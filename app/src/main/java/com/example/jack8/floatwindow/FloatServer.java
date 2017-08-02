@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -30,6 +31,7 @@ public class FloatServer extends Service {
     WindowManager wm;
     Notification NF;
     final int NotifyId=851262;
+    final int SECOND=1000;
     int wm_count=0;//計算FloatServer總共開了多少次
     Handler runUi= new Handler();
     @Override
@@ -163,8 +165,9 @@ public class FloatServer extends Service {
         });
         //Title.getLayoutParams().width=_wincon.getLayoutParams().width-(menu.getLayoutParams().width*3);
         //------------------------------------------------------------------
-        //---------------------------縮到最小按鈕---------------------------
+        //---------------------------縮到最小與最大按鈕---------------------------
         ((Button)winform.findViewById(R.id.mini)).setOnClickListener(windowInfo);
+        ((Button)winform.findViewById(R.id.max)).setOnClickListener(windowInfo);
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
         for(int i=0;i<wincon.length;i++)
@@ -182,6 +185,7 @@ public class FloatServer extends Service {
         View winform;//視窗外框
         ViewGroup wincon;//視窗內容框
         boolean isMini=false;//是否最小化
+        boolean isMax=false;
         Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
         static final int MINI_SIZE=80;//視窗最小化的寬度
 
@@ -199,33 +203,71 @@ public class FloatServer extends Service {
             switch (v.getId()) {
                 case R.id.mini://最小化
                     if (!isMini) {
+                        isMini = true;
                         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                        topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, 1000);
-                        heightMini.startScroll(width, height, MINI_SIZE - width, -height, 1000);
+                        if(!isMax) {
+                            topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, SECOND);
+                            heightMini.startScroll(width, height, MINI_SIZE - width, -height, SECOND);
+                        }else{
+                            int dy;
+                            topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE),0, SECOND);
+                            heightMini.startScroll( displayMetrics.widthPixels,
+                                    dy=displayMetrics.heightPixels -
+                                            ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - getStatusBarHeight(),
+                                    MINI_SIZE -displayMetrics.widthPixels, -dy,SECOND);
+                        }
                         wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
                         ((Button) winform.findViewById(R.id.menu)).setVisibility(View.GONE);
                         ((Button) winform.findViewById(R.id.close_button)).setVisibility(View.GONE);
                         ((Button) winform.findViewById(R.id.mini)).setVisibility(View.GONE);
+                        ((Button) winform.findViewById(R.id.max)).setVisibility(View.GONE);
                         ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.GONE);
-                        runUi.post(this);
-                        isMini = true;
                     }
                     break;
+                case R.id.max: {//最大化
+                    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                    if(!isMax) {
+                        isMax=true;
+                        topMini.startScroll(left, top, -left, -top, SECOND);
+                        heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
+                                displayMetrics.heightPixels -
+                                        ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - height - getStatusBarHeight(), SECOND);
+                        ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.GONE);
+                    }else{
+                        isMax=false;
+                        int dy;
+                        topMini.startScroll(0, 0, left, top, SECOND);
+                        heightMini.startScroll( displayMetrics.widthPixels,
+                                dy=displayMetrics.heightPixels -
+                                        ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - getStatusBarHeight(),
+                                width-displayMetrics.widthPixels, height-dy,SECOND);
+                        ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.VISIBLE);
+                    }
+                    break;
+                }
                 case R.id.title://還原視窗大小
                     if(isMini){
+                        isMini = false;
                         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                        topMini.startScroll(wmlp.x,wmlp.y,left-wmlp.x,top-wmlp.y,1000);
-                        heightMini.startScroll(wincon.getLayoutParams().width, wincon.getLayoutParams().height
-                                ,  width-wincon.getLayoutParams().width, height-wincon.getLayoutParams().height, 1000);
+                        if(!isMax) {
+                            topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, SECOND);
+                            heightMini.startScroll(wincon.getLayoutParams().width, wincon.getLayoutParams().height
+                                    , width - wincon.getLayoutParams().width, height - wincon.getLayoutParams().height, SECOND);
+                            ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.VISIBLE);
+                        }else{
+                            topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, SECOND);
+                            heightMini.startScroll(0, 0, displayMetrics.widthPixels,
+                                    displayMetrics.heightPixels -
+                                            ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - getStatusBarHeight(), SECOND);
+                        }
                         wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
                         ((Button) winform.findViewById(R.id.menu)).setVisibility(View.VISIBLE);
                         ((Button) winform.findViewById(R.id.close_button)).setVisibility(View.VISIBLE);
                         ((Button) winform.findViewById(R.id.mini)).setVisibility(View.VISIBLE);
-                        ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.VISIBLE);
-                        runUi.post(this);
-                        isMini = false;
+                        ((Button) winform.findViewById(R.id.max)).setVisibility(View.VISIBLE);
                     }
             }
+            runUi.post(this);
         }
 
         @Override
@@ -270,8 +312,8 @@ public class FloatServer extends Service {
                     return true;
                 }
                 wmlp.x = (int) (event.getRawX()-H);
-                wmlp.y = (int) (event.getRawY()-W-60);//60為狀態列高度
-                if(!windowInfo.isMini){
+                wmlp.y = (int) (event.getRawY()-W-getStatusBarHeight());//60為狀態列高度
+                if(!windowInfo.isMini&&!windowInfo.isMax){
                     windowInfo.left=wmlp.x-=((Button) winform.findViewById(R.id.close_button)).getLayoutParams().width;
                     windowInfo.top=wmlp.y;
                 }
@@ -282,6 +324,12 @@ public class FloatServer extends Service {
             wm.updateViewLayout(winform, wmlp);
             return false;
         }
+    }
+    private int getStatusBarHeight() {
+        Resources resources = getResources();
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen","android");
+        int height = resources.getDimensionPixelSize(resourceId);
+        return height;
     }
     @Nullable
     @Override

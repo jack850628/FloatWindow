@@ -40,8 +40,20 @@
             android:background="#0033FF"
             android:text="_"
             android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/max"
+            android:layout_toStartOf="@+id/max" />
+
+        <Button
+            android:id="@+id/max"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:text="口"
+            android:layout_alignParentTop="true"
+            android:textColor="#FFFFFF"
+            android:background="#0033FF"
             android:layout_toLeftOf="@+id/close_button"
             android:layout_toStartOf="@+id/close_button" />
+
         <Button
             android:id="@+id/close_button"
             android:layout_width="30dp"
