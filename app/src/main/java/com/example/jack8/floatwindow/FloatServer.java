@@ -269,10 +269,10 @@ public class FloatServer extends Service {
                     W=event.getY();//取得點擊的Y座標到視窗頂點的距離
                     return true;
                 }
-                wmlp.x = (int) (event.getRawX()-H-80);
+                wmlp.x = (int) (event.getRawX()-H);
                 wmlp.y = (int) (event.getRawY()-W-60);//60為狀態列高度
                 if(!windowInfo.isMini){
-                    windowInfo.left=wmlp.x;
+                    windowInfo.left=wmlp.x-=((Button) winform.findViewById(R.id.close_button)).getLayoutParams().width;
                     windowInfo.top=wmlp.y;
                 }
             }else if(event.getAction() == MotionEvent.ACTION_UP){
