@@ -99,7 +99,7 @@ public class FloatServer extends Service {
             wincon[i].setTag(titles[i]);
         }
         Title.setOnTouchListener(new MoveWindow(wmlp,windowInfo,winform));
-        Title.setOnClickListener(windowInfo);
+        Title.setOnClickListener(windowInfo);//還原視窗大小
         /*Log.i("formwidth",winform.getWidth()+"");
         Title.getLayoutParams().width=winform.getWidth()-160;*/
         ((Button)winform.findViewById(R.id.close_button)).setOnClickListener(new View.OnClickListener() {
@@ -172,14 +172,18 @@ public class FloatServer extends Service {
         //---------------------------------------------------------------------------------------------
         return START_REDELIVER_INTENT;
     }
+
+    /**
+     * 視窗資訊
+     */
     class WindowInfo implements View.OnClickListener,Runnable{
-         int top,left,height,width;
+         int top,left,height,width;//視窗的座標及大小
         WindowManager.LayoutParams wmlp;
-        View winform;
-        ViewGroup wincon;
-        boolean isMini=false;
+        View winform;//視窗外框
+        ViewGroup wincon;//視窗內容框
+        boolean isMini=false;//是否最小化
         Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
-        static final int MINI_SIZE=80;
+        static final int MINI_SIZE=80;//視窗最小化的寬度
 
         public WindowInfo(WindowManager.LayoutParams wmlp,View winform,ViewGroup wincon,int top,int left,int width,int height){
             this.wmlp=wmlp;
@@ -193,7 +197,7 @@ public class FloatServer extends Service {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.mini:
+                case R.id.mini://最小化
                     if (!isMini) {
                         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                         topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, 1000);
@@ -207,7 +211,7 @@ public class FloatServer extends Service {
                         isMini = true;
                     }
                     break;
-                case R.id.title:
+                case R.id.title://還原視窗大小
                     if(isMini){
                         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                         topMini.startScroll(wmlp.x,wmlp.y,left-wmlp.x,top-wmlp.y,1000);
@@ -225,7 +229,7 @@ public class FloatServer extends Service {
         }
 
         @Override
-        public void run() {
+        public void run() {//放大縮小動畫
             if(!topMini.isFinished()||!heightMini.isFinished()) {
                 if (topMini.computeScrollOffset()) {
                     wmlp.x = topMini.getCurrX();
