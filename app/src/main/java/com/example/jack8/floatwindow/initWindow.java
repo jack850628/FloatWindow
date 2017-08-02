@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * 初始化視窗內容
+ */
 public class initWindow {
     public static void init(View v,int index,View winform,WindowManager wm,WindowManager.LayoutParams wmlp){
         switch (index){

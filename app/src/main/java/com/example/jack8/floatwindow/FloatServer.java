@@ -26,7 +26,9 @@ import android.widget.PopupMenu;
 import android.widget.Scroller;
 import android.widget.TextView;
 
-
+/**
+ * 浮動視窗服務
+ */
 public class FloatServer extends Service {
     WindowManager wm;
     Notification NF;
