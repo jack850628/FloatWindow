@@ -161,7 +161,7 @@ public class FloatServer extends Service {
                 pm.show();
             }
         });
-        Title.getLayoutParams().width=_wincon.getLayoutParams().width-(menu.getLayoutParams().width*3);
+        //Title.getLayoutParams().width=_wincon.getLayoutParams().width-(menu.getLayoutParams().width*3);
         //------------------------------------------------------------------
         //---------------------------縮到最小按鈕---------------------------
         ((Button)winform.findViewById(R.id.mini)).setOnClickListener(windowInfo);
@@ -179,6 +179,7 @@ public class FloatServer extends Service {
         ViewGroup wincon;
         boolean isMini=false;
         Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
+        static final int MINI_SIZE=80;
 
         public WindowInfo(WindowManager.LayoutParams wmlp,View winform,ViewGroup wincon,int top,int left,int width,int height){
             this.wmlp=wmlp;
@@ -195,8 +196,8 @@ public class FloatServer extends Service {
                 case R.id.mini:
                     if (!isMini) {
                         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                        topMini.startScroll(left, top, (displayMetrics.widthPixels - 80) - left, -top, 1000);
-                        heightMini.startScroll(width, height, 80 - width, -height, 1000);
+                        topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, 1000);
+                        heightMini.startScroll(width, height, MINI_SIZE - width, -height, 1000);
                         wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
                         ((Button) winform.findViewById(R.id.menu)).setVisibility(View.GONE);
                         ((Button) winform.findViewById(R.id.close_button)).setVisibility(View.GONE);
@@ -264,8 +265,12 @@ public class FloatServer extends Service {
                     W=event.getY();//取得點擊的Y座標到視窗頂點的距離
                     return true;
                 }
-                wmlp.x = windowInfo.left = (int) (event.getRawX()-H-80);
-                wmlp.y = windowInfo.top = (int) (event.getRawY()-W-60);//60為狀態列高度
+                wmlp.x = (int) (event.getRawX()-H-80);
+                wmlp.y = (int) (event.getRawY()-W-60);//60為狀態列高度
+                if(!windowInfo.isMini){
+                    windowInfo.left=wmlp.x;
+                    windowInfo.top=wmlp.y;
+                }
             }else if(event.getAction() == MotionEvent.ACTION_UP){
                 H=-1;
                 W=-1;
