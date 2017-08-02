@@ -32,6 +32,17 @@
             android:textColor="#FFFFFF" />
 
         <Button
+            android:id="@+id/mini"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:background="#0033FF"
+            android:text="_"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/close_button"
+            android:layout_toStartOf="@+id/close_button" />
+        <Button
             android:id="@+id/close_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
