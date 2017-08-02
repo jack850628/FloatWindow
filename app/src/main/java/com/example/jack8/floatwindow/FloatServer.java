@@ -185,7 +185,7 @@ public class FloatServer extends Service {
         View winform;//視窗外框
         ViewGroup wincon;//視窗內容框
         boolean isMini=false;//是否最小化
-        boolean isMax=false;
+        boolean isMax=false;//是否最大化
         Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
         static final int MINI_SIZE=80;//視窗最小化的寬度
 
