@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:id="@+id/window"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="#FFFFFF"
-    android:id="@+id/window">
+    android:orientation="vertical">
 
 
     <RelativeLayout
@@ -35,24 +35,24 @@
             android:id="@+id/mini"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_weight="1"
-            android:textColor="#FFFFFF"
-            android:background="#0033FF"
-            android:text="_"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/max"
-            android:layout_toStartOf="@+id/max" />
+            android:layout_toStartOf="@+id/max"
+            android:layout_weight="1"
+            android:background="#0066FF"
+            android:text="_"
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/max"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:text="口"
             android:layout_alignParentTop="true"
-            android:textColor="#FFFFFF"
-            android:background="#0033FF"
             android:layout_toLeftOf="@+id/close_button"
-            android:layout_toStartOf="@+id/close_button" />
+            android:layout_toStartOf="@+id/close_button"
+            android:background="#0066FF"
+            android:text="口"
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/close_button"
@@ -74,8 +74,8 @@
     <LinearLayout
         android:id="@+id/size"
         android:layout_width="match_parent"
-        android:background="#0066FF"
         android:layout_height="10dp"
+        android:background="#0066FF"
         android:orientation="vertical"></LinearLayout>
 
 </LinearLayout>

@@ -32,8 +32,9 @@ import android.widget.TextView;
 public class FloatServer extends Service {
     WindowManager wm;
     Notification NF;
-    final int NotifyId=851262;
-    final int SECOND=500;
+    final int NOTIFY_ID=851262;
+    final int SECOND=500;//動畫持續時間
+    static final int START_POINT=60;//視窗預設座標
     int wm_count=0;//計算FloatServer總共開了多少次
     Handler runUi= new Handler();
     @Override
@@ -44,7 +45,7 @@ public class FloatServer extends Service {
                 setSmallIcon(R.drawable.menu_icom).
                 setContentTitle("浮動視窗").
                 setContentText("浮動視窗已啟用").build();
-        startForeground(NotifyId,NF);//將服務升級至前台等級，這樣就不會突然被系統回收
+        startForeground(NOTIFY_ID,NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         Log.i("WMStrver","Create");
     }
     /*
@@ -62,13 +63,14 @@ public class FloatServer extends Service {
 
         wm_count++;
 
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         wmlp = new WindowManager.LayoutParams();
         wmlp.type= WindowManager.LayoutParams.TYPE_PHONE;//類型
         wmlp.format = PixelFormat.RGBA_8888;//背景(透明)
         //wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//設定焦點(不聚交)，否則背後介面將不可操作，因為會有一層透明的圖層
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
-        wmlp.x=60;//設定原點座標
-        wmlp.y=60;
+        wmlp.x=START_POINT;//設定原點座標
+        wmlp.y=START_POINT;
         wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         winform= LayoutInflater.from(getApplicationContext()).inflate(R.layout.window,null);
@@ -88,7 +90,7 @@ public class FloatServer extends Service {
         });
         wm.addView(winform,wmlp);
         _wincon=(ViewGroup) winform.findViewById(R.id.wincon);
-        windowInfo=new WindowInfo(wmlp,winform,_wincon,wmlp.x,wmlp.y,_wincon.getLayoutParams().width,_wincon.getLayoutParams().height);
+        windowInfo=new WindowInfo(wmlp,winform,_wincon,START_POINT,START_POINT,_wincon.getLayoutParams().width,_wincon.getLayoutParams().height);
         //-------------------------建立視窗內容畫面----------------------------------------------------
         Title=(TextView)winform.findViewById(R.id.title);
         int[] ids=intent.getExtras().getIntArray("Layouts");//頁面id
@@ -106,16 +108,7 @@ public class FloatServer extends Service {
         Title.setOnClickListener(windowInfo);//還原視窗大小
         /*Log.i("formwidth",winform.getWidth()+"");
         Title.getLayoutParams().width=winform.getWidth()-160;*/
-        ((Button)winform.findViewById(R.id.close_button)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wm.removeView(winform);
-                if(--wm_count==0) {
-                    FloatServer.this.stopForeground(true);
-                    stopSelf();
-                }
-            }
-        });
+        ((Button)winform.findViewById(R.id.close_button)).setOnClickListener(windowInfo);
         winform.findViewById(R.id.size).setOnTouchListener(new View.OnTouchListener() {
             float Wlength=-1,Hlength=-1;
             @Override
@@ -175,6 +168,29 @@ public class FloatServer extends Service {
         for(int i=0;i<wincon.length;i++)
             initWindow.init(wincon[i],i,winform,wm,wmlp);
         //---------------------------------------------------------------------------------------------
+        //---------------------------視窗開啟動畫------------------------------------------------------
+        final Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
+        topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,START_POINT - displayMetrics.widthPixels / 2, START_POINT - displayMetrics.heightPixels / 2, SECOND);
+        heightMini.startScroll(0, 0, winform.getLayoutParams().width, winform.getLayoutParams().height, SECOND);
+        runUi.post(new Runnable() {
+            @Override
+            public void run() {
+                if(!topMini.isFinished()||!heightMini.isFinished()) {
+                    if (topMini.computeScrollOffset()) {
+                        wmlp.x = topMini.getCurrX();
+                        wmlp.y = topMini.getCurrY();
+                    }
+                    if (heightMini.computeScrollOffset()) {
+                        winform.getLayoutParams().width = heightMini.getCurrX();
+                        winform.getLayoutParams().height = heightMini.getCurrY();
+                    }
+                    wm.updateViewLayout(winform, wmlp);
+                    runUi.post(this);
+                }
+            }
+        });
+        //---------------------------------------------------------------------------------------------
+
         return START_REDELIVER_INTENT;
     }
 
@@ -188,8 +204,13 @@ public class FloatServer extends Service {
         ViewGroup wincon;//視窗內容框
         boolean isMini=false;//是否最小化
         boolean isMax=false;//是否最大化
+        boolean close=false;//是否是關閉視窗
         Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
         final int MINI_SIZE;//視窗最小化的寬度
+        Button menu,close_button,mini,max;
+        LinearLayout size;
+        TextView title;
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
 
         public WindowInfo(WindowManager.LayoutParams wmlp,View winform,ViewGroup wincon,int top,int left,int width,int height){
             this.wmlp=wmlp;
@@ -200,6 +221,13 @@ public class FloatServer extends Service {
             this.height=height;
             this.width=width;
             MINI_SIZE=winform.findViewById(R.id.close_button).getLayoutParams().width;
+
+            menu=(Button) winform.findViewById(R.id.menu);
+            close_button=(Button) winform.findViewById(R.id.close_button);
+            mini=(Button) winform.findViewById(R.id.mini);
+            max=(Button) winform.findViewById(R.id.max);
+            size=(LinearLayout) winform.findViewById(R.id.size);
+            title=(TextView) winform.findViewById(R.id.title);
         }
         @Override
         public void onClick(View v) {
@@ -207,7 +235,6 @@ public class FloatServer extends Service {
                 case R.id.mini://最小化
                     if (!isMini) {
                         isMini = true;
-                        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                         if(!isMax) {
                             topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, SECOND);
                             heightMini.startScroll(width, height, MINI_SIZE - width, -height, SECOND);
@@ -216,58 +243,68 @@ public class FloatServer extends Service {
                             topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE),0, SECOND);
                             heightMini.startScroll( displayMetrics.widthPixels,
                                     dy=displayMetrics.heightPixels -
-                                            ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - getStatusBarHeight(),
+                                            title.getLayoutParams().height - getStatusBarHeight(),
                                     MINI_SIZE -displayMetrics.widthPixels, -dy,SECOND);
                         }
                         wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
-                        ((Button) winform.findViewById(R.id.menu)).setVisibility(View.GONE);
-                        ((Button) winform.findViewById(R.id.close_button)).setVisibility(View.GONE);
-                        ((Button) winform.findViewById(R.id.mini)).setVisibility(View.GONE);
-                        ((Button) winform.findViewById(R.id.max)).setVisibility(View.GONE);
-                        ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.GONE);
+                        menu.setVisibility(View.GONE);
+                        close_button.setVisibility(View.GONE);
+                        mini.setVisibility(View.GONE);
+                        max.setVisibility(View.GONE);
+                        size.setVisibility(View.GONE);
                     }
                     break;
-                case R.id.max: {//最大化
-                    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                case R.id.max: //最大化
                     if(!isMax) {
                         isMax=true;
                         topMini.startScroll(left, top, -left, -top, SECOND);
                         heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
                                 displayMetrics.heightPixels -
-                                        ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - height - getStatusBarHeight(), SECOND);
-                        ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.GONE);
+                                        title.getLayoutParams().height - height - getStatusBarHeight(), SECOND);
+                        size.setVisibility(View.GONE);
                     }else{
                         isMax=false;
                         int dy;
                         topMini.startScroll(0, 0, left, top, SECOND);
                         heightMini.startScroll( displayMetrics.widthPixels,
                                 dy=displayMetrics.heightPixels -
-                                        ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - getStatusBarHeight(),
+                                        title.getLayoutParams().height - getStatusBarHeight(),
                                 width-displayMetrics.widthPixels, height-dy,SECOND);
-                        ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.VISIBLE);
+                        size.setVisibility(View.VISIBLE);
                     }
                     break;
-                }
                 case R.id.title://還原視窗大小
                     if(isMini){
                         isMini = false;
-                        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
                         if(!isMax) {
                             topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, SECOND);
                             heightMini.startScroll(wincon.getLayoutParams().width, wincon.getLayoutParams().height
                                     , width - wincon.getLayoutParams().width, height - wincon.getLayoutParams().height, SECOND);
-                            ((LinearLayout) winform.findViewById(R.id.size)).setVisibility(View.VISIBLE);
+                            size.setVisibility(View.VISIBLE);
                         }else{
                             topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, SECOND);
                             heightMini.startScroll(0, 0, displayMetrics.widthPixels,
                                     displayMetrics.heightPixels -
-                                            ((TextView) winform.findViewById(R.id.title)).getLayoutParams().height - getStatusBarHeight(), SECOND);
+                                            title.getLayoutParams().height - getStatusBarHeight(), SECOND);
                         }
                         wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
-                        ((Button) winform.findViewById(R.id.menu)).setVisibility(View.VISIBLE);
-                        ((Button) winform.findViewById(R.id.close_button)).setVisibility(View.VISIBLE);
-                        ((Button) winform.findViewById(R.id.mini)).setVisibility(View.VISIBLE);
-                        ((Button) winform.findViewById(R.id.max)).setVisibility(View.VISIBLE);
+                        menu.setVisibility(View.VISIBLE);
+                        close_button.setVisibility(View.VISIBLE);
+                        mini.setVisibility(View.VISIBLE);
+                        max.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case R.id.close_button://關閉視窗
+                    close=true;
+                    if(!isMax) {
+                        int dy;
+                        topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
+                        heightMini.startScroll(width, dy=height+title.getLayoutParams().height+size.getLayoutParams().height,
+                                - width, -dy, SECOND);
+                    }else{
+                        topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , SECOND);
+                        heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels  - getStatusBarHeight()
+                                , - displayMetrics.widthPixels, -(displayMetrics.heightPixels  - getStatusBarHeight()), SECOND);
                     }
             }
             runUi.post(this);
@@ -281,11 +318,22 @@ public class FloatServer extends Service {
                     wmlp.y = topMini.getCurrY();
                 }
                 if (heightMini.computeScrollOffset()) {
-                    wincon.getLayoutParams().width = heightMini.getCurrX();
-                    wincon.getLayoutParams().height = heightMini.getCurrY();
+                    if(!close) {
+                        wincon.getLayoutParams().width = heightMini.getCurrX();
+                        wincon.getLayoutParams().height = heightMini.getCurrY();
+                    }else{
+                        winform.getLayoutParams().width = heightMini.getCurrX();
+                        winform.getLayoutParams().height = heightMini.getCurrY();
+                    }
                 }
                 wm.updateViewLayout(winform, wmlp);
                 runUi.post(this);
+            }else if(close){
+                wm.removeView(winform);
+                if(--wm_count==0) {
+                    FloatServer.this.stopForeground(true);
+                    stopSelf();
+                }
             }
         }
     }
@@ -294,10 +342,13 @@ public class FloatServer extends Service {
         WindowInfo windowInfo;
         View winform;
         float H=-1,W=-1;
+        Button close_button;
         public MoveWindow(WindowManager.LayoutParams wmlp,WindowInfo windowInfo,View winform){
             this.wmlp=wmlp;
             this.windowInfo=windowInfo;
             this.winform=winform;
+
+            close_button=(Button) winform.findViewById(R.id.close_button);
         }
         /*
         移動視窗
@@ -317,7 +368,7 @@ public class FloatServer extends Service {
                 wmlp.x = (int) (event.getRawX()-H);
                 wmlp.y = (int) (event.getRawY()-W-getStatusBarHeight());//60為狀態列高度
                 if(!windowInfo.isMini&&!windowInfo.isMax){
-                    windowInfo.left=wmlp.x-=((Button) winform.findViewById(R.id.close_button)).getLayoutParams().width;
+                    windowInfo.left=wmlp.x-=close_button.getLayoutParams().width;
                     windowInfo.top=wmlp.y;
                 }
             }else if(event.getAction() == MotionEvent.ACTION_UP){
