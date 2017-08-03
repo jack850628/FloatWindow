@@ -189,7 +189,7 @@ public class FloatServer extends Service {
         boolean isMini=false;//是否最小化
         boolean isMax=false;//是否最大化
         Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
-        static final int MINI_SIZE=80;//視窗最小化的寬度
+        final int MINI_SIZE;//視窗最小化的寬度
 
         public WindowInfo(WindowManager.LayoutParams wmlp,View winform,ViewGroup wincon,int top,int left,int width,int height){
             this.wmlp=wmlp;
@@ -199,6 +199,7 @@ public class FloatServer extends Service {
             this.left=left;
             this.height=height;
             this.width=width;
+            MINI_SIZE=winform.findViewById(R.id.close_button).getLayoutParams().width;
         }
         @Override
         public void onClick(View v) {
