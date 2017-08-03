@@ -33,7 +33,7 @@ public class FloatServer extends Service {
     WindowManager wm;
     Notification NF;
     final int NotifyId=851262;
-    final int SECOND=1000;
+    final int SECOND=500;
     int wm_count=0;//計算FloatServer總共開了多少次
     Handler runUi= new Handler();
     @Override
