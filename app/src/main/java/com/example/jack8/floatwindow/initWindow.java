@@ -1,6 +1,5 @@
 package com.example.jack8.floatwindow;
 
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebBackForwardList;
@@ -29,18 +28,9 @@ public class initWindow {
     }
     public static void initWindow1(View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
         final EditText et=(EditText)v.findViewById(R.id.Temperature);
-        et.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
-            }
-        });
         View.OnClickListener oc=new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
                 if(et.getText().toString().matches("| "))
                     return;
                 switch (v.getId()) {
@@ -58,21 +48,10 @@ public class initWindow {
     }
     public static void initWindow2(View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
         final EditText H=(EditText)v.findViewById(R.id.H),W=(EditText)v.findViewById(R.id.W);
-        View.OnClickListener oc=new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
-            }
-        };
-        H.setOnClickListener(oc);
-        W.setOnClickListener(oc);
         final TextView BMI=(TextView)v.findViewById(R.id.BMI);
         ((Button)v.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
                 if(H.getText().toString().matches("| ")||W.getText().toString().matches("| "))
                     return;
                 float h=Float.parseFloat(H.getText().toString())/100f;
@@ -83,24 +62,9 @@ public class initWindow {
     public static void initWindow3(View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
         final EditText path=(EditText)v.findViewById(R.id.webpath);
         path.setText("https://www.google.com.tw/?gws_rd=ssl");
-        path.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
-            }
-        });
         Button go=(Button)v.findViewById(R.id.go);
         Button goBack=(Button)v.findViewById(R.id.goback);
         final WebView web=(WebView)v.findViewById(R.id.web);
-        web.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
-                return false;
-            }
-        });
         web.getSettings().setJavaScriptEnabled(true);
         web.setWebViewClient(new WebViewClient(){
             @Override
@@ -114,16 +78,12 @@ public class initWindow {
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
                 web.loadUrl(path.getText().toString());
             }
         });
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                wm.updateViewLayout(winform, wmlp);
                 WebBackForwardList WBFL = web.copyBackForwardList();
                 if(WBFL.getCurrentIndex()==0)//當目前顯示的是WebView第一個顯示的網址
                     return;

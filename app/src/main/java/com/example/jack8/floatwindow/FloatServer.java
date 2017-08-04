@@ -74,17 +74,16 @@ public class FloatServer extends Service {
         wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         winform= LayoutInflater.from(getApplicationContext()).inflate(R.layout.window,null);
+        ((WindowFrom)winform).setLayoutParams(wmlp);
         winform.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Rect rect = new Rect();
                 v.getGlobalVisibleRect(rect);//取得視窗所在的範圍
-                if(rect.contains((int)event.getX(),(int)event.getY())){//當Touch的點在視窗範圍內
-                    Log.i("Touch","win");
-                    wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
-                }else
+                if (!rect.contains((int) event.getX(), (int) event.getY())) {//當Touch的點在視窗範圍外
                     wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
-                wm.updateViewLayout(winform, wmlp);
+                    wm.updateViewLayout(winform, wmlp);
+                }
                 return false;
             }
         });
@@ -287,7 +286,7 @@ public class FloatServer extends Service {
                                     displayMetrics.heightPixels -
                                             title.getLayoutParams().height - getStatusBarHeight(), SECOND);
                         }
-                        wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
+                        wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
                         menu.setVisibility(View.VISIBLE);
                         close_button.setVisibility(View.VISIBLE);
                         mini.setVisibility(View.VISIBLE);
@@ -303,8 +302,8 @@ public class FloatServer extends Service {
                                 - width, -dy, SECOND);
                     }else{
                         topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , SECOND);
-                        heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels  - getStatusBarHeight()
-                                , - displayMetrics.widthPixels, -(displayMetrics.heightPixels  - getStatusBarHeight()), SECOND);
+                        heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
+                                , - displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), SECOND);
                     }
             }
             runUi.post(this);
@@ -357,8 +356,6 @@ public class FloatServer extends Service {
          */
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if(!windowInfo.isMini)
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
             if(event.getAction() == MotionEvent.ACTION_MOVE) {
                 if(H==-1||W==-1){
                     H=event.getX();//取得點擊的X座標到視窗頂點的距離
@@ -372,6 +369,8 @@ public class FloatServer extends Service {
                     windowInfo.top=wmlp.y;
                 }
             }else if(event.getAction() == MotionEvent.ACTION_UP){
+                if(windowInfo.isMini)
+                    wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
                 H=-1;
                 W=-1;
             }
