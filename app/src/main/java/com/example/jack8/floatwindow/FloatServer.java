@@ -165,7 +165,7 @@ public class FloatServer extends Service {
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
         for(int i=0;i<wincon.length;i++)
-            initWindow.init(wincon[i],i,winform,wm,wmlp);
+            initWindow.init(this,wincon[i],i,winform,wm,wmlp);
         //---------------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
         final Scroller topMini=new Scroller(FloatServer.this),heightMini=new Scroller(FloatServer.this);
