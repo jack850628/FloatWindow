@@ -256,6 +256,7 @@ public class FloatServer extends Service {
                 case R.id.max: //最大化
                     if(!isMax) {
                         isMax=true;
+                        max.setBackground(getResources().getDrawable(R.drawable.mini_window));
                         topMini.startScroll(left, top, -left, -top, SECOND);
                         heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
                                 displayMetrics.heightPixels -
@@ -263,6 +264,7 @@ public class FloatServer extends Service {
                         size.setVisibility(View.GONE);
                     }else{
                         isMax=false;
+                        max.setBackground(getResources().getDrawable(R.drawable.max_window));
                         int dy;
                         topMini.startScroll(0, 0, left, top, SECOND);
                         heightMini.startScroll( displayMetrics.widthPixels,

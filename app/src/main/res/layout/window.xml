@@ -50,8 +50,7 @@
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/close_button"
             android:layout_toStartOf="@+id/close_button"
-            android:background="#0066FF"
-            android:text="口"
+            android:background="@drawable/max_window"
             android:textColor="#FFFFFF" />
 
         <Button
