@@ -28,39 +28,6 @@ public class initWindow {
         }
     }
     public static void initWindow1(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
-        final EditText et=(EditText)v.findViewById(R.id.Temperature);
-        View.OnClickListener oc=new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(et.getText().toString().matches("| "))
-                    return;
-                switch (v.getId()) {
-                    case R.id.toC:
-                        et.setText(String.valueOf((Float.parseFloat(et.getText().toString()) - 32) * 5f / 9f));
-                        break;
-                    case R.id.toF:
-                        et.setText(String.valueOf(Float.parseFloat(et.getText().toString())*(9f/5f)+32));
-                        break;
-                }
-            }
-        };
-        ((Button)v.findViewById(R.id.toC)).setOnClickListener(oc);
-        ((Button)v.findViewById(R.id.toF)).setOnClickListener(oc);
-    }
-    public static void initWindow2(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
-        final EditText H=(EditText)v.findViewById(R.id.H),W=(EditText)v.findViewById(R.id.W);
-        final TextView BMI=(TextView)v.findViewById(R.id.BMI);
-        ((Button)v.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(H.getText().toString().matches("| ")||W.getText().toString().matches("| "))
-                    return;
-                float h=Float.parseFloat(H.getText().toString())/100f;
-                BMI.setText(String.valueOf(Float.parseFloat(W.getText().toString())/(h*h)));
-            }
-        });
-    }
-    public static void initWindow3(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
         final EditText path=(EditText)v.findViewById(R.id.webpath);
         path.setText("https://www.google.com.tw/?gws_rd=ssl");
         Button go=(Button)v.findViewById(R.id.go);
@@ -91,6 +58,39 @@ public class initWindow {
                 path.setText(WBFL.getItemAtIndex(WBFL.getCurrentIndex()-1).getUrl());//取得上一頁的網址連結
                 web.goBack();
 
+            }
+        });
+    }
+    public static void initWindow2(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
+        final EditText et=(EditText)v.findViewById(R.id.Temperature);
+        View.OnClickListener oc=new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(et.getText().toString().matches("| "))
+                    return;
+                switch (v.getId()) {
+                    case R.id.toC:
+                        et.setText(String.valueOf((Float.parseFloat(et.getText().toString()) - 32) * 5f / 9f));
+                        break;
+                    case R.id.toF:
+                        et.setText(String.valueOf(Float.parseFloat(et.getText().toString())*(9f/5f)+32));
+                        break;
+                }
+            }
+        };
+        ((Button)v.findViewById(R.id.toC)).setOnClickListener(oc);
+        ((Button)v.findViewById(R.id.toF)).setOnClickListener(oc);
+    }
+    public static void initWindow3(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
+        final EditText H=(EditText)v.findViewById(R.id.H),W=(EditText)v.findViewById(R.id.W);
+        final TextView BMI=(TextView)v.findViewById(R.id.BMI);
+        ((Button)v.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(H.getText().toString().matches("| ")||W.getText().toString().matches("| "))
+                    return;
+                float h=Float.parseFloat(H.getText().toString())/100f;
+                BMI.setText(String.valueOf(Float.parseFloat(W.getText().toString())/(h*h)));
             }
         });
     }
