@@ -32,28 +32,6 @@
             android:textColor="#FFFFFF" />
 
         <Button
-            android:id="@+id/mini"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/max"
-            android:layout_toStartOf="@+id/max"
-            android:layout_weight="1"
-            android:background="#0066FF"
-            android:text="_"
-            android:textColor="#FFFFFF" />
-
-        <Button
-            android:id="@+id/max"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/close_button"
-            android:layout_toStartOf="@+id/close_button"
-            android:background="@drawable/max_window"
-            android:textColor="#FFFFFF" />
-
-        <Button
             android:id="@+id/close_button"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -62,6 +40,38 @@
             android:background="#FF0000"
             android:text="X"
             android:textColor="#FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:background="#0066FF"
+            android:layout_toLeftOf="@+id/close_button"
+            android:layout_toStartOf="@+id/close_button">
+
+            <Button
+                android:id="@+id/mini"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/max"
+                android:layout_toStartOf="@+id/max"
+                android:layout_weight="1"
+                android:background="#0066FF"
+                android:text="_"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/max"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/close_button"
+                android:layout_toStartOf="@+id/close_button"
+                android:layout_weight="1"
+                android:background="@drawable/max_window" />
+        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
