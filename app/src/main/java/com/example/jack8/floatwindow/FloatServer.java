@@ -284,9 +284,10 @@ public class FloatServer extends Service {
                             size.setVisibility(View.VISIBLE);
                         }else{
                             topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, SECOND);
-                            heightMini.startScroll(0, 0, displayMetrics.widthPixels,
-                                    displayMetrics.heightPixels -
-                                            title.getLayoutParams().height - getStatusBarHeight(), SECOND);
+                            heightMini.startScroll(wincon.getLayoutParams().width, wincon.getLayoutParams().height
+                                    , displayMetrics.widthPixels - wincon.getLayoutParams().width,
+                                    (displayMetrics.heightPixels - wincon.getLayoutParams().height)
+                                           - title.getLayoutParams().height - getStatusBarHeight(), SECOND);
                         }
                         wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
                         menu.setVisibility(View.VISIBLE);
