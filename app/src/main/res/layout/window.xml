@@ -3,14 +3,15 @@
     android:id="@+id/window"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
+    android:background="@color/windowsBackground"
     android:orientation="vertical">
 
 
     <RelativeLayout
+        android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0066FF"
+        android:background="@color/windowFoucsColor"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -31,24 +32,15 @@
             android:textAllCaps="false"
             android:textColor="#FFFFFF" />
 
-        <Button
-            android:id="@+id/close_button"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:background="#FF0000"
-            android:text="X"
-            android:textColor="#FFFFFF" />
-
         <LinearLayout
+            android:id="@+id/micro_max_button_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_alignParentTop="true"
-            android:background="#0066FF"
-            android:layout_toLeftOf="@+id/close_button"
-            android:layout_toStartOf="@+id/close_button">
+            android:layout_toLeftOf="@+id/close_button_background"
+            android:layout_toStartOf="@+id/close_button_background"
+            android:background="@color/windowFoucsColor"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/mini"
@@ -58,9 +50,7 @@
                 android:layout_toLeftOf="@+id/max"
                 android:layout_toStartOf="@+id/max"
                 android:layout_weight="1"
-                android:background="#0066FF"
-                android:text="_"
-                android:textColor="#FFFFFF" />
+                android:background="@drawable/micro_window" />
 
             <Button
                 android:id="@+id/max"
@@ -71,7 +61,28 @@
                 android:layout_toStartOf="@+id/close_button"
                 android:layout_weight="1"
                 android:background="@drawable/max_window" />
+
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/close_button_background"
+            android:background="@color/closeButton">
+
+            <Button
+                android:id="@+id/close_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/close_window" />
+        </LinearLayout>
+
     </RelativeLayout>
 
     <LinearLayout
@@ -84,7 +95,7 @@
         android:id="@+id/size"
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:background="#0066FF"
+        android:background="@color/windowFoucsColor"
         android:orientation="vertical"></LinearLayout>
 
 </com.example.jack8.floatwindow.WindowFrom>

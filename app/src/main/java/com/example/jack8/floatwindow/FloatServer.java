@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -42,7 +43,7 @@ public class FloatServer extends Service {
         super.onCreate();
         wm=(WindowManager)getSystemService(Context.WINDOW_SERVICE);
         NF=new Notification.Builder(getApplicationContext()).
-                setSmallIcon(R.drawable.menu_icom).
+                setSmallIcon(R.drawable.mini_window).
                 setContentTitle("浮動視窗").
                 setContentText("浮動視窗已啟用").build();
         startForeground(NOTIFY_ID,NF);//將服務升級至前台等級，這樣就不會突然被系統回收
@@ -76,6 +77,10 @@ public class FloatServer extends Service {
         winform= LayoutInflater.from(getApplicationContext()).inflate(R.layout.window,null);
         ((WindowFrom)winform).setLayoutParams(wmlp);
         winform.setOnTouchListener(new View.OnTouchListener() {
+            View titleBar=winform.findViewById(R.id.title_bar),
+                    sizeBar=winform.findViewById(R.id.size),
+                    microMaxButtonBackground=winform.findViewById(R.id.micro_max_button_background),
+                    closeButtonBackground=winform.findViewById(R.id.close_button_background);
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Rect rect = new Rect();
@@ -83,6 +88,10 @@ public class FloatServer extends Service {
                 if (!rect.contains((int) event.getX(), (int) event.getY())) {//當Touch的點在視窗範圍外
                     wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
                     wm.updateViewLayout(winform, wmlp);
+                    titleBar.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
+                    sizeBar.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
+                    microMaxButtonBackground.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
+                    closeButtonBackground.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
                 }
                 return false;
             }
