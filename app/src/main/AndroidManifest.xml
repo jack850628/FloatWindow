@@ -17,7 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".FloatServer"></service>
+        <activity android:name=".Setup"/>
+        <service android:name=".FloatServer"/>
     </application>
 
 </manifest>

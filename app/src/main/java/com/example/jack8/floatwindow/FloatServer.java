@@ -1,6 +1,7 @@
 package com.example.jack8.floatwindow;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,13 +40,17 @@ public class FloatServer extends Service {
     static final int START_POINT=60;//視窗預設座標
     int wm_count=0;//計算FloatServer總共開了多少次
     Handler runUi= new Handler();
+    WindowColor wColor;
     @Override
     public void onCreate() {
         super.onCreate();
         wm=(WindowManager)getSystemService(Context.WINDOW_SERVICE);
-        NF=new Notification.Builder(getApplicationContext()).
+        Intent toSetup=new Intent(this,Setup.class);
+        NF=new NotificationCompat.Builder(this).
                 setSmallIcon(R.drawable.mini_window).
+                //setContentIntent(PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT)).
                 setContentTitle("浮動視窗").
+                addAction(new NotificationCompat.Action.Builder(R.drawable.mini_window,"設定", PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT)).build()).
                 setContentText("浮動視窗已啟用").build();
         startForeground(NOTIFY_ID,NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         Log.i("WMStrver","Create");
@@ -61,6 +67,7 @@ public class FloatServer extends Service {
         final View[] wincon;
         final TextView Title;
         final WindowInfo windowInfo;
+        wColor=new WindowColor(this);
 
         wm_count++;
 
@@ -88,10 +95,10 @@ public class FloatServer extends Service {
                 if (!rect.contains((int) event.getX(), (int) event.getY())) {//當Touch的點在視窗範圍外
                     wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
                     wm.updateViewLayout(winform, wmlp);
-                    titleBar.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
-                    sizeBar.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
-                    microMaxButtonBackground.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
-                    closeButtonBackground.setBackgroundColor(getResources().getColor(R.color.windowNotFoucsColor));
+                    titleBar.setBackgroundColor(wColor.getWindowNotFoucs());
+                    sizeBar.setBackgroundColor(wColor.getWindowNotFoucs());
+                    microMaxButtonBackground.setBackgroundColor(wColor.getWindowNotFoucs());
+                    closeButtonBackground.setBackgroundColor(wColor.getWindowNotFoucs());
                 }
                 return false;
             }
