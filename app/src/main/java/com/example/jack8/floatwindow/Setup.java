@@ -1,5 +1,7 @@
 package com.example.jack8.floatwindow;
 
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -11,14 +13,17 @@ import android.widget.TextView;
 
 public class Setup extends AppCompatActivity {
     WindowColor wColor;
-    ViewGroup titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
-    ViewGroup titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
+    ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
+    ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setup);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         wColor=new WindowColor(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
+            getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
         setTitle("浮動視窗設定");
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
@@ -34,11 +39,14 @@ public class Setup extends AppCompatActivity {
         content.addView(NotFoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
         ((WindowFrom)NotFoucsWindow).isStart=false;
 
+        //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
-        prompt.setText("點選視窗外框設定顏色");
+        prompt.setText("點選視窗設定顏色\n");
         prompt.setTextSize(15f);
         ((ViewGroup) FoucsWindow.findViewById(R.id.wincon)).addView(prompt);
 
+        windowsBackground=(ViewGroup) FoucsWindow.findViewById(R.id.window);
+        windowsBackground.setOnClickListener(setColor);
         titleBar=(ViewGroup) FoucsWindow.findViewById(R.id.title_bar);
         titleBar.setOnClickListener(setColor);
         sizeBar=(ViewGroup) FoucsWindow.findViewById(R.id.size);
@@ -49,12 +57,16 @@ public class Setup extends AppCompatActivity {
         FoucsWindow.findViewById(R.id.menu).setOnClickListener(setColor);
         FoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColor);
         closeButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.close_button_background);
-
+        ((TextView)FoucsWindow.findViewById(R.id.title)).setText("視窗標題");
+        //---------------------------------------------------------------------------
+        //-------------------------初始化失焦視窗設定畫面----------------------------
         TextView promptNotFoucs=new TextView(this);
-        promptNotFoucs.setText("點選視窗外框設定失焦顏色");
+        promptNotFoucs.setText("點選視窗設定失焦顏色");
         promptNotFoucs.setTextSize(15f);
         ((ViewGroup) NotFoucsWindow.findViewById(R.id.wincon)).addView(promptNotFoucs);
 
+        windowsBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.window);
+        windowsBackgroundNotFoucs.setOnClickListener(setColor);
         titleBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.title_bar);
         titleBarNotFoucs.setOnClickListener(setColorForNotFoucs);
         sizeBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.size);
@@ -65,11 +77,13 @@ public class Setup extends AppCompatActivity {
         NotFoucsWindow.findViewById(R.id.menu).setOnClickListener(setColorForNotFoucs);
         NotFoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColorForNotFoucs);
         closeButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.close_button_background);
+        ((TextView)NotFoucsWindow.findViewById(R.id.title)).setText("視窗標題");
 
         microMaxButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         titleBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         sizeBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         closeButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
+        //---------------------------------------------------------------------------
 
         ((Button)findViewById(R.id.ok)).setOnClickListener(save);
         ((Button)findViewById(R.id.no)).setOnClickListener(save);
@@ -89,6 +103,9 @@ public class Setup extends AppCompatActivity {
                                 wColor.setSizeBar(color);
                                 titleBar.setBackgroundColor(color);
                                 sizeBar.setBackgroundColor(color);
+                                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
+                                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
+                                    getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
                             }
                         });
                     break;
@@ -108,6 +125,16 @@ public class Setup extends AppCompatActivity {
                                 public void colorChanged(int color){
                                     wColor.setCloseButtonBackground(color);
                                     closeButtonBackground.setBackgroundColor(color);
+                                }
+                            });
+                    break;
+                case R.id.window:
+                    dialog = new ColorPickerDialog(Setup.this, wColor.getWindowsBackground(), "選擇顏色",
+                            new ColorPickerDialog.OnColorChangedListener() {
+                                public void colorChanged(int color){
+                                    wColor.setWindowsBackground(color);
+                                    windowsBackground.setBackgroundColor(color);
+                                    windowsBackgroundNotFoucs.setBackgroundColor(color);
                                 }
                             });
                     break;
@@ -145,8 +172,6 @@ public class Setup extends AppCompatActivity {
                 finish();
                 return true;
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
     }

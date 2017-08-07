@@ -6,10 +6,12 @@ import android.graphics.Color;
 
 public class WindowColor {
     private final static String WINDOW_COLOR="windowColor";
-    private int titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground,windowNotFoucs;
+    private int windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground,windowNotFoucs;
     private final SharedPreferences spf;
     public WindowColor(Context context){
         spf =  context.getSharedPreferences(WINDOW_COLOR,0);
+        windowsBackground=Color.parseColor(String.format("#%06X",
+                (0xFFFFFF & spf.getInt("windowsBackground",context.getResources().getColor(R.color.windowsBackground)))));
         titleBar=Color.parseColor(String.format("#%06X",
                 (0xFFFFFF & spf.getInt("titleBar",context.getResources().getColor(R.color.windowFoucsColor)))));
         sizeBar=Color.parseColor(String.format("#%06X",
@@ -20,6 +22,12 @@ public class WindowColor {
                 (0xFFFFFF & spf.getInt("closeButtonBackground",context.getResources().getColor(R.color.closeButton)))));
         windowNotFoucs=Color.parseColor(String.format("#%06X",
                 (0xFFFFFF & spf.getInt("windowNotFoucs",context.getResources().getColor(R.color.windowNotFoucsColor)))));
+    }
+    public int getWindowsBackground(){
+        return windowsBackground;
+    }
+    public void setWindowsBackground(int color){
+        windowsBackground=color;
     }
     public int getTitleBar(){
         return titleBar;
@@ -53,6 +61,7 @@ public class WindowColor {
     }
     public void save(){
         SharedPreferences.Editor editor=spf.edit();
+        editor.putInt("windowsBackground",windowsBackground);
         editor.putInt("titleBar",titleBar);
         editor.putInt("sizeBar",sizeBar);
         editor.putInt("microMaxButtonBackground",microMaxButtonBackground);
