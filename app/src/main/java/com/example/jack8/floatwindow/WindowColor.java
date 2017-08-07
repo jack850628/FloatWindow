@@ -25,45 +25,39 @@ public class WindowColor {
         return titleBar;
     }
     public void setTitleBar(int color){
-        SharedPreferences.Editor editor=spf.edit();
-        editor.putInt("titleBar",color);
-        editor.commit();
         titleBar=color;
     }
     public int getSizeBar(){
         return sizeBar;
     }
     public void setSizeBar(int color){
-        SharedPreferences.Editor editor=spf.edit();
-        editor.putInt("sizeBar",color);
-        editor.commit();
         sizeBar=color;
     }
     public int getMicroMaxButtonBackground(){
         return microMaxButtonBackground;
     }
     public void setMicroMaxButtonBackground(int color){
-        SharedPreferences.Editor editor=spf.edit();
-        editor.putInt("microMaxButtonBackground",color);
-        editor.commit();
         microMaxButtonBackground=color;
     }
     public int getCloseButtonBackground(){
         return closeButtonBackground;
     }
     public void setCloseButtonBackground(int color){
-        SharedPreferences.Editor editor=spf.edit();
-        editor.putInt("closeButtonBackground",color);
-        editor.commit();
         closeButtonBackground=color;
     }
     public int getWindowNotFoucs(){
         return windowNotFoucs;
     }
     public void setWindowNotFoucs(int color){
-        SharedPreferences.Editor editor=spf.edit();
-        editor.putInt("windowNotFoucs",color);
-        editor.commit();
         windowNotFoucs=color;
+    }
+    public void save(){
+        SharedPreferences.Editor editor=spf.edit();
+        editor.putInt("titleBar",titleBar);
+        editor.putInt("sizeBar",sizeBar);
+        editor.putInt("microMaxButtonBackground",microMaxButtonBackground);
+        editor.putInt("closeButtonBackground",closeButtonBackground);
+        editor.putInt("windowNotFoucs",windowNotFoucs);
+        editor.commit();
     }
 }

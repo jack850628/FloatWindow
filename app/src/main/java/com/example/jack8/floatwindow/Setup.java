@@ -3,8 +3,10 @@ package com.example.jack8.floatwindow;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class Setup extends AppCompatActivity {
@@ -15,6 +17,7 @@ public class Setup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setup);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         wColor=new WindowColor(this);
         setTitle("浮動視窗設定");
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
@@ -67,6 +70,9 @@ public class Setup extends AppCompatActivity {
         titleBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         sizeBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         closeButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
+
+        ((Button)findViewById(R.id.ok)).setOnClickListener(save);
+        ((Button)findViewById(R.id.no)).setOnClickListener(save);
     }
     View.OnClickListener setColor=new View.OnClickListener() {
         @Override
@@ -124,4 +130,24 @@ public class Setup extends AppCompatActivity {
                     }).show();
         }
     };
+    View.OnClickListener save=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.getId()==R.id.ok)
+                wColor.save();
+            finish();
+        }
+    };
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
