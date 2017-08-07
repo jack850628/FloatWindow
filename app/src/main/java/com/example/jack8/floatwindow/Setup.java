@@ -17,7 +17,7 @@ public class Setup extends AppCompatActivity {
         setContentView(R.layout.setup);
         wColor=new WindowColor(this);
         setTitle("浮動視窗設定");
-        ViewGroup content = (ViewGroup) ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+        ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
         TextView windowColorSetTitle=new TextView(this);
         windowColorSetTitle.setText("視窗顏色:");
