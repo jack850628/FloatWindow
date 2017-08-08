@@ -6,9 +6,9 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -46,12 +46,14 @@ public class FloatServer extends Service {
         super.onCreate();
         wm=(WindowManager)getSystemService(Context.WINDOW_SERVICE);
         Intent toSetup=new Intent(this,Setup.class);
-        NF=new NotificationCompat.Builder(this).
-                setSmallIcon(R.drawable.mini_window).
-                //setContentIntent(PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT)).
+        NotificationCompat.Builder NFB = new NotificationCompat.Builder(this);
+        NFB.setSmallIcon(R.drawable.mini_window).
                 setContentTitle("浮動視窗").
                 addAction(new NotificationCompat.Action.Builder(R.drawable.mini_window,"設定", PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                setContentText("浮動視窗已啟用").build();
+                setContentText("浮動視窗已啟用");
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.JELLY_BEAN_MR2)
+            NFB.setContentIntent(PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT));
+        NF=NFB.build();
         startForeground(NOTIFY_ID,NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         Log.i("WMStrver","Create");
     }
@@ -272,7 +274,10 @@ public class FloatServer extends Service {
                 case R.id.max: //最大化
                     if(!isMax) {
                         isMax=true;
-                        max.setBackground(getResources().getDrawable(R.drawable.mini_window));
+                        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                            max.setBackground(getResources().getDrawable(R.drawable.mini_window));
+                        else
+                            max.setBackgroundDrawable(getResources().getDrawable(R.drawable.mini_window));
                         topMini.startScroll(left, top, -left, -top, SECOND);
                         heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
                                 displayMetrics.heightPixels -
@@ -280,7 +285,10 @@ public class FloatServer extends Service {
                         size.setVisibility(View.GONE);
                     }else{
                         isMax=false;
-                        max.setBackground(getResources().getDrawable(R.drawable.max_window));
+                        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                            max.setBackground(getResources().getDrawable(R.drawable.max_window));
+                        else
+                            max.setBackgroundDrawable(getResources().getDrawable(R.drawable.max_window));
                         int dy;
                         topMini.startScroll(0, 0, left, top, SECOND);
                         heightMini.startScroll( displayMetrics.widthPixels,

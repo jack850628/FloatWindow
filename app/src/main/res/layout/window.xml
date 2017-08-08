@@ -7,29 +7,25 @@
     android:orientation="vertical">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/windowFoucsColor"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/menu"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_weight="0"
             android:background="@drawable/menu_icom" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/menu"
-            android:layout_weight="1.50"
-            android:gravity="center_vertical"
-            android:textAllCaps="false"
+            android:layout_weight="1"
             android:textColor="#FFFFFF" />
 
         <LinearLayout
@@ -46,9 +42,6 @@
                 android:id="@+id/mini"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/max"
-                android:layout_toStartOf="@+id/max"
                 android:layout_weight="1"
                 android:background="@drawable/micro_window" />
 
@@ -56,24 +49,18 @@
                 android:id="@+id/max"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/close_button"
-                android:layout_toStartOf="@+id/close_button"
                 android:layout_weight="1"
                 android:background="@drawable/max_window" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/close_button_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:id="@+id/close_button_background"
-            android:background="@color/closeButton">
+            android:layout_weight="0"
+            android:background="@color/closeButton"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/close_button"
@@ -83,7 +70,7 @@
                 android:background="@drawable/close_window" />
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/wincon"
