@@ -41,17 +41,20 @@ public class Setup extends AppCompatActivity {
 
         //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
-        prompt.setText("點選視窗設定顏色\n");
+        prompt.setText("點選視窗設定顏色");
         prompt.setTextSize(15f);
         ((ViewGroup) FoucsWindow.findViewById(R.id.wincon)).addView(prompt);
 
         windowsBackground=(ViewGroup) FoucsWindow.findViewById(R.id.window);
+        //windowsBackground.getLayoutParams().width=(int)(getResources().getDisplayMetrics().density*200);
+        windowsBackground.getLayoutParams().height=(int)(getResources().getDisplayMetrics().density*240);
         windowsBackground.setOnClickListener(setColor);
         titleBar=(ViewGroup) FoucsWindow.findViewById(R.id.title_bar);
         titleBar.setOnClickListener(setColor);
         sizeBar=(ViewGroup) FoucsWindow.findViewById(R.id.size);
         sizeBar.setOnClickListener(setColor);
         microMaxButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.micro_max_button_background);
+        FoucsWindow.findViewById(R.id.hide).setOnClickListener(setColor);
         FoucsWindow.findViewById(R.id.mini).setOnClickListener(setColor);
         FoucsWindow.findViewById(R.id.max).setOnClickListener(setColor);
         FoucsWindow.findViewById(R.id.menu).setOnClickListener(setColor);
@@ -66,12 +69,15 @@ public class Setup extends AppCompatActivity {
         ((ViewGroup) NotFoucsWindow.findViewById(R.id.wincon)).addView(promptNotFoucs);
 
         windowsBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.window);
+        //windowsBackgroundNotFoucs.getLayoutParams().width=(int)(getResources().getDisplayMetrics().density*200);
+        windowsBackgroundNotFoucs.getLayoutParams().height=(int)(getResources().getDisplayMetrics().density*240);
         windowsBackgroundNotFoucs.setOnClickListener(setColor);
         titleBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.title_bar);
         titleBarNotFoucs.setOnClickListener(setColorForNotFoucs);
         sizeBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.size);
         sizeBarNotFoucs.setOnClickListener(setColorForNotFoucs);
         microMaxButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.micro_max_button_background);
+        NotFoucsWindow.findViewById(R.id.hide).setOnClickListener(setColorForNotFoucs);
         NotFoucsWindow.findViewById(R.id.mini).setOnClickListener(setColorForNotFoucs);
         NotFoucsWindow.findViewById(R.id.max).setOnClickListener(setColorForNotFoucs);
         NotFoucsWindow.findViewById(R.id.menu).setOnClickListener(setColorForNotFoucs);
@@ -109,6 +115,7 @@ public class Setup extends AppCompatActivity {
                             }
                         });
                     break;
+                case R.id.hide:
                 case R.id.max:
                 case R.id.mini:
                     dialog = new ColorPickerDialog(Setup.this, wColor.getMicroMaxButtonBackground(), "選擇顏色",
