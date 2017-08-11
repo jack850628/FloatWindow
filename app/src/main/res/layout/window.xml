@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.example.jack8.floatwindow.WindowFrom xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/window"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
     android:background="@color/windowsBackground"
     android:orientation="vertical">
 
@@ -10,7 +10,8 @@
     <LinearLayout
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
+        android:layout_weight="0"
         android:background="@color/windowFoucsColor"
         android:orientation="horizontal">
 
@@ -26,7 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:marqueeRepeatLimit="-1"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:ellipsize="marquee"
+            android:singleLine="true" /><requestFocus/>
 
         <LinearLayout
             android:id="@+id/micro_max_button_background"
@@ -37,6 +43,13 @@
             android:layout_toStartOf="@+id/close_button_background"
             android:background="@color/windowFoucsColor"
             android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/hide"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/hide_window" />
 
             <Button
                 android:id="@+id/mini"
@@ -74,14 +87,16 @@
 
     <LinearLayout
         android:id="@+id/wincon"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="vertical"></LinearLayout>
 
     <LinearLayout
         android:id="@+id/size"
         android:layout_width="match_parent"
         android:layout_height="10dp"
+        android:layout_weight="0"
         android:background="@color/windowFoucsColor"
         android:orientation="vertical"></LinearLayout>
 

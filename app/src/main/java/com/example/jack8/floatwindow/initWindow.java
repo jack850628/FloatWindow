@@ -20,20 +20,20 @@ import android.widget.Toast;
  * 初始化視窗內容
  */
 public class initWindow {
-    public static void init(Context context,View v, int index, View winform, WindowManager wm, WindowManager.LayoutParams wmlp){
+    public static void init(Context context, View v, int index, FloatServer.WindowInfo windowInfo, WindowManager wm){
         switch (index){
             case 0:
-                initWindow1(context,v,winform,wm,wmlp);
+                initWindow1(context,v,windowInfo,wm);
                 break;
             case 1:
-                initWindow2(context,v,winform,wm,wmlp);
+                initWindow2(context,v,windowInfo,wm);
                 break;
             case 2:
-                initWindow3(context,v,winform,wm,wmlp);
+                initWindow3(context,v,windowInfo,wm);
                 break;
         }
     }
-    public static void initWindow1(final Context context, final View v, final View winform, final WindowManager wm, final WindowManager.LayoutParams wmlp){
+    public static void initWindow1(final Context context, final View v, final FloatServer.WindowInfo windowInfo, final WindowManager wm){
         final EditText path=(EditText)v.findViewById(R.id.webpath);
         path.setText("https://www.google.com.tw/?gws_rd=ssl");
         Button go=(Button)v.findViewById(R.id.go);
@@ -46,6 +46,11 @@ public class initWindow {
                 path.setText(url);
                 web.loadUrl(url);
                 return true;
+            }
+            @Override
+            public void onPageFinished(WebView wed, String url) {
+                v.setTag(web.getTitle());
+                windowInfo.title.setText(web.getTitle());
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
@@ -143,7 +148,7 @@ public class initWindow {
             }
         });
     }
-    public static void initWindow2(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
+    public static void initWindow2(Context context,View v,final FloatServer.WindowInfo windowInfo,final WindowManager wm){
         final EditText et=(EditText)v.findViewById(R.id.Temperature);
         View.OnClickListener oc=new View.OnClickListener() {
             @Override
@@ -163,7 +168,7 @@ public class initWindow {
         ((Button)v.findViewById(R.id.toC)).setOnClickListener(oc);
         ((Button)v.findViewById(R.id.toF)).setOnClickListener(oc);
     }
-    public static void initWindow3(Context context,View v,final View winform,final WindowManager wm,final WindowManager.LayoutParams wmlp){
+    public static void initWindow3(Context context,View v,final FloatServer.WindowInfo windowInfo,final WindowManager wm){
         final EditText H=(EditText)v.findViewById(R.id.H),W=(EditText)v.findViewById(R.id.W);
         final TextView BMI=(TextView)v.findViewById(R.id.BMI);
         ((Button)v.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
