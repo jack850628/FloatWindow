@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow;
+package com.example.jack8.floatwindow.Window;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.example.jack8.floatwindow.R;
 
 public class Setup extends AppCompatActivity {
     WindowColor wColor;
@@ -136,10 +138,10 @@ public class Setup extends AppCompatActivity {
                             });
                     break;
                 case R.id.window:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getWindowsBackground(), "選擇顏色",
+                    dialog = new ColorPickerDialog(Setup.this, wColor.getWindowBackground(), "選擇顏色",
                             new ColorPickerDialog.OnColorChangedListener() {
                                 public void colorChanged(int color){
-                                    wColor.setWindowsBackground(color);
+                                    wColor.setWindowBackground(color);
                                     windowsBackground.setBackgroundColor(color);
                                     windowsBackgroundNotFoucs.setBackgroundColor(color);
                                 }

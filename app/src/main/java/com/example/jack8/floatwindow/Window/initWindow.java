@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow;
+package com.example.jack8.floatwindow.Window;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,31 +14,40 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.jack8.floatwindow.R;
+import com.example.jack8.floatwindow.Window.WindowStruct;
 
 /**
  * 初始化視窗內容
  */
 public class initWindow {
-    public static void init(Context context, View v, int index, FloatServer.WindowInfo windowInfo, WindowManager wm){
-        switch (index){
+    /**
+     * 初始化視窗子頁面內容
+     * @param context 視窗所在的Activity或Service的Context
+     * @param pageView 子頁面的View
+     * @param position 表示是第幾個子頁面
+     * @param windowStruct  子頁面所在的視窗本體
+     */
+    public static void init(Context context, View pageView, int position, WindowStruct windowStruct){
+        switch (position){
             case 0:
-                initWindow1(context,v,windowInfo,wm);
+                initWindow1(context,pageView,position,windowStruct);
                 break;
             case 1:
-                initWindow2(context,v,windowInfo,wm);
+                initWindow2(context,pageView,windowStruct);
                 break;
             case 2:
-                initWindow3(context,v,windowInfo,wm);
+                initWindow3(context,pageView,windowStruct);
                 break;
         }
     }
-    public static void initWindow1(final Context context, final View v, final FloatServer.WindowInfo windowInfo, final WindowManager wm){
-        final EditText path=(EditText)v.findViewById(R.id.webpath);
+    public static void initWindow1(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
+        final EditText path=(EditText)pageView.findViewById(R.id.webpath);
         path.setText("https://www.google.com.tw/?gws_rd=ssl");
-        Button go=(Button)v.findViewById(R.id.go);
-        Button goBack=(Button)v.findViewById(R.id.goback);
-        final WebView web=(WebView)v.findViewById(R.id.web);
+        Button go=(Button)pageView.findViewById(R.id.go);
+        Button goBack=(Button)pageView.findViewById(R.id.goback);
+        final WebView web=(WebView)pageView.findViewById(R.id.web);
         web.getSettings().setJavaScriptEnabled(true);
         web.setWebViewClient(new WebViewClient(){
             @Override
@@ -49,8 +58,8 @@ public class initWindow {
             }
             @Override
             public void onPageFinished(WebView wed, String url) {
-                v.setTag(web.getTitle());
-                windowInfo.title.setText(web.getTitle());
+                pageView.setTag(web.getTitle());
+                windowStruct.setWindowTitle(position,web.getTitle());
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
@@ -148,8 +157,8 @@ public class initWindow {
             }
         });
     }
-    public static void initWindow2(Context context,View v,final FloatServer.WindowInfo windowInfo,final WindowManager wm){
-        final EditText et=(EditText)v.findViewById(R.id.Temperature);
+    public static void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
+        final EditText et=(EditText)pageView.findViewById(R.id.Temperature);
         View.OnClickListener oc=new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,13 +174,13 @@ public class initWindow {
                 }
             }
         };
-        ((Button)v.findViewById(R.id.toC)).setOnClickListener(oc);
-        ((Button)v.findViewById(R.id.toF)).setOnClickListener(oc);
+        ((Button)pageView.findViewById(R.id.toC)).setOnClickListener(oc);
+        ((Button)pageView.findViewById(R.id.toF)).setOnClickListener(oc);
     }
-    public static void initWindow3(Context context,View v,final FloatServer.WindowInfo windowInfo,final WindowManager wm){
-        final EditText H=(EditText)v.findViewById(R.id.H),W=(EditText)v.findViewById(R.id.W);
-        final TextView BMI=(TextView)v.findViewById(R.id.BMI);
-        ((Button)v.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
+    public static void initWindow3(Context context, View pageView, final WindowStruct windowStruct){
+        final EditText H=(EditText)pageView.findViewById(R.id.H),W=(EditText)pageView.findViewById(R.id.W);
+        final TextView BMI=(TextView)pageView.findViewById(R.id.BMI);
+        ((Button)pageView.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(H.getText().toString().matches("| ")||W.getText().toString().matches("| "))

@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow;
+package com.example.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,6 +6,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+
+import com.example.jack8.floatwindow.R;
+import com.example.jack8.floatwindow.Window.WindowColor;
 
 public class WindowFrom extends LinearLayout {
     final WindowManager wm;
@@ -33,7 +36,7 @@ public class WindowFrom extends LinearLayout {
         sizeBar=this.findViewById(R.id.size);
         microMaxButtonBackground=this.findViewById(R.id.micro_max_button_background);
         closeButtonBackground=this.findViewById(R.id.close_button_background);
-        findViewById(R.id.window).setBackgroundColor(wColor.getWindowsBackground());
+        findViewById(R.id.window).setBackgroundColor(wColor.getWindowBackground());
 
         if(isStart){
             isStart=false;
