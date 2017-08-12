@@ -6,6 +6,6 @@
 
     <color name="windowFoucsColor">#0066FF</color>
     <color name="windowNotFoucsColor">#DDDDDD</color>
-    <color name="windowsBackground">#FFFFFF</color>
+    <color name="windowBackground">#FFFFFF</color>
     <color name="closeButton">#FF0000</color>
 </resources>

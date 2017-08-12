@@ -3,7 +3,7 @@
     android:id="@+id/window"
     android:layout_width="200dp"
     android:layout_height="200dp"
-    android:background="@color/windowsBackground"
+    android:background="@color/windowBackground"
     android:orientation="vertical">
 
 

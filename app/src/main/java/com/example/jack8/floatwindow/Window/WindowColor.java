@@ -21,7 +21,7 @@ public class WindowColor {
     public WindowColor(Context context){
         spf =  context.getSharedPreferences(WINDOW_COLOR,0);
         windowBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("windowsBackground",context.getResources().getColor(R.color.windowsBackground)))));
+                (0xFFFFFF & spf.getInt("windowBackground",context.getResources().getColor(R.color.windowBackground)))));
         titleBar=Color.parseColor(String.format("#%06X",
                 (0xFFFFFF & spf.getInt("titleBar",context.getResources().getColor(R.color.windowFoucsColor)))));
         sizeBar=Color.parseColor(String.format("#%06X",
