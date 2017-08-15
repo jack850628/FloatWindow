@@ -323,6 +323,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗最小化
      */
     public void mini(){
+        wmlp.flags=NO_FOCUS_FLAGE;
+        wm.updateViewLayout(winform,wmlp);
         if (!isMini) {
             isMini = true;
             if(!isMax) {
@@ -379,6 +381,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 還原視窗大小
      */
     public void reSize(){
+        wmlp.flags=FOCUS_FLAGE;
+        wm.updateViewLayout(winform,wmlp);
         if(isMini){
             isMini = false;
             if(!isMax) {
@@ -424,6 +428,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗隱藏
      */
     public void hide(){
+        wmlp.flags=NO_FOCUS_FLAGE;
+        wm.updateViewLayout(winform,wmlp);
         windowAction.goHide(this);
         if(!isMax) {
             topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
@@ -441,6 +447,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 取消視窗隱藏
      */
     public void unHide(){
+        wmlp.flags=FOCUS_FLAGE;
+        wm.updateViewLayout(winform,wmlp);
         if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)) {
             WindowStruct WS=windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             if(!WS.isMini)
