@@ -3,16 +3,20 @@ package com.example.jack8.floatwindow.Window;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.jack8.floatwindow.R;
@@ -21,7 +25,7 @@ import com.example.jack8.floatwindow.Window.WindowStruct;
 /**
  * 初始化視窗內容
  */
-public class initWindow {
+public class initWindow implements WindowStruct.constructionAndDeconstructionWindow {
     /**
      * 初始化視窗子頁面內容
      * @param context 視窗所在的Activity或Service的Context
@@ -29,7 +33,7 @@ public class initWindow {
      * @param position 表示是第幾個子頁面
      * @param windowStruct  子頁面所在的視窗本體
      */
-    public static void init(Context context, View pageView, int position, WindowStruct windowStruct){
+    public void Construction(Context context, View pageView, int position, WindowStruct windowStruct){
         switch (position){
             case 0:
                 initWindow1(context,pageView,position,windowStruct);
@@ -42,18 +46,30 @@ public class initWindow {
                 break;
         }
     }
-    public static void initWindow1(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
+    public void initWindow1(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
         final EditText path=(EditText)pageView.findViewById(R.id.webpath);
         path.setText("https://www.google.com.tw/?gws_rd=ssl");
         Button go=(Button)pageView.findViewById(R.id.go);
         Button goBack=(Button)pageView.findViewById(R.id.goback);
         final WebView web=(WebView)pageView.findViewById(R.id.web);
+        final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
         web.getSettings().setJavaScriptEnabled(true);
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
+                PB.setVisibility(View.VISIBLE);
+                PB.setProgress(0);
                 path.setText(url);
                 web.loadUrl(url);
+                return true;
+            }
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){//當點擊WebView內的連結時處理
+                PB.setVisibility(View.VISIBLE);
+                PB.setProgress(0);
+                path.setText(request.getUrl().toString());
+                web.loadUrl(request.getUrl().toString());
                 return true;
             }
             @Override
@@ -137,6 +153,13 @@ public class initWindow {
                 //return super.onJsPrompt(view,url,message,defaultValue,result);
                 return true;
             }
+            @Override
+            public void onProgressChanged(WebView view, int newProgress){
+                PB.setProgress(newProgress);
+                if(newProgress==100)
+                    PB.setVisibility(View.GONE);
+                super.onProgressChanged(view,newProgress);
+            }
         });
         web.loadUrl("https://www.google.com.tw/?gws_rd=ssl");
         go.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +180,7 @@ public class initWindow {
             }
         });
     }
-    public static void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
+    public void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
         final EditText et=(EditText)pageView.findViewById(R.id.Temperature);
         View.OnClickListener oc=new View.OnClickListener() {
             @Override
@@ -177,7 +200,7 @@ public class initWindow {
         ((Button)pageView.findViewById(R.id.toC)).setOnClickListener(oc);
         ((Button)pageView.findViewById(R.id.toF)).setOnClickListener(oc);
     }
-    public static void initWindow3(Context context, View pageView, final WindowStruct windowStruct){
+    public void initWindow3(Context context, View pageView, final WindowStruct windowStruct){
         final EditText H=(EditText)pageView.findViewById(R.id.H),W=(EditText)pageView.findViewById(R.id.W);
         final TextView BMI=(TextView)pageView.findViewById(R.id.BMI);
         ((Button)pageView.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
@@ -189,5 +212,11 @@ public class initWindow {
                 BMI.setText(String.valueOf(Float.parseFloat(W.getText().toString())/(h*h)));
             }
         });
+    }
+
+    public void Deconstruction(Context context, View pageView, int position){
+        if(position==0){
+            ((WebView)pageView.findViewById(R.id.web)).onPause();
+        }
     }
 }

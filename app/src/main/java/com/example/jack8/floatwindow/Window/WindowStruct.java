@@ -26,40 +26,69 @@ import com.example.jack8.floatwindow.R;
 
 
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener,Runnable{
-    final int MINI_SIZE;//視窗最小化的寬度
+    int MINI_SIZE;//視窗最小化的寬度
     static final int SECOND=500;//動畫持續時間
-    static final int START_POINT=60;//視窗預設座標
+    //static final int START_POINT=60;//視窗預設座標
 
     private int top,left,height,width;//視窗的座標及大小
 
-    private final Context context;
-    private final WindowColor wColor;//視窗顏色
-    private final WindowManager wm;
-    private final WindowManager.LayoutParams wmlp;
+    private Context context;
+    private WindowColor wColor;//視窗顏色
+    private WindowManager wm;
+    private WindowManager.LayoutParams wmlp;
     private WindowAction windowAction;
-    private final View winform;//視窗外框
-    private final ViewGroup wincon;//視窗內容框
+    private View winform;//視窗外框
+    private ViewGroup wincon;//視窗內容框
     private View[] winconPage;//視窗子頁面
     private int currentWindowPagePosition=0;
     private Scroller topMini,heightMini;
-    private final Button menu,close_button,mini,max,hide;
-    private final LinearLayout sizeBar;
-    private final TextView title;
-    private final String[] windowTitle;
+    private Button menu,close_button,mini,max,hide;
+    private LinearLayout sizeBar;
+    private TextView title;
+    private String[] windowTitle;
 
-    private final Handler runUi= new Handler();
+    private Handler runUi= new Handler();
 
-    private final DisplayMetrics displayMetrics;
+    private DisplayMetrics displayMetrics;
+
+    private constructionAndDeconstructionWindow CDAW;
 
     private boolean isMini=false;//是否最小化
     private boolean isMax=false;//是否最大化
     private boolean close=false;//是否是關閉視窗
 
-    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, WindowAction windowAction){
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPagesForLayoutResources,windowPageTitles,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                windowAction,CDAW);
+    }
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        View[] windowPages=new View[windowPagesForLayoutResources.length];
+        View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+        for(int i=0;i<windowPages.length;i++) {
+            windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
+            windowPages[i].setTag(windowPageTitles[i]);
+        }
+        initWindow(context,wm,windowPages,windowPageTitles,Top,Left,Height,Width,windowAction,CDAW);
+    }
+
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPages,windowPageTitles,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                windowAction,CDAW);
+    }
+
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        initWindow(context,wm,windowPages,windowPageTitles,Top,Left,Height,Width,windowAction,CDAW);
+    }
+
+    private void initWindow(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         this.context=context;
         this.wm=wm;
+        this.winconPage=windowPages;
         this.windowAction=windowAction;
         this.windowTitle=windowPageTitles;
+        this.CDAW=CDAW;
         topMini=new Scroller(context);
         heightMini=new Scroller(context);
         displayMetrics = context.getResources().getDisplayMetrics();
@@ -72,8 +101,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         wmlp.format = PixelFormat.RGBA_8888;//背景(透明)
         //wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//設定焦點(不聚交)，否則背後介面將不可操作，因為會有一層透明的圖層
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
-        wmlp.x=START_POINT;//設定原點座標
-        wmlp.y=START_POINT;
+        wmlp.x=Top;//設定原點座標
+        wmlp.y=Left;
         wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
@@ -101,10 +130,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         wm.addView(winform,wmlp);
         wincon=(ViewGroup) winform.findViewById(R.id.wincon);
 
-        top=START_POINT;
-        left=START_POINT;
-        width=winform.getLayoutParams().width=(int)(displayMetrics.density*200);
-        height=winform.getLayoutParams().height=(int)(displayMetrics.density*(240));
+        top=Top;
+        left=Left;
+        width=Width;
+        height=Height;
         MINI_SIZE=winform.findViewById(R.id.close_button).getLayoutParams().width;
 
         menu=(Button) winform.findViewById(R.id.menu);
@@ -116,15 +145,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         title=(TextView) winform.findViewById(R.id.title);
 
         //-------------------------建立視窗內容畫面----------------------------------------------------
-        winconPage=new View[windowPagesForLayoutResources.length];
-        winconPage[0]=LayoutInflater.from(context).inflate(windowPagesForLayoutResources[0],(ViewGroup) winform,false);//視窗內容實例
         wincon.addView(winconPage[0]);
-        winconPage[0].setTag(windowPageTitles[0]);
         title.setText(windowPageTitles[0]);
-        for(int i=1;i<winconPage.length;i++) {
-            winconPage[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
-            winconPage[i].setTag(windowPageTitles[i]);
-        }
         title.setOnTouchListener(this);
         title.setOnClickListener(this);//還原視窗大小
         /*Log.i("formwidth",winform.getWidth()+"");
@@ -188,7 +210,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
         for(int i=0;i<winconPage.length;i++)
-            initWindow.init(context,winconPage[i],i,this);
+            CDAW.Construction(context,winconPage[i],i,this);
         //---------------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
         topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, SECOND);
@@ -200,6 +222,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public interface WindowAction{
         void goHide(WindowStruct windowStruct);//當按下隱藏視窗按鈕
         void goClose();//當按下關閉視窗按鈕
+    }
+
+    public interface constructionAndDeconstructionWindow{
+        void Construction(Context context, View pageView, int position, WindowStruct windowStruct);
+        void Deconstruction(Context context, View pageView, int position);
     }
 
     /*
@@ -236,94 +263,21 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.mini://最小化
-                if (!isMini) {
-                    isMini = true;
-                    if(!isMax) {
-                        topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, SECOND);
-                        heightMini.startScroll(width, height, MINI_SIZE - width, -(height-title.getLayoutParams().height), SECOND);
-                    }else{
-                        int dy;
-                        topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE),0, SECOND);
-                        heightMini.startScroll( displayMetrics.widthPixels,
-                                dy=displayMetrics.heightPixels - getStatusBarHeight(),
-                                MINI_SIZE -displayMetrics.widthPixels, -(dy-title.getLayoutParams().height),SECOND);
-                    }
-                    wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
-                    menu.setVisibility(View.GONE);
-                    close_button.setVisibility(View.GONE);
-                    mini.setVisibility(View.GONE);
-                    max.setVisibility(View.GONE);
-                    hide.setVisibility(View.GONE);
-                    sizeBar.setVisibility(View.GONE);
-                }
+                mini();
                 break;
-            case R.id.max: //最大化
-                if(!isMax) {
-                    isMax=true;
-                    if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                        max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
-                    else
-                        max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
-                    topMini.startScroll(left, top, -left, -top, SECOND);
-                    heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
-                            displayMetrics.heightPixels - height - getStatusBarHeight(), SECOND);
-                    sizeBar.setVisibility(View.GONE);
-                }else{
-                    isMax=false;
-                    if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                        max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
-                    else
-                        max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
-                    int dy;
-                    topMini.startScroll(0, 0, left, top, SECOND);
-                    heightMini.startScroll( displayMetrics.widthPixels,
-                            dy=displayMetrics.heightPixels - getStatusBarHeight(),
-                            width-displayMetrics.widthPixels, height-dy,SECOND);
-                    sizeBar.setVisibility(View.VISIBLE);
-                }
+            case R.id.max: //最大化或一般大小
+                maxOrUnMax();
                 break;
             case R.id.title://還原視窗大小
-                if(isMini){
-                    isMini = false;
-                    if(!isMax) {
-                        topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, SECOND);
-                        heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
-                                , width - winform.getLayoutParams().width,
-                                height - winform.getLayoutParams().height, SECOND);
-                        sizeBar.setVisibility(View.VISIBLE);
-                    }else{
-                        topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, SECOND);
-                        heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
-                                , displayMetrics.widthPixels - winform.getLayoutParams().width,
-                                displayMetrics.heightPixels - getStatusBarHeight(), SECOND);
-                    }
-                    wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
-                    menu.setVisibility(View.VISIBLE);
-                    close_button.setVisibility(View.VISIBLE);
-                    mini.setVisibility(View.VISIBLE);
-                    max.setVisibility(View.VISIBLE);
-                    hide.setVisibility(View.VISIBLE);
-                }
+                reSize();
                 break;
             case R.id.close_button://關閉視窗
+                close();
+                break;
             case R.id.hide://隱藏視窗
-                if (v.getId()==R.id.close_button)
-                    close=true;
-                else {
-                    wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
-                    windowAction.goHide(this);
-                }
-                if(!isMax) {
-                    topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
-                    heightMini.startScroll(width, height,
-                            - width, -height, SECOND);
-                }else{
-                    topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , SECOND);
-                    heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
-                            , - displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), SECOND);
-                }
+                hide();
+                break;
         }
-        runUi.post(this);
     }
 
     @Override
@@ -341,8 +295,130 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             runUi.post(this);
         }else if(close){
             wm.removeView(winform);
+            for(int i=0;i<winconPage.length;i++)
+                CDAW.Deconstruction(context,winconPage[i],i);
             windowAction.goClose();
         }
+    }
+
+    /**
+     * 視窗最小化
+     */
+    public void mini(){
+        if (!isMini) {
+            isMini = true;
+            if(!isMax) {
+                topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, SECOND);
+                heightMini.startScroll(width, height, MINI_SIZE - width, -(height-title.getLayoutParams().height), SECOND);
+            }else{
+                int dy;
+                topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE),0, SECOND);
+                heightMini.startScroll( displayMetrics.widthPixels,
+                        dy=displayMetrics.heightPixels - getStatusBarHeight(),
+                        MINI_SIZE -displayMetrics.widthPixels, -(dy-title.getLayoutParams().height),SECOND);
+            }
+            wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
+            menu.setVisibility(View.GONE);
+            close_button.setVisibility(View.GONE);
+            mini.setVisibility(View.GONE);
+            max.setVisibility(View.GONE);
+            hide.setVisibility(View.GONE);
+            sizeBar.setVisibility(View.GONE);
+        }
+        runUi.post(this);
+    }
+
+    /**
+     * 視窗最大化或一般大小
+     */
+    public void maxOrUnMax(){
+        if(!isMax) {
+            isMax=true;
+            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
+            else
+                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
+            topMini.startScroll(left, top, -left, -top, SECOND);
+            heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
+                    displayMetrics.heightPixels - height - getStatusBarHeight(), SECOND);
+            sizeBar.setVisibility(View.GONE);
+        }else{
+            isMax=false;
+            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
+            else
+                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
+            int dy;
+            topMini.startScroll(0, 0, left, top, SECOND);
+            heightMini.startScroll( displayMetrics.widthPixels,
+                    dy=displayMetrics.heightPixels - getStatusBarHeight(),
+                    width-displayMetrics.widthPixels, height-dy,SECOND);
+            sizeBar.setVisibility(View.VISIBLE);
+        }
+        runUi.post(this);
+    }
+
+    /**
+     * 還原視窗大小
+     */
+    public void reSize(){
+        if(isMini){
+            isMini = false;
+            if(!isMax) {
+                topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, SECOND);
+                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
+                        , width - winform.getLayoutParams().width,
+                        height - winform.getLayoutParams().height, SECOND);
+                sizeBar.setVisibility(View.VISIBLE);
+            }else{
+                topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, SECOND);
+                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
+                        , displayMetrics.widthPixels - winform.getLayoutParams().width,
+                        displayMetrics.heightPixels - getStatusBarHeight(), SECOND);
+            }
+            wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
+            menu.setVisibility(View.VISIBLE);
+            close_button.setVisibility(View.VISIBLE);
+            mini.setVisibility(View.VISIBLE);
+            max.setVisibility(View.VISIBLE);
+            hide.setVisibility(View.VISIBLE);
+        }
+        runUi.post(this);
+    }
+
+    /**
+     * 視窗關閉
+     */
+    public void close(){
+        close=true;
+        if(!isMax) {
+            topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
+            heightMini.startScroll(width, height,
+                    - width, -height, SECOND);
+        }else{
+            topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , SECOND);
+            heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
+                    , - displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), SECOND);
+        }
+        runUi.post(this);
+    }
+
+    /**
+     * 視窗隱藏
+     */
+    public void hide(){
+        wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
+        windowAction.goHide(this);
+        if(!isMax) {
+            topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
+            heightMini.startScroll(width, height,
+                    - width, -height, SECOND);
+        }else{
+            topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , SECOND);
+            heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
+                    , - displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), SECOND);
+        }
+        runUi.post(this);
     }
 
     /**

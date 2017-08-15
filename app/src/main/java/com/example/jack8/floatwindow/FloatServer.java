@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.jack8.floatwindow.Window.Setup;
 import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.example.jack8.floatwindow.Window.initWindow;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class FloatServer extends Service {
                         stopSelf();
                     }
                 }
-            });
+            },new initWindow());
         }else{
             //---------------------收起下拉選單-----------------------------
             try {
