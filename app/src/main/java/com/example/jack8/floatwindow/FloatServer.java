@@ -48,8 +48,8 @@ public class FloatServer extends Service {
         NotificationCompat.Builder NFB = new NotificationCompat.Builder(this);
         NFB.setSmallIcon(R.drawable.mini_window).
                 setContentTitle("浮動視窗").
-                addAction(new NotificationCompat.Action.Builder(R.drawable.mini_window,"設定", PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                addAction(new NotificationCompat.Action.Builder(R.drawable.mini_window,"被隱藏視窗清單", PendingIntent.getService(this,1,unHide,PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                addAction(new NotificationCompat.Action.Builder(R.drawable.settings,"設定", PendingIntent.getActivity(this,0,toSetup,PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                addAction(new NotificationCompat.Action.Builder(R.drawable.menu,"被隱藏視窗清單", PendingIntent.getService(this,1,unHide,PendingIntent.FLAG_UPDATE_CURRENT)).build()).
                 setContentText("浮動視窗已啟用");
         if(Build.VERSION.SDK_INT<Build.VERSION_CODES.JELLY_BEAN)
             NFB.setContentIntent(PendingIntent.getService(this,0,unHide,PendingIntent.FLAG_UPDATE_CURRENT));
