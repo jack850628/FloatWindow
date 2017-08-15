@@ -8,11 +8,11 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.example.jack8.floatwindow.R;
-import com.example.jack8.floatwindow.Window.WindowColor;
 
 public class WindowFrom extends LinearLayout {
     final WindowManager wm;
     WindowManager.LayoutParams wmlp=null;
+    WindowStruct WS;
     public boolean isStart=true;
     public WindowFrom(Context context) {
         super(context);
@@ -24,8 +24,9 @@ public class WindowFrom extends LinearLayout {
         wColor=new WindowColor(context);
         wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
-    public void setLayoutParams(WindowManager.LayoutParams wmlp){
+    public void setLayoutParams(WindowManager.LayoutParams wmlp,WindowStruct WS){
         this.wmlp=wmlp;
+        this.WS=WS;
     }
     View titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     WindowColor wColor;
@@ -49,13 +50,30 @@ public class WindowFrom extends LinearLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if(wmlp!=null) {
-            wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
-            wm.updateViewLayout(this, wmlp);
-            titleBar.setBackgroundColor(wColor.getTitleBar());
-            sizeBar.setBackgroundColor(wColor.getSizeBar());
-            microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
-            closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
+            if(WindowStruct.NOW_FOCUS_NUMBER!=WS.Number){
+                if(WindowStruct.windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
+                    WindowStruct WS=WindowStruct.windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
+                    if(!WS.isMini)
+                        WS.getWindowFrom().unFocusWindow();
+                }
+                WindowStruct.NOW_FOCUS_NUMBER=WS.Number;
+                wm.removeView(this);
+                wm.addView(this,wmlp);
+            }
+            focusWindow();
         }
         return super.onInterceptTouchEvent(event);
+    }
+    public void focusWindow(){
+        titleBar.setBackgroundColor(wColor.getTitleBar());
+        sizeBar.setBackgroundColor(wColor.getSizeBar());
+        microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
+        closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
+    }
+    public void unFocusWindow(){
+        titleBar.setBackgroundColor(wColor.getWindowNotFoucs());
+        sizeBar.setBackgroundColor(wColor.getWindowNotFoucs());
+        microMaxButtonBackground.setBackgroundColor(wColor.getWindowNotFoucs());
+        closeButtonBackground.setBackgroundColor(wColor.getWindowNotFoucs());
     }
 }

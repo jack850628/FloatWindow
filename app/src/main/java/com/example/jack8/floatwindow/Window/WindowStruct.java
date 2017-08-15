@@ -24,11 +24,20 @@ import android.widget.TextView;
 
 import com.example.jack8.floatwindow.R;
 
+import java.util.HashMap;
+
 
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener,Runnable{
+    static private int Index=0;//計算視窗開啟數量
+    int Number;//視窗編號
+    static int NOW_FOCUS_NUMBER=-1;//現在點視窗
     int MINI_SIZE;//視窗最小化的寬度
     static final int SECOND=500;//動畫持續時間
     //static final int START_POINT=60;//視窗預設座標
+    private static int FOCUS_FLAGE=WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//上視窗超出螢幕
+            |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
+            ;
+    private static int NO_FOCUS_FLAGE=WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
     private int top,left,height,width;//視窗的座標及大小
 
@@ -53,9 +62,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
     private constructionAndDeconstructionWindow CDAW;
 
-    private boolean isMini=false;//是否最小化
-    private boolean isMax=false;//是否最大化
-    private boolean close=false;//是否是關閉視窗
+    boolean isMini=false;//是否最小化
+    boolean isMax=false;//是否最大化
+    boolean close=false;//是否是關閉視窗
+
+    static HashMap<Integer,WindowStruct> windowList=new HashMap<>();
 
     public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         this(context,wm,windowPagesForLayoutResources,windowPageTitles,60,60,
@@ -83,12 +94,20 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     }
 
     private void initWindow(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
+            WindowStruct WS=windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
+            if(!WS.isMini)
+                WS.getWindowFrom().unFocusWindow();
+        }
+        this.Number=Index++;
+        WindowStruct.NOW_FOCUS_NUMBER=this.Number;
         this.context=context;
         this.wm=wm;
         this.winconPage=windowPages;
         this.windowAction=windowAction;
         this.windowTitle=windowPageTitles;
         this.CDAW=CDAW;
+        windowList.put(Number,this);
         topMini=new Scroller(context);
         heightMini=new Scroller(context);
         displayMetrics = context.getResources().getDisplayMetrics();
@@ -99,7 +118,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         wmlp = new WindowManager.LayoutParams();
         wmlp.type= WindowManager.LayoutParams.TYPE_PHONE;//類型
         wmlp.format = PixelFormat.RGBA_8888;//背景(透明)
-        //wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//設定焦點(不聚交)，否則背後介面將不可操作，因為會有一層透明的圖層
+        wmlp.flags=FOCUS_FLAGE;
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
         wmlp.x=Top;//設定原點座標
         wmlp.y=Left;
@@ -107,8 +126,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         winform= LayoutInflater.from(context).inflate(R.layout.window,null);
-        ((WindowFrom)winform).setLayoutParams(wmlp);
-        winform.setOnTouchListener(new View.OnTouchListener() {
+        ((WindowFrom)winform).setLayoutParams(wmlp,this);
+        /*winform.setOnTouchListener(new View.OnTouchListener() {
             View titleBar=winform.findViewById(R.id.title_bar),
                     microMaxButtonBackground=winform.findViewById(R.id.micro_max_button_background),
                     closeButtonBackground=winform.findViewById(R.id.close_button_background);
@@ -126,7 +145,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 }
                 return false;
             }
-        });
+        });*/
         wm.addView(winform,wmlp);
         wincon=(ViewGroup) winform.findViewById(R.id.wincon);
 
@@ -149,14 +168,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         title.setText(windowPageTitles[0]);
         title.setOnTouchListener(this);
         title.setOnClickListener(this);//還原視窗大小
-        /*Log.i("formwidth",winform.getWidth()+"");
-        Title.getLayoutParams().width=winform.getWidth()-160;*/
         close_button.setOnClickListener(this);
         winform.findViewById(R.id.size).setOnTouchListener(new View.OnTouchListener() {
             float Wlength=-1,Hlength=-1;
             @Override
             public boolean onTouch(View v, MotionEvent event) {//調整視窗大小
-                wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
+                //wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
                 if(event.getAction() == MotionEvent.ACTION_MOVE) {
                     if(Wlength==-1||Hlength==-1){
                         Wlength=wincon.getWidth()-event.getX();//取得點擊X點到視窗最右側的距離
@@ -237,26 +254,27 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     private float H=-1,W=-1;
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_MOVE) {
-            if(H==-1||W==-1){
-                H=event.getX();//取得點擊的X座標到視窗頂點的距離
-                W=event.getY();//取得點擊的Y座標到視窗頂點的距離
-                return true;
+        if(!isMax||isMini) {
+            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                if (H == -1 || W == -1) {
+                    H = event.getX();//取得點擊的X座標到視窗頂點的距離
+                    W = event.getY();//取得點擊的Y座標到視窗頂點的距離
+                    return true;
+                }
+                wmlp.x = (int) (event.getRawX() - H);
+                wmlp.y = (int) (event.getRawY() - W - getStatusBarHeight());//60為狀態列高度
+                if (!isMini && !isMax) {
+                    left = wmlp.x -= close_button.getLayoutParams().width;
+                    top = wmlp.y;
+                }
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                H = -1;
+                W = -1;
             }
-            wmlp.x = (int) (event.getRawX()-H);
-            wmlp.y = (int) (event.getRawY()-W-getStatusBarHeight());//60為狀態列高度
-            if(!isMini&&!isMax){
-                left=wmlp.x-=close_button.getLayoutParams().width;
-                top=wmlp.y;
-            }
-        }else if(event.getAction() == MotionEvent.ACTION_UP){
-            if(isMini)
-                wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-            H=-1;
-            W=-1;
+            wm.updateViewLayout(winform, wmlp);
         }
-        wm.updateViewLayout(winform, wmlp);
         return false;
+
     }
 
     @Override
@@ -317,7 +335,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                         dy=displayMetrics.heightPixels - getStatusBarHeight(),
                         MINI_SIZE -displayMetrics.widthPixels, -(dy-title.getLayoutParams().height),SECOND);
             }
-            wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
             menu.setVisibility(View.GONE);
             close_button.setVisibility(View.GONE);
             mini.setVisibility(View.GONE);
@@ -376,7 +393,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                         , displayMetrics.widthPixels - winform.getLayoutParams().width,
                         displayMetrics.heightPixels - getStatusBarHeight(), SECOND);
             }
-            wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
             menu.setVisibility(View.VISIBLE);
             close_button.setVisibility(View.VISIBLE);
             mini.setVisibility(View.VISIBLE);
@@ -390,6 +406,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗關閉
      */
     public void close(){
+        windowList.remove(Number);
         close=true;
         if(!isMax) {
             topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
@@ -407,7 +424,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗隱藏
      */
     public void hide(){
-        wmlp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//讓視窗不可聚焦
         windowAction.goHide(this);
         if(!isMax) {
             topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, SECOND);
@@ -425,7 +441,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 取消視窗隱藏
      */
     public void unHide(){
-        wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;//讓視窗聚焦
+        if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)) {
+            WindowStruct WS=windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
+            if(!WS.isMini)
+                WS.getWindowFrom().unFocusWindow();
+        }
+        WindowStruct.NOW_FOCUS_NUMBER=this.Number;
+        ((WindowFrom)winform).focusWindow();
+        wm.removeView(winform);
+        wm.addView(winform,wmlp);
         if(!isMax) {
             topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, SECOND);
             heightMini.startScroll(0, 0, width, height, SECOND);
@@ -473,5 +497,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         int resourceId = resources.getIdentifier("status_bar_height", "dimen","android");
         int height = resources.getDimensionPixelSize(resourceId);
         return height;
+    }
+    public WindowFrom getWindowFrom(){
+        return (WindowFrom)winform;
     }
 }
