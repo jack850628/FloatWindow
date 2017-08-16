@@ -479,7 +479,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, SECOND);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
                         , displayMetrics.widthPixels - winform.getLayoutParams().width,
-                        displayMetrics.heightPixels - getStatusBarHeight(), SECOND);
+                        displayMetrics.heightPixels - winform.getLayoutParams().height - getStatusBarHeight(), SECOND);
             }
             menu.setVisibility(View.VISIBLE);
             close_button.setVisibility(View.VISIBLE);
