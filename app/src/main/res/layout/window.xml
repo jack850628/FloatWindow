@@ -86,11 +86,28 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/wincon"
+        android:id="@+id/menu_list_and_context"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical"></LinearLayout>
+        android:gravity="left"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/menu_list"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="-150dp"
+            android:background="#FFFFFF" />
+
+        <LinearLayout
+            android:id="@+id/wincon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:orientation="vertical"></LinearLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/size"

@@ -2,8 +2,8 @@ package com.example.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -16,8 +16,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Scroller;
 import android.widget.TextView;
@@ -78,7 +82,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
         for(int i=0;i<windowPages.length;i++) {
             windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
-            windowPages[i].setTag(windowPageTitles[i]);
+            //windowPages[i].setTag(windowPageTitles[i]);
         }
         initWindow(context,wm,windowPages,windowPageTitles,Top,Left,Height,Width,windowAction,CDAW);
     }
@@ -196,7 +200,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         });
         //-----------------------------------------------------------------------------
         //-------------------------建立Menu-------------------------------
-        final PopupMenu pm=new PopupMenu(context,menu);
+        /*final PopupMenu pm=new PopupMenu(context,menu);
         Menu m=pm.getMenu();
         for(int i=0;i<winconPage.length;i++)
             //參數1:群組id, 參數2:itemId, 參數3:item順序, 參數4:item名稱
@@ -218,7 +222,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             public void onClick(View v) {
                 pm.show();
             }
-        });
+        });*/
+        menu.setOnClickListener(new menuList(windowPageTitles));
         //------------------------------------------------------------------
         //---------------------------縮到最小與最大按鈕---------------------------
         hide.setOnClickListener(this);
@@ -244,6 +249,85 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public interface constructionAndDeconstructionWindow{
         void Construction(Context context, View pageView, int position, WindowStruct windowStruct);
         void Deconstruction(Context context, View pageView, int position);
+    }
+
+    public class menuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
+        private int ViweIndex=0;
+        private ListView menu;
+        private LinearLayout menuListAndContext;
+        private Scroller scroller=new Scroller(context);
+        private boolean isOpen=false;
+        public menuList(final String[] menuItems){
+            menuListAndContext=(LinearLayout) winform.findViewById(R.id.menu_list_and_context);
+            menu=(ListView) winform.findViewById(R.id.menu_list);
+            menu.setAdapter(new BaseAdapter() {
+                @Override
+                public int getCount() {
+                    return menuItems.length;
+                }
+
+                @Override
+                public Object getItem(int position) {
+                    return menuItems[position];
+                }
+
+                @Override
+                public long getItemId(int position) {
+                    return position;
+                }
+
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    if(convertView==null){
+                        convertView=LayoutInflater.from(context).inflate(R.layout.hide_menu_item,null,false);
+                        TextView itenText=(TextView) convertView.findViewById(R.id.item_text);
+                        itenText.setText(menuItems[position]);
+                        itenText.setTextColor(Color.BLACK);
+                    }
+                    return convertView;
+                }
+            });
+            menu.setOnItemClickListener(this);
+        }
+        public void showMenu(){
+            scroller.startScroll(0,0,-menu.getLayoutParams().width,0);
+            runUi.post(this);
+        }
+        public void closeMenu(){
+            scroller.startScroll(-menu.getLayoutParams().width,0,menu.getLayoutParams().width,0);
+            runUi.post(this);
+        }
+        @Override
+        public void onClick(View v) {
+            Log.i("startMenu",isOpen+","+menu.getLayoutParams().width);
+            if(!isOpen) {
+                showMenu();
+                isOpen=true;
+            }else {
+                closeMenu();
+                isOpen=false;
+            }
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            isOpen=false;
+            currentWindowPagePosition=position;
+            wincon.removeView(winconPage[ViweIndex]);
+            wincon.addView(winconPage[position]);
+            title.setText(windowTitle[position]);
+            ViweIndex=position;
+            closeMenu();
+        }
+
+        @Override
+        public void run() {
+            if(scroller.computeScrollOffset()) {
+                menuListAndContext.scrollTo(scroller.getCurrX(), scroller.getCurrY());
+                runUi.post(this);
+            }else
+                menuListAndContext.invalidate();
+        }
     }
 
     /*
