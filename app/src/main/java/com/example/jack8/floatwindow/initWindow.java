@@ -14,13 +14,16 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.jack8.floatwindow.R;
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.example.jack8.floatwindow.Window.WindowStruct;;import java.lang.reflect.Field;
 
 /**
  * 初始化視窗內容
@@ -53,6 +56,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         Button goBack=(Button)pageView.findViewById(R.id.goback);
         final WebView web=(WebView)pageView.findViewById(R.id.web);
         final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
+        final Clipboard clipboard=new Clipboard(context);
         web.getSettings().setJavaScriptEnabled(true);
         web.setWebViewClient(new WebViewClient(){
             @Override
@@ -161,6 +165,62 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 super.onProgressChanged(view,newProgress);
             }
         });
+        web.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+                int resultType = result.getType();
+                if (resultType == WebView.HitTestResult.SRC_ANCHOR_TYPE ||
+                        resultType == WebView.HitTestResult.ANCHOR_TYPE) {
+                    ListView listView=new ListView(context);
+                    final AlertDialog alertDialog=new AlertDialog.Builder(context).setView(listView).create();
+                    alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    alertDialog.show();
+                    listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"開啟連結","新的視窗開啟連結","複製連結到剪貼簿"}));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            switch (position){
+                                case 0:
+                                    web.loadUrl(result.getExtra());
+                                    break;
+                                case 1:
+                                    try {
+                                        Field field = windowStruct.getClass().getDeclaredField("windowAction");
+                                        field.setAccessible(true);
+                                        new WindowStruct(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE), new int[]{R.layout.webpage}, new String[]{"網頁瀏覽器"}, (WindowStruct.WindowAction) field.get(windowStruct), new WindowStruct.constructionAndDeconstructionWindow() {
+                                            @Override
+                                            public void Construction(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                initWindow.this.initWindow1(context,pageView,position,windowStruct);
+                                                ((WebView)pageView.findViewById(R.id.web)).loadUrl(result.getExtra());
+                                            }
+
+                                            @Override
+                                            public void Deconstruction(Context context, View pageView, int position) {
+                                                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                                                    ((WebView)pageView.findViewById(R.id.web)).onPause();
+                                            }
+                                        });
+                                        ((FloatServer)context).wm_count++;
+                                    } catch (NoSuchFieldException e) {
+                                        e.printStackTrace();
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case 2:
+                                    clipboard.copyToClipboard(result.getExtra());
+                                    Toast.makeText(context,"以複製到剪貼簿",Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            alertDialog.dismiss();
+                        }
+                    });
+                    return true;
+                }
+                return false;
+            }
+        });
         web.loadUrl("https://www.google.com.tw/?gws_rd=ssl");
         go.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,6 +276,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
 
     public void Deconstruction(Context context, View pageView, int position){
         if(position==0){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             ((WebView)pageView.findViewById(R.id.web)).onPause();
         }
     }

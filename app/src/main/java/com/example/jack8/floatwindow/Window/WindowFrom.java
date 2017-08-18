@@ -50,8 +50,8 @@ public class WindowFrom extends LinearLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if(wmlp!=null) {
-            if(WindowStruct.NOW_FOCUS_NUMBER!=WS.Number){
-                if(WindowStruct.windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
+            if(WindowStruct.NOW_FOCUS_NUMBER!=WS.Number){//如果被觸碰的視窗編號不是現在焦點視窗編號
+                if(WindowStruct.windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){//如果現在焦點視窗編號在有視窗清單裡
                     WindowStruct WS=WindowStruct.windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
                     if(!WS.isMini)
                         WS.getWindowFrom().unFocusWindow();
@@ -59,8 +59,9 @@ public class WindowFrom extends LinearLayout {
                 WindowStruct.NOW_FOCUS_NUMBER=WS.Number;
                 wm.removeView(this);
                 wm.addView(this,wmlp);
+                focusWindow();
+                return true;//防止點擊事件因為至視窗至頂切換變成長按事件
             }
-            focusWindow();
         }
         return super.onInterceptTouchEvent(event);
     }
