@@ -171,12 +171,13 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 final WebView.HitTestResult result = ((WebView) v).getHitTestResult();
                 int resultType = result.getType();
                 if (resultType == WebView.HitTestResult.SRC_ANCHOR_TYPE ||
+                        resultType == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE ||
                         resultType == WebView.HitTestResult.ANCHOR_TYPE) {
                     ListView listView=new ListView(context);
                     final AlertDialog alertDialog=new AlertDialog.Builder(context).setView(listView).create();
                     alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                     alertDialog.show();
-                    listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"開啟連結","新的視窗開啟連結","複製連結到剪貼簿"}));
+                    listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"開啟連結","在新的視窗開啟連結","複製連結網址"}));
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
