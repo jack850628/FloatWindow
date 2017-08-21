@@ -10,7 +10,6 @@ import com.example.jack8.floatwindow.R;
  * 視窗顏色
  */
 public class WindowColor {
-    private final static String WINDOW_COLOR="windowColor";//顏色設定檔的名稱
     private int windowBackground;//視窗內容區的顏色
     private int titleBar;//標題列的顏色
     private int sizeBar;//視窗大小調整條的顏色
@@ -19,19 +18,19 @@ public class WindowColor {
     private int windowNotFoucs;//視窗失焦時的外框顏色
     private final SharedPreferences spf;
     public WindowColor(Context context){
-        spf =  context.getSharedPreferences(WINDOW_COLOR,0);
+        spf =  context.getSharedPreferences(WindowConfig.WINDOW_CONF,0);
         windowBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("windowBackground",context.getResources().getColor(R.color.windowBackground)))));
+                (0xFFFFFF & spf.getInt(WindowConfig.WINDOW_BACKGROUND,context.getResources().getColor(R.color.windowBackground)))));
         titleBar=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("titleBar",context.getResources().getColor(R.color.windowFoucsColor)))));
+                (0xFFFFFF & spf.getInt(WindowConfig.TITLE_BAR,context.getResources().getColor(R.color.windowFoucsColor)))));
         sizeBar=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("sizeBar",context.getResources().getColor(R.color.windowFoucsColor)))));
+                (0xFFFFFF & spf.getInt(WindowConfig.SIZE_BAR,context.getResources().getColor(R.color.windowFoucsColor)))));
         microMaxButtonBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("microMaxButtonBackground",context.getResources().getColor(R.color.windowFoucsColor)))));
+                (0xFFFFFF & spf.getInt(WindowConfig.MICRO_MAX_BUTTON_BACKGROUND,context.getResources().getColor(R.color.windowFoucsColor)))));
         closeButtonBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("closeButtonBackground",context.getResources().getColor(R.color.closeButton)))));
+                (0xFFFFFF & spf.getInt(WindowConfig.CLOSE_BUTTON_BACKGROUND,context.getResources().getColor(R.color.closeButton)))));
         windowNotFoucs=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt("windowNotFoucs",context.getResources().getColor(R.color.windowNotFoucsColor)))));
+                (0xFFFFFF & spf.getInt(WindowConfig.WINDOW_NOT_FOUSE,context.getResources().getColor(R.color.windowNotFoucsColor)))));
     }
     public int getWindowBackground(){
         return windowBackground;
@@ -71,12 +70,12 @@ public class WindowColor {
     }
     public void save(){
         SharedPreferences.Editor editor=spf.edit();
-        editor.putInt("windowBackground",windowBackground);
-        editor.putInt("titleBar",titleBar);
-        editor.putInt("sizeBar",sizeBar);
-        editor.putInt("microMaxButtonBackground",microMaxButtonBackground);
-        editor.putInt("closeButtonBackground",closeButtonBackground);
-        editor.putInt("windowNotFoucs",windowNotFoucs);
+        editor.putInt(WindowConfig.WINDOW_BACKGROUND,windowBackground);
+        editor.putInt(WindowConfig.TITLE_BAR,titleBar);
+        editor.putInt(WindowConfig.SIZE_BAR,sizeBar);
+        editor.putInt(WindowConfig.MICRO_MAX_BUTTON_BACKGROUND,microMaxButtonBackground);
+        editor.putInt(WindowConfig.CLOSE_BUTTON_BACKGROUND,closeButtonBackground);
+        editor.putInt(WindowConfig.WINDOW_NOT_FOUSE,windowNotFoucs);
         editor.commit();
     }
 }

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.jack8.floatwindow.R;
@@ -17,6 +18,7 @@ public class Setup extends AppCompatActivity {
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
+    SeekBar secondSet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +29,27 @@ public class Setup extends AppCompatActivity {
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
             getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
         setTitle("浮動視窗設定");
+
+        secondSet=(SeekBar) findViewById(R.id.secondSet);
+        secondSet.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView secondText=(TextView) findViewById(R.id.second);
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                secondText.setText(String.format("%.2f",progress/1000f));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        secondSet.setProgress(getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(WindowConfig.SECOND,500));
+
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
         TextView windowColorSetTitle=new TextView(this);
@@ -169,8 +192,10 @@ public class Setup extends AppCompatActivity {
     View.OnClickListener save=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v.getId()==R.id.ok)
+            if(v.getId()==R.id.ok) {
+                getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putInt(WindowConfig.SECOND,secondSet.getProgress()).commit();
                 wColor.save();
+            }
             finish();
         }
     };
