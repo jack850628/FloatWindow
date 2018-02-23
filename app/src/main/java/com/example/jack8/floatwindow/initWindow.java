@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -29,6 +31,7 @@ import com.example.jack8.floatwindow.Window.WindowStruct;;import org.json.JSONEx
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -250,26 +253,54 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
         });
     }
-    SharedPreferences note_spf;
-    String note_id;
+    SharedPreferences noteSpf;
+    String noteId=null;
+    static LinkedList<String> noteIdList=new LinkedList<>();
     public void initWindow_Note_Page(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
         EditText node=(EditText) pageView.findViewById(R.id.note);
-        final String NOTE="Note";
-        note_spf=context.getSharedPreferences(NOTE,0);
-        String notes_string=note_spf.getString("Notes","{}");
-        Log.i("note",notes_string);
-        try {
-            JSONObject notes=new JSONObject(notes_string);
-            if(notes.length()==0){
-                note_id=UUID.randomUUID().toString();
-            }else{
-                note_id=notes.names().getString(0);
-                node.setText(notes.getString(note_id));
-                notes.remove(note_id);
-                SharedPreferences.Editor spfe=note_spf.edit();
-                spfe.putString("Notes",notes.toString());
-                spfe.apply();
+        node.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    JSONObject notes=new JSONObject(noteSpf.getString("Notes","{}"));
+                    if(!s.toString().matches("^\\s*$"))
+                        notes.put(noteId,s);
+                    else
+                        notes.remove(noteId);
+                    SharedPreferences.Editor spfe=noteSpf.edit();
+                    spfe.putString("Notes",notes.toString());
+                    spfe.apply();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        final String NOTE="Note";
+        noteSpf=context.getSharedPreferences(NOTE,0);
+        try {
+            JSONObject notes=new JSONObject(noteSpf.getString("Notes","{}"));
+            if(notes.names()!=null)
+                for(int i=0;i<notes.names().length();i++){
+                    if(!noteIdList.contains(notes.names().getString(i))){
+                        noteId=notes.names().getString(i);
+                        noteIdList.add(noteId);
+                        break;
+                    }
+                }
+            if(noteId!=null)
+                node.setText(notes.getString(noteId));
+            else
+                noteId=UUID.randomUUID().toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -313,18 +344,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             ((WebView)pageView.findViewById(R.id.web)).onPause();
         }else if(position==1){
-            EditText node=(EditText) pageView.findViewById(R.id.note);
-            String notes_string=note_spf.getString("Notes","{}");
-            if(!node.getText().toString().matches("^\\s*$"))
-                try {
-                    JSONObject notes=new JSONObject(notes_string);
-                    notes.put(note_id,node.getText());
-                    SharedPreferences.Editor spfe=note_spf.edit();
-                    spfe.putString("Notes",notes.toString());
-                    spfe.apply();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            noteIdList.remove(noteId);
         }
     }
 }
