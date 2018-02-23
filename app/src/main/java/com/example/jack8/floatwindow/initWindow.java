@@ -3,8 +3,10 @@ package com.example.jack8.floatwindow;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.JsPromptResult;
@@ -23,7 +25,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;;import java.lang.reflect.Field;
+import com.example.jack8.floatwindow.Window.WindowStruct;;import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 /**
  * 初始化視窗內容
@@ -42,9 +48,12 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 initWindow1(context,pageView,position,windowStruct);
                 break;
             case 1:
-                initWindow2(context,pageView,windowStruct);
+                initWindow_Note_Page(context,pageView,position,windowStruct);
                 break;
             case 2:
+                initWindow2(context,pageView,windowStruct);
+                break;
+            case 3:
                 initWindow3(context,pageView,windowStruct);
                 break;
         }
@@ -241,12 +250,36 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
         });
     }
+    SharedPreferences note_spf;
+    String note_id;
+    public void initWindow_Note_Page(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
+        EditText node=(EditText) pageView.findViewById(R.id.note);
+        final String NOTE="Note";
+        note_spf=context.getSharedPreferences(NOTE,0);
+        String notes_string=note_spf.getString("Notes","{}");
+        Log.i("note",notes_string);
+        try {
+            JSONObject notes=new JSONObject(notes_string);
+            if(notes.length()==0){
+                note_id=UUID.randomUUID().toString();
+            }else{
+                note_id=notes.names().getString(0);
+                node.setText(notes.getString(note_id));
+                notes.remove(note_id);
+                SharedPreferences.Editor spfe=note_spf.edit();
+                spfe.putString("Notes",notes.toString());
+                spfe.apply();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     public void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
         final EditText et=(EditText)pageView.findViewById(R.id.Temperature);
         View.OnClickListener oc=new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et.getText().toString().matches("| "))
+                if(!et.getText().toString().matches("^\\s*$"))
                     return;
                 switch (v.getId()) {
                     case R.id.toC:
@@ -279,6 +312,19 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         if(position==0){
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             ((WebView)pageView.findViewById(R.id.web)).onPause();
+        }else if(position==1){
+            EditText node=(EditText) pageView.findViewById(R.id.note);
+            String notes_string=note_spf.getString("Notes","{}");
+            if(!node.getText().toString().matches("^\\s*$"))
+                try {
+                    JSONObject notes=new JSONObject(notes_string);
+                    notes.put(note_id,node.getText());
+                    SharedPreferences.Editor spfe=note_spf.edit();
+                    spfe.putString("Notes",notes.toString());
+                    spfe.apply();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
         }
     }
 }

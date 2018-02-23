@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void startFloatWindow(){
         Intent intent=new Intent(this, FloatServer.class);
-        intent.putExtra("Layouts",new int[]{R.layout.webpage,R.layout.window_context,R.layout.window_conetxt2});
-        intent.putExtra("Titles",new String[]{"網頁瀏覽器","溫度轉換","BMI轉換"});
+        intent.putExtra("Layouts",new int[]{R.layout.webpage,R.layout.note_page,R.layout.window_context,R.layout.window_conetxt2});
+        intent.putExtra("Titles",new String[]{"網頁瀏覽器","便條紙","溫度轉換","BMI轉換"});
         startService(intent);
         finish();
     }
