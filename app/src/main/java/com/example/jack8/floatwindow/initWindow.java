@@ -31,6 +31,8 @@ import com.example.jack8.floatwindow.Window.WindowStruct;;import org.json.JSONEx
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -256,6 +258,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
     SharedPreferences noteSpf;
     String noteId=null;
     static LinkedList<String> noteIdList=new LinkedList<>();
+    Date dNow = new Date();
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
     public void initWindow_Note_Page(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
         EditText node=(EditText) pageView.findViewById(R.id.note);
         node.addTextChangedListener(new TextWatcher() {
@@ -299,8 +303,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 }
             if(noteId!=null)
                 node.setText(notes.getString(noteId));
-            else
-                noteId=UUID.randomUUID().toString();
+            else {
+                noteId = formatter.format(dNow);
+                noteIdList.add(noteId);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
