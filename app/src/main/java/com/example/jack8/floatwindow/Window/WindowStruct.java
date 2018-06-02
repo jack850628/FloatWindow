@@ -72,11 +72,73 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
     static HashMap<Integer,WindowStruct> windowList=new HashMap<>();
 
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
     public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         this(context,wm,windowPagesForLayoutResources,windowPageTitles,60,60,
                 (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
                 windowAction,CDAW);
     }
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles ,Object[][] windowInitArgs, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPagesForLayoutResources,windowPageTitles,windowInitArgs,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles ,Object[][] windowInitArgs, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        View[] windowPages=new View[windowPagesForLayoutResources.length];
+        View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+        for(int i=0;i<windowPages.length;i++) {
+            windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
+            //windowPages[i].setTag(windowPageTitles[i]);
+        }
+        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
     public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         View[] windowPages=new View[windowPagesForLayoutResources.length];
         View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
@@ -84,20 +146,76 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
             //windowPages[i].setTag(windowPageTitles[i]);
         }
-        initWindow(context,wm,windowPages,windowPageTitles,Top,Left,Height,Width,windowAction,CDAW);
+        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,windowAction,CDAW);
     }
 
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
     public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         this(context,wm,windowPages,windowPageTitles,60,60,
                 (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
                 windowAction,CDAW);
     }
 
-    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
-        initWindow(context,wm,windowPages,windowPageTitles,Top,Left,Height,Width,windowAction,CDAW);
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPages,windowPageTitles,windowInitArgs,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                windowAction,CDAW);
     }
 
-    private void initWindow(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,windowAction,CDAW);
+    }
+
+    private void initWindow(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
             WindowStruct WS=windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             if(!WS.isMini)
@@ -233,7 +351,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
         for(int i=0;i<winconPage.length;i++)
-            CDAW.Construction(context,winconPage[i],i,this);
+            CDAW.Construction(context,winconPage[i],i,windowInitArgs != null ? windowInitArgs[i] : new Object[0],this);
         //---------------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
         topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, Second);
@@ -248,7 +366,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     }
 
     public interface constructionAndDeconstructionWindow{
-        void Construction(Context context, View pageView, int position, WindowStruct windowStruct);
+        void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct);
         void Deconstruction(Context context, View pageView, int position);
     }
 

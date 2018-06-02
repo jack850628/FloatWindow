@@ -62,22 +62,36 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        if(intent.getExtras().getIntArray("Layouts").length!=0) {
-            wm_count++;
-            new WindowStruct(this, wm, intent.getExtras().getIntArray("Layouts"), intent.getExtras().getStringArray("Titles"), new WindowStruct.WindowAction() {
-                @Override
-                public void goHide(WindowStruct windowStruct) {
-                    hideList.add(windowStruct);
-                }
+        int[] layouts = intent.getExtras().getIntArray("Layouts");
+        WindowStruct.WindowAction windowAction = new WindowStruct.WindowAction() {
+            @Override
+            public void goHide(WindowStruct windowStruct) {
+                hideList.add(windowStruct);
+            }
 
-                @Override
-                public void goClose() {
-                    if (--wm_count == 0) {
-                        FloatServer.this.stopForeground(true);
-                        stopSelf();
-                    }
+            @Override
+            public void goClose() {
+                if (--wm_count == 0) {
+                    FloatServer.this.stopForeground(true);
+                    stopSelf();
                 }
-            },new initWindow());
+            }
+        };
+        if(layouts.length!=0) {
+            wm_count++;
+            String[] titles = intent.getExtras().getStringArray("Titles");
+            String extra_url = intent.getStringExtra("extra_url");
+            if(extra_url == null)
+                new WindowStruct(this, wm, layouts, titles, new Object[layouts.length][0], windowAction,new initWindow());
+            else{
+                ListView menu_list = new ListView(this);
+                menu_list.setId(0);
+                menu_list.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_selectable_list_item,titles));
+                Object[][] args = new Object[layouts.length][3];
+                for(int i=0;i<args.length;i++)
+                    args[i] = new Object[]{layouts,titles,extra_url};
+                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{"要使用哪個頁面開啟?"}, args, windowAction, new ProcessShare(wm,windowAction));
+            }
         }else{
             //---------------------收起下拉選單-----------------------------
             try {

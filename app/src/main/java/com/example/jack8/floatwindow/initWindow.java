@@ -3,6 +3,7 @@ package com.example.jack8.floatwindow;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -45,15 +46,16 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
      * @param context 視窗所在的Activity或Service的Context
      * @param pageView 子頁面的View
      * @param position 表示是第幾個子頁面
+     * @param  args 初始化視窗用的參數
      * @param windowStruct  子頁面所在的視窗本體
      */
-    public void Construction(Context context, View pageView, int position, WindowStruct windowStruct){
+    public void Construction(Context context, View pageView, int position,Object[] args, WindowStruct windowStruct){
         switch (position){
             case 0:
-                initWindow1(context,pageView,position,windowStruct);
+                initWindow1(context,pageView,position,args,windowStruct);
                 break;
             case 1:
-                initWindow_Note_Page(context,pageView,position,windowStruct);
+                initWindow_Note_Page(context,pageView,position,args,windowStruct);
                 break;
             case 2:
                 initWindow2(context,pageView,windowStruct);
@@ -63,11 +65,12 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 break;
         }
     }
-    public void initWindow1(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
+    public void initWindow1(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
         final EditText path=(EditText)pageView.findViewById(R.id.webpath);
         path.setText("https://www.google.com.tw/?gws_rd=ssl");
         Button go=(Button)pageView.findViewById(R.id.go);
         Button goBack=(Button)pageView.findViewById(R.id.goback);
+        final Button menu=(Button) pageView.findViewById(R.id.menu);
         final WebView web=(WebView)pageView.findViewById(R.id.web);
         final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
         final Clipboard clipboard=new Clipboard(context);
@@ -203,11 +206,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     try {
                                         Field field = windowStruct.getClass().getDeclaredField("windowAction");
                                         field.setAccessible(true);
-                                        new WindowStruct(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE), new int[]{R.layout.webpage}, new String[]{"網頁瀏覽器"}, (WindowStruct.WindowAction) field.get(windowStruct), new WindowStruct.constructionAndDeconstructionWindow() {
+                                        new WindowStruct(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE), new int[]{R.layout.webpage}, new String[]{"網頁瀏覽器"} ,new Object[][]{new String[]{result.getExtra()}} ,(WindowStruct.WindowAction) field.get(windowStruct), new WindowStruct.constructionAndDeconstructionWindow() {
                                             @Override
-                                            public void Construction(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                initWindow.this.initWindow1(context,pageView,position,windowStruct);
-                                                ((WebView)pageView.findViewById(R.id.web)).loadUrl(result.getExtra());
+                                            public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
+                                                initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
                                             }
 
                                             @Override
@@ -236,7 +238,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return false;
             }
         });
-        web.loadUrl("https://www.google.com.tw/?gws_rd=ssl");
+        String url = "https://www.google.com.tw/?gws_rd=ssl";
+        if(args != null && args.length != 0 && args[0] instanceof String)
+            url = (String) args[0];
+        web.loadUrl(url);
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -254,15 +259,43 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
 
             }
         });
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ListView menu_list = new ListView(context);
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"分享或用其他APP開啟此網頁"}));
+                final AlertDialog menu = new AlertDialog.Builder(context).setView(menu_list).create();
+                menu.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                menu.show();
+                menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        switch (position){
+                            case 0:
+                                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                                sendIntent.putExtra(Intent.EXTRA_TEXT,web.getUrl());
+                                sendIntent.setType("text/plain");
+                                Intent chooser = Intent.createChooser(sendIntent, "選擇APP");
+                                chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
+                                    context.startActivity(chooser);
+                                }
+                                menu.dismiss();
+                                break;
+                        }
+                    }
+                });
+            }
+        });
     }
     SharedPreferences noteSpf;
     String noteId=null;
     static LinkedList<String> noteIdList=new LinkedList<>();
     Date dNow = new Date();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
-    public void initWindow_Note_Page(final Context context, final View pageView, final int position, final WindowStruct windowStruct){
-        EditText node=(EditText) pageView.findViewById(R.id.note);
-        node.addTextChangedListener(new TextWatcher() {
+    public void initWindow_Note_Page(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
+        EditText note=(EditText) pageView.findViewById(R.id.note);
+        note.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -291,24 +324,30 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         });
         final String NOTE="Note";
         noteSpf=context.getSharedPreferences(NOTE,0);
-        try {
-            JSONObject notes=new JSONObject(noteSpf.getString("Notes","{}"));
-            if(notes.names()!=null)
-                for(int i=0;i<notes.names().length();i++){
-                    if(!noteIdList.contains(notes.names().getString(i))){
-                        noteId=notes.names().getString(i);
-                        noteIdList.add(noteId);
-                        break;
+        if(args == null || args.length == 0) {
+            try {
+                JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
+                if (notes.names() != null)
+                    for (int i = 0; i < notes.names().length(); i++) {
+                        if (!noteIdList.contains(notes.names().getString(i))) {
+                            noteId = notes.names().getString(i);
+                            noteIdList.add(noteId);
+                            break;
+                        }
                     }
+                if (noteId != null)
+                    note.setText(notes.getString(noteId));
+                else {
+                    noteId = formatter.format(dNow);
+                    noteIdList.add(noteId);
                 }
-            if(noteId!=null)
-                node.setText(notes.getString(noteId));
-            else {
-                noteId = formatter.format(dNow);
-                noteIdList.add(noteId);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        }else{
+            noteId = formatter.format(dNow);
+            noteIdList.add(noteId);
+            note.setText((String)args[0]);
         }
     }
     public void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
@@ -316,7 +355,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         View.OnClickListener oc=new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!et.getText().toString().matches("^\\s*$"))
+                if(et.getText().toString().matches("^\\s*$"))
                     return;
                 switch (v.getId()) {
                     case R.id.toC:
@@ -337,7 +376,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         ((Button)pageView.findViewById(R.id.CH)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(H.getText().toString().matches("| ")||W.getText().toString().matches("| "))
+                if(H.getText().toString().matches("^\\s*$")||W.getText().toString().matches("^\\s*$"))
                     return;
                 float h=Float.parseFloat(H.getText().toString())/100f;
                 BMI.setText(String.valueOf(Float.parseFloat(W.getText().toString())/(h*h)));
