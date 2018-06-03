@@ -90,7 +90,7 @@ public class FloatServer extends Service {
                 Object[][] args = new Object[layouts.length][3];
                 for(int i=0;i<args.length;i++)
                     args[i] = new Object[]{layouts,titles,extra_url};
-                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{"要使用哪個頁面開啟?"}, args, windowAction, new ProcessShare(wm,windowAction));
+                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{"要使用哪個頁面開啟?"}, args,60,60,(int)(getResources().getDisplayMetrics().density*80*layouts.length),(int)(getResources().getDisplayMetrics().density*200),WindowStruct.ALL_NOT_DISPLAY, windowAction, new ProcessShare(wm,windowAction));
             }
         }else{
             //---------------------收起下拉選單-----------------------------

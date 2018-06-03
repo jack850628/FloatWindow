@@ -66,6 +66,16 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
     private constructionAndDeconstructionWindow CDAW;
 
+//------------可隱藏或顯示的控制項物件------------------
+    private int display_oblect;
+    public static int ALL_NOT_DISPLAY = 0x00;
+    public static int MENU_BUTTON = 0x01;
+    public static int HIDE_BUTTON = 0x02;
+    public static int MINI_BUTTON = 0x04;
+    public static int MAX_BUTTON  = 0x08;
+    public static int SIZE_BAR = 0x16;
+//-------------------------------------------------------
+
     boolean isMini=false;//是否最小化
     boolean isMax=false;//是否最大化
     boolean close=false;//是否是關閉視窗
@@ -92,6 +102,23 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * @param wm WindowManager用來管理window
      * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
      * @param windowPageTitles 所有子頁面的標題
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPagesForLayoutResources,windowPageTitles,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                display_object,
+                windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
      * @param windowInitArgs 初始化視窗用的參數
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
@@ -99,6 +126,23 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles ,Object[][] windowInitArgs, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         this(context,wm,windowPagesForLayoutResources,windowPageTitles,windowInitArgs,60,60,
                 (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                windowAction,CDAW);
+    }
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles ,Object[][] windowInitArgs, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPagesForLayoutResources,windowPageTitles,windowInitArgs,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                display_object,
                 windowAction,CDAW);
     }
 
@@ -123,7 +167,32 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
             //windowPages[i].setTag(windowPageTitles[i]);
         }
-        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,windowAction,CDAW);
+        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR,windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles ,Object[][] windowInitArgs, int Top, int Left, int Height, int Width, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        View[] windowPages=new View[windowPagesForLayoutResources.length];
+        View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+        for(int i=0;i<windowPages.length;i++) {
+            windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
+            //windowPages[i].setTag(windowPageTitles[i]);
+        }
+        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,display_object,windowAction,CDAW);
     }
 
     /**
@@ -146,7 +215,31 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
             //windowPages[i].setTag(windowPageTitles[i]);
         }
-        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,windowAction,CDAW);
+        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR,windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPagesForLayoutResources 浮動視窗所有子頁面的View的Resources ID
+     * @param windowPageTitles 所有子頁面的標題
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, int[] windowPagesForLayoutResources, String[] windowPageTitles, int Top, int Left, int Height, int Width, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        View[] windowPages=new View[windowPagesForLayoutResources.length];
+        View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+        for(int i=0;i<windowPages.length;i++) {
+            windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
+            //windowPages[i].setTag(windowPageTitles[i]);
+        }
+        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,display_object,windowAction,CDAW);
     }
 
     /**
@@ -170,6 +263,23 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * @param wm WindowManager用來管理window
      * @param windowPages 浮動視窗所有子頁面的View
      * @param windowPageTitles 所有子頁面的標題
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPages,windowPageTitles,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                display_object,
+                windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
      * @param windowInitArgs 初始化視窗用的參數
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
@@ -177,6 +287,25 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         this(context,wm,windowPages,windowPageTitles,windowInitArgs,60,60,
                 (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR,
+                windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
+     * @param windowInitArgs 初始化視窗用的參數
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        this(context,wm,windowPages,windowPageTitles,windowInitArgs,60,60,
+                (int)(context.getResources().getDisplayMetrics().density*240),(int)(context.getResources().getDisplayMetrics().density*200),
+                display_object,
                 windowAction,CDAW);
     }
 
@@ -194,7 +323,25 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
     public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
-        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,windowAction,CDAW);
+        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR,windowAction,CDAW);
+    }
+
+    /**
+     * 建立一個浮動視窗
+     * @param context Activity 或 Servict的context
+     * @param wm WindowManager用來管理window
+     * @param windowPages 浮動視窗所有子頁面的View
+     * @param windowPageTitles 所有子頁面的標題
+     * @param Top 浮動視窗一開始顯示的位置的Top
+     * @param Left 浮動視窗一開始顯示的位置的Left
+     * @param Height 浮動視窗一開始高度
+     * @param Width 浮動視窗一開始寬度
+     * @param  display_object 表示要顯示那些windows控制物件
+     * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
+     * @param CDAW 浮動視窗初始化與結束時的事件
+     */
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles, int Top, int Left, int Height, int Width, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        initWindow(context,wm,windowPages,windowPageTitles,new Object[windowPages.length][0],Top,Left,Height,Width,display_object,windowAction,CDAW);
     }
 
     /**
@@ -208,14 +355,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * @param Left 浮動視窗一開始顯示的位置的Left
      * @param Height 浮動視窗一開始高度
      * @param Width 浮動視窗一開始寬度
+     * @param  display_object 表示要顯示那些windows控制物件
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
-        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,windowAction,CDAW);
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int display_object, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+        initWindow(context,wm,windowPages,windowPageTitles,windowInitArgs,Top,Left,Height,Width,display_object,windowAction,CDAW);
     }
 
-    private void initWindow(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+    private void initWindow(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int display_object,WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
         if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
             WindowStruct WS=windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             if(!WS.isMini)
@@ -230,6 +378,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         this.windowTitle=windowPageTitles;
         this.CDAW=CDAW;
         this.Second=context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(WindowConfig.SECOND,500);
+        this.display_oblect=display_object;
         windowList.put(Number,this);
         topMini=new Scroller(context);
         heightMini=new Scroller(context);
@@ -353,6 +502,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         for(int i=0;i<winconPage.length;i++)
             CDAW.Construction(context,winconPage[i],i,windowInitArgs != null ? windowInitArgs[i] : new Object[0],this);
         //---------------------------------------------------------------------------------------------
+        //---------------------------隱藏不顯示的控制項物件------------------------------------------
+        if((display_object & MENU_BUTTON) != MENU_BUTTON)
+            menu.setVisibility(View.GONE);
+        if((display_object & HIDE_BUTTON) != HIDE_BUTTON)
+            hide.setVisibility(View.GONE);
+        if((display_object & MINI_BUTTON) != MINI_BUTTON)
+            mini.setVisibility(View.GONE);
+        if((display_object & MAX_BUTTON) != MAX_BUTTON)
+            max.setVisibility(View.GONE);
+        if((display_object & SIZE_BAR) != SIZE_BAR)
+            sizeBar.setVisibility(View.GONE);
+        //-------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
         topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, Second);
         heightMini.startScroll(0, 0, width, height, Second);
@@ -467,7 +628,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 wmlp.x = (int) (event.getRawX() - H);
                 wmlp.y = (int) (event.getRawY() - W - getStatusBarHeight());//60為狀態列高度
                 if (!isMini && !isMax) {
-                    left = wmlp.x -= close_button.getLayoutParams().width;
+                    if((display_oblect & MENU_BUTTON) == MENU_BUTTON)
+                        wmlp.x -= menu.getLayoutParams().width;
+                    left = wmlp.x;
                     top = wmlp.y;
                 }
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -540,12 +703,17 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                         dy=displayMetrics.heightPixels - getStatusBarHeight(),
                         MINI_SIZE -displayMetrics.widthPixels, -(dy-title.getLayoutParams().height),Second);
             }
-            menu.setVisibility(View.GONE);
+            if((display_oblect & MENU_BUTTON) == MENU_BUTTON)
+                menu.setVisibility(View.GONE);
             close_button.setVisibility(View.GONE);
-            mini.setVisibility(View.GONE);
-            max.setVisibility(View.GONE);
-            hide.setVisibility(View.GONE);
-            sizeBar.setVisibility(View.GONE);
+            if((display_oblect & MINI_BUTTON) == MINI_BUTTON)
+                mini.setVisibility(View.GONE);
+            if((display_oblect & MAX_BUTTON) == MAX_BUTTON)
+                max.setVisibility(View.GONE);
+            if((display_oblect & HIDE_BUTTON) == HIDE_BUTTON)
+                hide.setVisibility(View.GONE);
+            if((display_oblect & SIZE_BAR) == SIZE_BAR)
+                sizeBar.setVisibility(View.GONE);
         }
         runUi.post(this);
     }
@@ -563,7 +731,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             topMini.startScroll(left, top, -left, -top, Second);
             heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
                     displayMetrics.heightPixels - height - getStatusBarHeight(), Second);
-            sizeBar.setVisibility(View.GONE);
+            if((display_oblect & SIZE_BAR) == SIZE_BAR)
+                sizeBar.setVisibility(View.GONE);
         }else{
             isMax=false;
             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
@@ -575,7 +744,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             heightMini.startScroll( displayMetrics.widthPixels,
                     dy=displayMetrics.heightPixels - getStatusBarHeight(),
                     width-displayMetrics.widthPixels, height-dy,Second);
-            sizeBar.setVisibility(View.VISIBLE);
+            if((display_oblect & SIZE_BAR) == SIZE_BAR)
+                sizeBar.setVisibility(View.VISIBLE);
         }
         runUi.post(this);
     }
@@ -593,17 +763,22 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
                         , width - winform.getLayoutParams().width,
                         height - winform.getLayoutParams().height, Second);
-                sizeBar.setVisibility(View.VISIBLE);
+                if((display_oblect & SIZE_BAR) == SIZE_BAR)
+                    sizeBar.setVisibility(View.VISIBLE);
             }else{
                 topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, Second);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
                         , displayMetrics.widthPixels - winform.getLayoutParams().width,
                         displayMetrics.heightPixels - winform.getLayoutParams().height - getStatusBarHeight(), Second);
             }
-            menu.setVisibility(View.VISIBLE);
+            if((display_oblect & MENU_BUTTON) == MENU_BUTTON)
+                menu.setVisibility(View.VISIBLE);
             close_button.setVisibility(View.VISIBLE);
+            if((display_oblect & MINI_BUTTON) == MINI_BUTTON)
             mini.setVisibility(View.VISIBLE);
+            if((display_oblect & MAX_BUTTON) == MAX_BUTTON)
             max.setVisibility(View.VISIBLE);
+            if((display_oblect & HIDE_BUTTON) == HIDE_BUTTON)
             hide.setVisibility(View.VISIBLE);
         }
         runUi.post(this);

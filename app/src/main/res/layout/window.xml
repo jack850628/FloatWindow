@@ -27,12 +27,13 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:textColor="#FFFFFF"
-            android:marqueeRepeatLimit="-1"
-            android:focusableInTouchMode="true"
-            android:focusable="true"
             android:ellipsize="marquee"
-            android:singleLine="true" /><requestFocus/>
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:marqueeRepeatLimit="-1"
+            android:singleLine="true"
+            android:textColor="#FFFFFF" /><requestFocus/>
 
         <LinearLayout
             android:id="@+id/micro_max_button_background"
