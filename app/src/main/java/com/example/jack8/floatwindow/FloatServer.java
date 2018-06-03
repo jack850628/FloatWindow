@@ -86,7 +86,7 @@ public class FloatServer extends Service {
             else{
                 ListView menu_list = new ListView(this);
                 menu_list.setId(0);
-                menu_list.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_selectable_list_item,titles));
+                menu_list.setAdapter(new ArrayAdapter<String>(this,R.layout.simple_selectable_list_item,titles));
                 Object[][] args = new Object[layouts.length][3];
                 for(int i=0;i<args.length;i++)
                     args[i] = new Object[]{layouts,titles,extra_url};

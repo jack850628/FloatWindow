@@ -3,6 +3,7 @@ package com.example.jack8.floatwindow;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -27,7 +28,8 @@ public class ProcessShare extends initWindow {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         int[] layouts = (int[])args[0];
-                        View window_content_view = LayoutInflater.from(context).inflate(layouts[position],null);
+                        View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+                        View window_content_view = LayoutInflater.from(context).inflate(layouts[position],(ViewGroup) winform,false);
                         window_content_view.setId(layouts[position]);//將id設定跟Resource id相同
                         String[] titles = (String[])args[1];
                         String[] _args = new String[]{(String)args[2]};
