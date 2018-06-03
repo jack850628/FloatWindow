@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
@@ -263,7 +264,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"分享或用其他APP開啟此網頁"}));
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"分享此網頁","用其他瀏覽器開啟此網頁"}));
                 final AlertDialog menu = new AlertDialog.Builder(context).setView(menu_list).create();
                 menu.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 menu.show();
@@ -271,18 +272,28 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
-                            case 0:
+                            case 0: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                                sendIntent.putExtra(Intent.EXTRA_TEXT,web.getUrl());
+                                sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
                                 Intent chooser = Intent.createChooser(sendIntent, "選擇APP");
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
                                     context.startActivity(chooser);
                                 }
-                                menu.dismiss();
                                 break;
+                            }
+                            case 1: {
+                                Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
+                                Intent chooser = Intent.createChooser(sendIntent, "選擇瀏覽器");
+                                chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
+                                    context.startActivity(chooser);
+                                }
+                                break;
+                            }
                         }
+                        menu.dismiss();
                     }
                 });
             }
