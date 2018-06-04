@@ -68,12 +68,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
 //------------可隱藏或顯示的控制項物件------------------
     private int display_oblect;
-    public static int ALL_NOT_DISPLAY = 0x00;
-    public static int MENU_BUTTON = 0x01;
-    public static int HIDE_BUTTON = 0x02;
-    public static int MINI_BUTTON = 0x04;
-    public static int MAX_BUTTON  = 0x08;
-    public static int SIZE_BAR = 0x16;
+    public final static int ALL_NOT_DISPLAY = 0x00;
+    public final static int MENU_BUTTON = 0x01;
+    public final static int HIDE_BUTTON = 0x02;
+    public final static int MINI_BUTTON = 0x04;
+    public final static int MAX_BUTTON  = 0x08;
+    public final static int SIZE_BAR = 0x16;
 //-------------------------------------------------------
 
     boolean isMini=false;//是否最小化
