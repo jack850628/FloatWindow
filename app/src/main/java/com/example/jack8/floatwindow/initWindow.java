@@ -37,6 +37,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 初始化視窗內容
@@ -68,7 +70,6 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
     }
     public void initWindow1(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
         final EditText path=(EditText)pageView.findViewById(R.id.webpath);
-        path.setText("https://www.google.com.tw/?gws_rd=ssl");
         Button go=(Button)pageView.findViewById(R.id.go);
         Button goBack=(Button)pageView.findViewById(R.id.goback);
         final Button menu=(Button) pageView.findViewById(R.id.menu);
@@ -239,9 +240,16 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return false;
             }
         });
-        String url = "https://www.google.com.tw/?gws_rd=ssl";
-        if(args != null && args.length != 0 && args[0] instanceof String)
+        String url;
+        if(args != null && args.length != 0 && args[0] instanceof String) {
             url = (String) args[0];
+            Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.find())
+                url = matcher.group();
+        }else
+            url = "https://www.google.com.tw/?gws_rd=ssl";
+        path.setText(url);
         web.loadUrl(url);
         go.setOnClickListener(new View.OnClickListener() {
             @Override
