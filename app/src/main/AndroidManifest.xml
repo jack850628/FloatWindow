@@ -30,7 +30,7 @@
                 <data android:scheme="https"/>
             </intent-filter>
         </activity>
-        <activity android:name=".Window.Setup"/>
+        <activity android:name=".Setup"/>
         <service android:name=".FloatServer"/>
     </application>
 

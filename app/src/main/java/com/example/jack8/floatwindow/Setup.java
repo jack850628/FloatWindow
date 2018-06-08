@@ -1,18 +1,24 @@
-package com.example.jack8.floatwindow.Window;
+package com.example.jack8.floatwindow;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.jack8.floatwindow.R;
+import com.example.jack8.floatwindow.Window.WindowColor;
+import com.example.jack8.floatwindow.Window.WindowConfig;
+import com.example.jack8.floatwindow.Window.WindowFrom;
+import com.example.jack8.floatwindow.Window.WindowStruct;
 
 public class Setup extends AppCompatActivity {
     WindowColor wColor;
@@ -48,7 +54,7 @@ public class Setup extends AppCompatActivity {
 
             }
         });
-        secondSet.setProgress(getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(WindowConfig.SECOND,500));
+        secondSet.setProgress(WindowConfig.getWindowSpeed(this));
 
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
@@ -193,17 +199,56 @@ public class Setup extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(v.getId()==R.id.ok) {
-                getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putInt(WindowConfig.SECOND,secondSet.getProgress()).commit();
+                WindowConfig.setWindowSpeed(Setup.this,secondSet.getProgress());
                 wColor.save();
             }
             finish();
         }
     };
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0,0,0,"關於");
+        return true;
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case 0:
+                new WindowStruct(
+                        this,
+                        (WindowManager) getSystemService(Context.WINDOW_SERVICE),
+                        new int[]{R.layout.about},
+                        new String[]{"關於"},
+                        60,
+                        60,
+                        280,
+                        480,
+                        WindowStruct.MINI_BUTTON,
+                        new WindowStruct.WindowAction() {
+                            @Override
+                            public void goHide(WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void goClose() {
+
+                            }
+                        },
+                        new WindowStruct.constructionAndDeconstructionWindow() {
+                            @Override
+                            public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void Deconstruction(Context context, View pageView, int position) {
+
+                            }
+                        });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

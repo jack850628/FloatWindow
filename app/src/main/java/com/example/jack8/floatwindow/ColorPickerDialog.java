@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow.Window;
+package com.example.jack8.floatwindow;
 
 import android.app.Dialog;
 import android.content.Context;
