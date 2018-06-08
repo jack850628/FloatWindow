@@ -73,7 +73,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public final static int HIDE_BUTTON = 0x02;
     public final static int MINI_BUTTON = 0x04;
     public final static int MAX_BUTTON  = 0x08;
-    public final static int SIZE_BAR = 0x16;
+    public final static int SIZE_BAR = 0x10;
 //-------------------------------------------------------
 
     boolean isMini=false;//是否最小化
