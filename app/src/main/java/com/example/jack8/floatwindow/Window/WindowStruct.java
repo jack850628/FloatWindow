@@ -500,7 +500,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
         for(int i=0;i<winconPage.length;i++)
-            CDAW.Construction(context,winconPage[i],i,windowInitArgs != null ? windowInitArgs[i] : new Object[0],this);
+            CDAW.Construction(context,winconPage[i],i,(windowInitArgs != null && i < windowInitArgs.length) ? windowInitArgs[i] : new Object[0],this);
         //---------------------------------------------------------------------------------------------
         //---------------------------隱藏不顯示的控制項物件------------------------------------------
         if((display_object & MENU_BUTTON) != MENU_BUTTON)

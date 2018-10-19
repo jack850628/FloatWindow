@@ -86,10 +86,7 @@ public class FloatServer extends Service {
                 ListView menu_list = new ListView(this);
                 menu_list.setId(0);
                 menu_list.setAdapter(new ArrayAdapter<String>(this,R.layout.simple_selectable_list_item,titles));
-                Object[][] args = new Object[layouts.length][3];
-                for(int i=0;i<args.length;i++)
-                    args[i] = new Object[]{layouts,titles,extra_url};
-                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{"要使用哪個頁面開啟?"}, args,60,60,(int)(getResources().getDisplayMetrics().density*80*layouts.length),(int)(getResources().getDisplayMetrics().density*200),WindowStruct.ALL_NOT_DISPLAY, windowAction, new ProcessShare(wm,windowAction));
+                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{"要使用哪個頁面開啟?"}, new Object[][]{new Object[]{layouts,titles,extra_url}},60,60,(int)(getResources().getDisplayMetrics().density*80*layouts.length),(int)(getResources().getDisplayMetrics().density*200),WindowStruct.ALL_NOT_DISPLAY, windowAction, new ProcessShare(wm,windowAction));
             }
         }else{
             //---------------------收起下拉選單-----------------------------
