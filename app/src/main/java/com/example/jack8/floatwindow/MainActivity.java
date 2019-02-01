@@ -39,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("extra_url",url);
         }
 
-        startService(intent);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            startService(intent);
+        else
+            startForegroundService(intent);
         finish();
     }
     @RequiresApi(api = Build.VERSION_CODES.M)

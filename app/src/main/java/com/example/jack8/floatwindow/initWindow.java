@@ -111,7 +111,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                 result.confirm();
                             }
                         }).create();
-                Alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                Alert.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                 Alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
@@ -144,7 +144,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                         result.cancel();
                     }
                 });
-                Confirm.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                Confirm.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                 Confirm.show();
                 //return super.onJsConfirm(view,url,message,result);
                 return true;
@@ -171,7 +171,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                         result.cancel();
                     }
                 });
-                Prompt.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                Prompt.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                 Prompt.show();
                 //return super.onJsPrompt(view,url,message,defaultValue,result);
                 return true;
@@ -194,7 +194,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                         resultType == WebView.HitTestResult.ANCHOR_TYPE) {
                     ListView listView=new ListView(context);
                     final AlertDialog alertDialog=new AlertDialog.Builder(context).setView(listView).create();
-                    alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    alertDialog.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                     alertDialog.show();
                     listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"開啟連結","在新的視窗開啟連結","複製連結網址"}));
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -274,7 +274,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 ListView menu_list = new ListView(context);
                 menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"分享此網頁","用其他瀏覽器開啟此網頁"}));
                 final AlertDialog menu = new AlertDialog.Builder(context).setView(menu_list).create();
-                menu.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                menu.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                 menu.show();
                 menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                     @Override
