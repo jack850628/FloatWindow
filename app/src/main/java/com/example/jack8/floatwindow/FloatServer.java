@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -204,14 +205,12 @@ public class FloatServer extends Service {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView==null)
-                convertView=LayoutInflater.from(FloatServer.this).inflate(R.layout.hide_menu_item,parent,false);
-
-            TextView item_text = ((TextView)convertView.findViewById(R.id.item_text));
-            item_text.setText(windowList.get(key[position]).getWindowTitle());
-            item_text.setTextColor(Color.WHITE);
-            item_text.setShadowLayer(15f,0,0,Color.argb(206,0,0,0));
-
+            if(convertView==null) {
+                convertView = new TextView(FloatServer.this);
+                convertView.setPadding(25,25,0,25);
+                ((TextView)convertView).setTextSize(20);
+            }
+            ((TextView)convertView).setText(windowList.get(key[position]).getWindowTitle());
             return convertView;
         }
     }
