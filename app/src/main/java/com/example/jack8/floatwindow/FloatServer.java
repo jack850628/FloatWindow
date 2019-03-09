@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -203,11 +204,14 @@ public class FloatServer extends Service {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView==null){
+            if(convertView==null)
                 convertView=LayoutInflater.from(FloatServer.this).inflate(R.layout.hide_menu_item,parent,false);
 
-                ((TextView)convertView.findViewById(R.id.item_text)).setText(windowList.get(key[position]).getWindowTitle());
-            }
+            TextView item_text = ((TextView)convertView.findViewById(R.id.item_text));
+            item_text.setText(windowList.get(key[position]).getWindowTitle());
+            item_text.setTextColor(Color.WHITE);
+            item_text.setShadowLayer(15f,0,0,Color.argb(206,0,0,0));
+
             return convertView;
         }
     }

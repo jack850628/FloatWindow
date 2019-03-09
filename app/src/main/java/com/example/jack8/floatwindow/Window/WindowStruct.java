@@ -46,7 +46,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     private int top,left,height,width;//視窗的座標及大小
 
     private Context context;
-    private WindowColor wColor;//視窗顏色
+    //private WindowColor wColor;//視窗顏色
     private WindowManager wm;
     private WindowManager.LayoutParams wmlp;
     private WindowAction windowAction;
@@ -384,7 +384,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         heightMini=new Scroller(context);
         displayMetrics = context.getResources().getDisplayMetrics();
 
-        wColor=new WindowColor(context);
+        //wColor=new WindowColor(context);
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         wmlp = new WindowManager.LayoutParams();
@@ -564,7 +564,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                         convertView=LayoutInflater.from(context).inflate(R.layout.hide_menu_item,null,false);
                         TextView itenText=(TextView) convertView.findViewById(R.id.item_text);
                         itenText.setText(menuItems[position]);
-                        itenText.setTextColor(Color.BLACK);
                     }
                     return convertView;
                 }

@@ -33,7 +33,11 @@
             android:gravity="center_vertical"
             android:marqueeRepeatLimit="-1"
             android:singleLine="true"
-            android:textColor="#FFFFFF" /><requestFocus/>
+            android:textColor="#FFFFFF"
+            android:shadowColor="#ce000000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="15"/><requestFocus/>
 
         <LinearLayout
             android:id="@+id/micro_max_button_background"
@@ -98,8 +102,7 @@
             android:id="@+id/menu_list"
             android:layout_width="150dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="-150dp"
-            android:background="#FFFFFF" />
+            android:layout_marginLeft="-151dp" />
 
         <LinearLayout
             android:id="@+id/wincon"
