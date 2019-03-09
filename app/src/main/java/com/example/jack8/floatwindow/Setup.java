@@ -20,6 +20,8 @@ import com.example.jack8.floatwindow.Window.WindowConfig;
 import com.example.jack8.floatwindow.Window.WindowFrom;
 import com.example.jack8.floatwindow.Window.WindowStruct;
 
+import net.margaritov.preference.colorpicker.ColorPickerDialog;
+
 public class Setup extends AppCompatActivity {
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
@@ -76,7 +78,7 @@ public class Setup extends AppCompatActivity {
         prompt.setTextSize(15f);
         ((ViewGroup) FoucsWindow.findViewById(R.id.wincon)).addView(prompt);
 
-        windowsBackground=(ViewGroup) FoucsWindow.findViewById(R.id.window);
+        windowsBackground=(ViewGroup) FoucsWindow.findViewById(R.id.menu_list_and_context);
         //windowsBackground.getLayoutParams().width=(int)(getResources().getDisplayMetrics().density*200);
         windowsBackground.getLayoutParams().height=(int)(getResources().getDisplayMetrics().density*240);
         windowsBackground.setOnClickListener(setColor);
@@ -99,7 +101,7 @@ public class Setup extends AppCompatActivity {
         promptNotFoucs.setTextSize(15f);
         ((ViewGroup) NotFoucsWindow.findViewById(R.id.wincon)).addView(promptNotFoucs);
 
-        windowsBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.window);
+        windowsBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.menu_list_and_context);
         //windowsBackgroundNotFoucs.getLayoutParams().width=(int)(getResources().getDisplayMetrics().density*200);
         windowsBackgroundNotFoucs.getLayoutParams().height=(int)(getResources().getDisplayMetrics().density*240);
         windowsBackgroundNotFoucs.setOnClickListener(setColor);
@@ -133,66 +135,79 @@ public class Setup extends AppCompatActivity {
                 case R.id.title_bar:
                 case R.id.size:
                 case R.id.menu:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getTitleBar(), "選擇顏色",
-                        new ColorPickerDialog.OnColorChangedListener() {
-                            public void colorChanged(int color){
-                                wColor.setTitleBar(color);
-                                wColor.setSizeBar(color);
-                                titleBar.setBackgroundColor(color);
-                                sizeBar.setBackgroundColor(color);
-                                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
-                                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
-                                    getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
-                            }
-                        });
+                    dialog = new ColorPickerDialog(Setup.this, wColor.getTitleBar());
+                    dialog.setTitle("選擇顏色");
+                    dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+                        @Override
+                        public void onColorChanged(int color) {
+                            wColor.setTitleBar(color);
+                            wColor.setSizeBar(color);
+                            titleBar.setBackgroundColor(color);
+                            sizeBar.setBackgroundColor(color);
+                            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
+                            if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
+                                getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
+                        }
+                    });
                     break;
                 case R.id.hide:
                 case R.id.max:
                 case R.id.mini:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getMicroMaxButtonBackground(), "選擇顏色",
-                            new ColorPickerDialog.OnColorChangedListener() {
-                                public void colorChanged(int color){
-                                    wColor.setMicroMaxButtonBackground(color);
-                                    microMaxButtonBackground.setBackgroundColor(color);
-                                }
-                            });
+                    dialog = new ColorPickerDialog(Setup.this, wColor.getMicroMaxButtonBackground());
+                    dialog.setTitle("選擇顏色");
+                    dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+                        @Override
+                        public void onColorChanged(int color) {
+                            wColor.setMicroMaxButtonBackground(color);
+                            microMaxButtonBackground.setBackgroundColor(color);
+                        }
+                    });
                     break;
                 case R.id.close_button:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getCloseButtonBackground(), "選擇顏色",
-                            new ColorPickerDialog.OnColorChangedListener() {
-                                public void colorChanged(int color){
-                                    wColor.setCloseButtonBackground(color);
-                                    closeButtonBackground.setBackgroundColor(color);
-                                }
-                            });
+                    dialog = new ColorPickerDialog(Setup.this, wColor.getCloseButtonBackground());
+                    dialog.setTitle("選擇顏色");
+                    dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+                        @Override
+                        public void onColorChanged(int color) {
+                            wColor.setCloseButtonBackground(color);
+                            closeButtonBackground.setBackgroundColor(color);
+                        }
+                    });
                     break;
-                case R.id.window:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getWindowBackground(), "選擇顏色",
-                            new ColorPickerDialog.OnColorChangedListener() {
-                                public void colorChanged(int color){
-                                    wColor.setWindowBackground(color);
-                                    windowsBackground.setBackgroundColor(color);
-                                    windowsBackgroundNotFoucs.setBackgroundColor(color);
-                                }
-                            });
+                case R.id.menu_list_and_context:
+                    dialog = new ColorPickerDialog(Setup.this, wColor.getWindowBackground());
+                    dialog.setTitle("選擇顏色");
+                    dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+                        @Override
+                        public void onColorChanged(int color) {
+                            wColor.setWindowBackground(color);
+                            windowsBackground.setBackgroundColor(color);
+                            windowsBackgroundNotFoucs.setBackgroundColor(color);
+                        }
+                    });
                     break;
             }
+            dialog.setAlphaSliderVisible(true);
             dialog.show();
         }
     };
     View.OnClickListener setColorForNotFoucs=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            new ColorPickerDialog(Setup.this, wColor.getWindowNotFoucs(), "選擇顏色",
-                    new ColorPickerDialog.OnColorChangedListener() {
-                        public void colorChanged(int color) {
-                            wColor.setWindowNotFoucs(color);
-                            microMaxButtonBackgroundNotFoucs.setBackgroundColor(color);
-                            titleBarNotFoucs.setBackgroundColor(color);
-                            sizeBarNotFoucs.setBackgroundColor(color);
-                            closeButtonBackgroundNotFoucs.setBackgroundColor(color);
-                        }
-                    }).show();
+            ColorPickerDialog dialog = new ColorPickerDialog(Setup.this, wColor.getWindowNotFoucs());
+            dialog.setTitle("選擇顏色");
+            dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+                @Override
+                public void onColorChanged(int color) {
+                    wColor.setWindowNotFoucs(color);
+                    microMaxButtonBackgroundNotFoucs.setBackgroundColor(color);
+                    titleBarNotFoucs.setBackgroundColor(color);
+                    sizeBarNotFoucs.setBackgroundColor(color);
+                    closeButtonBackgroundNotFoucs.setBackgroundColor(color);
+                }
+            });
+            dialog.setAlphaSliderVisible(true);
+            dialog.show();
         }
     };
     View.OnClickListener save=new View.OnClickListener() {

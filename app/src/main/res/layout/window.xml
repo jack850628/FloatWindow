@@ -3,41 +3,50 @@
     android:id="@+id/window"
     android:layout_width="200dp"
     android:layout_height="200dp"
-    android:background="@color/windowBackground"
+    android:background="#00000000"
     android:orientation="vertical">
 
 
     <LinearLayout
-        android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_weight="0"
-        android:background="@color/windowFoucsColor"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/menu"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_weight="0"
-            android:background="@drawable/menu_icom" />
+        <requestFocus/>
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
+        <LinearLayout
+            android:id="@+id/title_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:gravity="center_vertical"
-            android:marqueeRepeatLimit="-1"
-            android:singleLine="true"
-            android:textColor="#FFFFFF"
-            android:shadowColor="#ce000000"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="15"/><requestFocus/>
+            android:background="@color/windowFoucsColor"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/menu"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_weight="0"
+                android:background="@drawable/menu_icom" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:marqueeRepeatLimit="-1"
+                android:shadowColor="#ce000000"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:singleLine="true"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/micro_max_button_background"
@@ -94,6 +103,7 @@
         android:id="@+id/menu_list_and_context"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/windowBackground"
         android:layout_weight="1"
         android:gravity="left"
         android:orientation="horizontal">

@@ -37,7 +37,7 @@ public class WindowFrom extends LinearLayout {
         sizeBar=this.findViewById(R.id.size);
         microMaxButtonBackground=this.findViewById(R.id.micro_max_button_background);
         closeButtonBackground=this.findViewById(R.id.close_button_background);
-        findViewById(R.id.window).setBackgroundColor(wColor.getWindowBackground());
+        findViewById(R.id.menu_list_and_context).setBackgroundColor(wColor.getWindowBackground());
 
         if(isStart){
             isStart=false;

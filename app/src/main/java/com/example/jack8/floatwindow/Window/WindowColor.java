@@ -19,18 +19,14 @@ public class WindowColor {
     private final SharedPreferences spf;
     public WindowColor(Context context){
         spf =  context.getSharedPreferences(WindowConfig.WINDOW_CONF,0);
-        windowBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt(WindowConfig.WINDOW_BACKGROUND,context.getResources().getColor(R.color.windowBackground)))));
-        titleBar=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt(WindowConfig.TITLE_BAR,context.getResources().getColor(R.color.windowFoucsColor)))));
-        sizeBar=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt(WindowConfig.SIZE_BAR,context.getResources().getColor(R.color.windowFoucsColor)))));
-        microMaxButtonBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt(WindowConfig.MICRO_MAX_BUTTON_BACKGROUND,context.getResources().getColor(R.color.windowFoucsColor)))));
-        closeButtonBackground=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt(WindowConfig.CLOSE_BUTTON_BACKGROUND,context.getResources().getColor(R.color.closeButton)))));
-        windowNotFoucs=Color.parseColor(String.format("#%06X",
-                (0xFFFFFF & spf.getInt(WindowConfig.WINDOW_NOT_FOUSE,context.getResources().getColor(R.color.windowNotFoucsColor)))));
+        /*windowBackground=Color.parseColor(String.format("#%06X",
+                (0xFFFFFF & spf.getInt(WindowConfig.WINDOW_BACKGROUND,context.getResources().getColor(R.color.windowBackground)))));*/
+        windowBackground = spf.getInt(WindowConfig.WINDOW_BACKGROUND,context.getResources().getColor(R.color.windowBackground));
+        titleBar = spf.getInt(WindowConfig.TITLE_BAR,context.getResources().getColor(R.color.windowFoucsColor));
+        sizeBar = spf.getInt(WindowConfig.SIZE_BAR,context.getResources().getColor(R.color.windowFoucsColor));
+        microMaxButtonBackground = spf.getInt(WindowConfig.MICRO_MAX_BUTTON_BACKGROUND,context.getResources().getColor(R.color.windowFoucsColor));
+        closeButtonBackground = spf.getInt(WindowConfig.CLOSE_BUTTON_BACKGROUND,context.getResources().getColor(R.color.closeButton));
+        windowNotFoucs = spf.getInt(WindowConfig.WINDOW_NOT_FOUSE,context.getResources().getColor(R.color.windowNotFoucsColor));
     }
     public int getWindowBackground(){
         return windowBackground;
