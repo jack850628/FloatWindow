@@ -22,14 +22,11 @@ import com.example.jack8.floatwindow.Window.WindowStruct;
 
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
 
-import java.util.ArrayList;
-
 public class Setup extends AppCompatActivity {
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
     SeekBar secondSet;
-    ArrayList<WindowStruct> windowList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,14 +221,6 @@ public class Setup extends AppCompatActivity {
         }
     };
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        for(WindowStruct windowStruct:windowList) {
-            windowStruct.enableAnimation(false);
-            windowStruct.close();
-        }
-    }
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0,0,0,"關於");
         return true;
@@ -243,7 +232,7 @@ public class Setup extends AppCompatActivity {
                 finish();
                 return true;
             case 0:
-                windowList.add(new WindowStruct(
+                new WindowStruct(
                         this,
                         (WindowManager) getSystemService(Context.WINDOW_SERVICE),
                         new int[]{R.layout.about},
@@ -260,8 +249,8 @@ public class Setup extends AppCompatActivity {
                             }
 
                             @Override
-                            public void goClose(WindowStruct windowStruct) {
-                                windowList.remove(windowStruct);
+                            public void goClose() {
+
                             }
                         },
                         new WindowStruct.constructionAndDeconstructionWindow() {
@@ -274,7 +263,7 @@ public class Setup extends AppCompatActivity {
                             public void Deconstruction(Context context, View pageView, int position) {
 
                             }
-                        }));
+                        });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
