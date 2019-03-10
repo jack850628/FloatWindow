@@ -101,7 +101,7 @@ public class FloatServer extends Service {
             }
 
             @Override
-            public void goClose() {
+            public void goClose(WindowStruct windowStruct) {
                 if (--wm_count == 0) {
                     FloatServer.this.stopForeground(true);
                     stopSelf();

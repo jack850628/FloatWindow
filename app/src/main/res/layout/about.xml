@@ -27,7 +27,11 @@
             android:gravity="center"
             android:text="FloatWindow"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:shadowColor="#cefffefe"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="15" />
 
         <TextView
             android:id="@+id/textView5"
@@ -35,7 +39,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="版本:1.0.3" />
+            android:text="版本:1.0.4"
+            android:shadowColor="#cefffefe"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="15" />
     </LinearLayout>
 
 </LinearLayout>
