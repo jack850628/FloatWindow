@@ -66,7 +66,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
     private constructionAndDeconstructionWindow CDAW;
 
-//------------可隱藏或顯示的控制項物件------------------
+    //------------可隱藏或顯示的控制項物件------------------
     private int display_oblect;
     public final static int ALL_NOT_DISPLAY = 0x00;
     public final static int MENU_BUTTON = 0x01;
@@ -79,6 +79,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     public enum State{MAX,MINI,HIDE,GENERAL,CLOSE}
     public State nowState = State.GENERAL;//當前狀態
     public State previousState = null;//前一次的狀態
+    public boolean animation = true;//過場動畫開關
 
     static HashMap<Integer,WindowStruct> windowList=new HashMap<>();
 
@@ -525,7 +526,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
     public interface WindowAction{
         void goHide(WindowStruct windowStruct);//當按下隱藏視窗按鈕
-        void goClose();//當按下關閉視窗按鈕
+        void goClose(WindowStruct windowStruct);//當按下關閉視窗按鈕
     }
 
     public interface constructionAndDeconstructionWindow{
@@ -669,6 +670,16 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
     @Override
     public void run() {//放大縮小動畫
+        if(!animation){
+            //abortAnimation可以使Scroller終止動畫跳過滾動過程直接給出最後數值
+            topMini.abortAnimation();
+            heightMini.abortAnimation();
+            wmlp.x = topMini.getCurrX();
+            wmlp.y = topMini.getCurrY();
+            winform.getLayoutParams().width = heightMini.getCurrX();
+            winform.getLayoutParams().height = heightMini.getCurrY();
+            wm.updateViewLayout(winform, wmlp);
+        }
         if(!topMini.isFinished()||!heightMini.isFinished()) {
             if (topMini.computeScrollOffset()) {
                 wmlp.x = topMini.getCurrX();
@@ -684,7 +695,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             wm.removeView(winform);
             for(int i=0;i<winconPage.length;i++)
                 CDAW.Deconstruction(context,winconPage[i],i);
-            windowAction.goClose();
+            windowAction.goClose(this);
         }
     }
 
@@ -782,11 +793,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 menu.setVisibility(View.VISIBLE);
             close_button.setVisibility(View.VISIBLE);
             if((display_oblect & MINI_BUTTON) == MINI_BUTTON)
-            mini.setVisibility(View.VISIBLE);
+                mini.setVisibility(View.VISIBLE);
             if((display_oblect & MAX_BUTTON) == MAX_BUTTON)
-            max.setVisibility(View.VISIBLE);
+                max.setVisibility(View.VISIBLE);
             if((display_oblect & HIDE_BUTTON) == HIDE_BUTTON)
-            hide.setVisibility(View.VISIBLE);
+                hide.setVisibility(View.VISIBLE);
         }
         runUi.post(this);
     }
@@ -911,6 +922,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      */
     public String getWindowTitle(){
         return title.getText().toString();
+    }
+
+    /**
+     * 啟用或停用過場動畫(動畫預設式開啟的)
+     * @param animation 開關過場動畫
+     */
+    public void enableAnimation(boolean animation){
+        this.animation = animation;
     }
 
     /**
