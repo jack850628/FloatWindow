@@ -2,7 +2,6 @@ package com.example.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 
 import com.example.jack8.floatwindow.R;
 

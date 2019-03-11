@@ -2,7 +2,6 @@ package com.example.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
@@ -10,19 +9,15 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.Scroller;
 import android.widget.TextView;
 
@@ -387,7 +382,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
 
         //wColor=new WindowColor(context);
 
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         wmlp = new WindowManager.LayoutParams();
         wmlp.type = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 ?WindowManager.LayoutParams.TYPE_PHONE
