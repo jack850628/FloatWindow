@@ -4,67 +4,75 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp">
 
-        <EditText
-            android:id="@+id/webpath"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:ems="10"
-            android:hint="網址"
-            android:inputType="textPersonName"
-            android:textColor="#000000"
-            android:textColorHint="#AAAAAA"
-            android:layout_toLeftOf="@+id/goback"
-            android:layout_toStartOf="@+id/goback" />
+    <LinearLayout
+        android:id="@+id/controls_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
 
-            <Button
-                android:id="@+id/goback"
-                android:layout_width="40dp"
+            <EditText
+                android:id="@+id/webpath"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/webpath"
-                android:layout_toLeftOf="@+id/go"
-                android:layout_toStartOf="@+id/go"
-                android:layout_weight="1"
-                android:text="&#060;" />
-
-            <Button
-                android:id="@+id/go"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/goback"
+                android:layout_toLeftOf="@+id/goback"
                 android:layout_weight="1"
-                android:text="&#062;" />
+                android:ems="10"
+                android:hint="網址"
+                android:inputType="textPersonName"
+                android:textColor="#000000"
+                android:textColorHint="#AAAAAA" />
 
-            <Button
-                android:id="@+id/menu"
-                android:layout_width="40dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="⋮" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/goback"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/webpath"
+                    android:layout_toStartOf="@+id/go"
+                    android:layout_toLeftOf="@+id/go"
+                    android:layout_weight="1"
+                    android:text="&#060;" />
+
+                <Button
+                    android:id="@+id/go"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_weight="1"
+                    android:text="&#062;" />
+
+                <Button
+                    android:id="@+id/menu"
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="⋮" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <WebView
         android:id="@+id/web"

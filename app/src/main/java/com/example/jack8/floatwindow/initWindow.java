@@ -74,6 +74,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         Button goBack=(Button)pageView.findViewById(R.id.goback);
         final Button menu=(Button) pageView.findViewById(R.id.menu);
         final WebView web=(WebView)pageView.findViewById(R.id.web);
+        final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
         final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
         final Clipboard clipboard=new Clipboard(context);
 
@@ -207,11 +208,13 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 ((ViewGroup)pageView).addView(customView);
                 customViewCallback = callback;
                 web.setVisibility(View.GONE);
+                controlsBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onHideCustomView() {
                 web.setVisibility(View.VISIBLE);
+                controlsBar.setVisibility(View.VISIBLE);
                 if (customView == null)
                     return;
                 customView.setVisibility(View.GONE);
