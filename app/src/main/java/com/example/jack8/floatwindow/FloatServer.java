@@ -8,20 +8,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,13 +27,13 @@ import com.example.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * 浮動視窗服務
  */
 public class FloatServer extends Service {
+    private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
     WindowManager wm;
     Notification NF;
     final int NOTIFY_ID=851262;
@@ -76,6 +74,12 @@ public class FloatServer extends Service {
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }
         Log.i("WMStrver","Create");
+
+        //---------------註冊翻轉事件廣播接收---------------
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BCAST_CONFIGCHANGED);
+        this.registerReceiver(new ScreenChangeListener(), filter);
+        //-------------------------------------------------
 
         try {//用反射取得所有視窗清單
             Field field = WindowStruct.class.getDeclaredField("windowList");

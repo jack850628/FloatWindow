@@ -10,14 +10,15 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -36,7 +37,6 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,7 +76,14 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         final WebView web=(WebView)pageView.findViewById(R.id.web);
         final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
         final Clipboard clipboard=new Clipboard(context);
-        web.getSettings().setJavaScriptEnabled(true);
+
+        WebSettings webSettings = web.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setDisplayZoomControls(false);
+        webSettings.setUseWideViewPort(true);
+
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
@@ -183,6 +190,37 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     PB.setVisibility(View.GONE);
                 super.onProgressChanged(view,newProgress);
             }
+
+            /*------------全螢幕播放--------------
+            * 參考:https://www.jianshu.com/p/8b4df0f902db
+             */
+            private View customView;
+            private CustomViewCallback customViewCallback;
+            @Override
+            public void onShowCustomView(View view/*全螢幕撥放器的view*/, CustomViewCallback callback) {
+                super.onShowCustomView(view, callback);
+                if (customView != null) {
+                    callback.onCustomViewHidden();
+                    return;
+                }
+                customView = view;
+                ((ViewGroup)pageView).addView(customView);
+                customViewCallback = callback;
+                web.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onHideCustomView() {
+                web.setVisibility(View.VISIBLE);
+                if (customView == null)
+                    return;
+                customView.setVisibility(View.GONE);
+                ((ViewGroup)pageView).removeView(customView);
+                customViewCallback.onCustomViewHidden();
+                customView = null;
+                super.onHideCustomView();
+            }
+            //----------------------------------------
         });
         web.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
