@@ -10,10 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -41,6 +43,8 @@ public class FloatServer extends Service {
     int wm_count=0;//計算FloatServer總共開了多少次
     AlertDialog menu;
     HashMap<Integer,WindowStruct> windowList;
+    WindowStruct windowManager = null;//視窗管理員
+    Handler handler = new Handler();
     @Override
     public void onCreate() {
         super.onCreate();
@@ -108,6 +112,8 @@ public class FloatServer extends Service {
             public void goClose(WindowStruct windowStruct) {
                 if (--wm_count == 0) {
                     FloatServer.this.stopForeground(true);
+                    if(windowManager != null)
+                        windowManager.close();
                     stopSelf();
                 }
             }
@@ -173,28 +179,89 @@ public class FloatServer extends Service {
         final ListView hideMenu=new ListView(this);
         final hideMenuAdapter hma = new hideMenuAdapter();
         hideMenu.setAdapter(hma);
-        menu=new AlertDialog.Builder(this).setTitle("所有視窗清單").setView(hideMenu).create();
+        /*menu=new AlertDialog.Builder(this).setTitle("所有視窗清單").setView(hideMenu).create();
         menu.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
         menu.show();
         hideMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                menu.dismiss();
+                //menu.dismiss();
                 windowList.get(hma.key[position]).focusAndShowWindow();
             }
-        });
+        });*/
+        if(windowManager == null) {
+            windowManager = new WindowStruct(
+                    this,
+                    wm,
+                    new View[]{hideMenu},
+                    new String[]{"所有視窗清單"},
+                    60,
+                    60,
+                    (int) (200 * this.getResources().getDisplayMetrics().density),
+                    (int) (195 * this.getResources().getDisplayMetrics().density),
+                    WindowStruct.SIZE_BAR,
+                    new WindowStruct.WindowAction() {
+                        @Override
+                        public void goHide(WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void goClose(WindowStruct windowStruct) {
+                            windowManager = null;
+                        }
+                    },
+                    new WindowStruct.constructionAndDeconstructionWindow() {
+                        @Override
+                        public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void Deconstruction(Context context, View pageView, int position) {
+
+                        }
+                    });
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int windowListLength = 0;
+                    while (windowManager != null) {
+                        if (windowListLength != windowList.size())
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hma.updateWindowList();
+                                    hma.notifyDataSetChanged();
+                                }
+                            });
+                        windowListLength = windowList.size();
+                        try {
+                            Thread.sleep(1l);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }else
+            windowManager.focusAndShowWindow();
     }
 
     class hideMenuAdapter extends BaseAdapter{
-        Integer[] key;
+        private Integer[] key;
 
         public hideMenuAdapter(){
+            updateWindowList();
+        }
+
+        public void updateWindowList(){
             key = windowList.keySet().toArray(new Integer[windowList.size()]);
         }
 
         @Override
         public int getCount() {
-            return windowList.size();
+            return key.length;
         }
 
         @Override
@@ -210,11 +277,24 @@ public class FloatServer extends Service {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if(convertView==null) {
-                convertView = new TextView(FloatServer.this);
-                convertView.setPadding(25,25,0,25);
-                ((TextView)convertView).setTextSize(20);
+                convertView = LayoutInflater.from(FloatServer.this).inflate(R.layout.window_manager,null);
             }
-            ((TextView)convertView).setText(windowList.get(key[position]).getWindowTitle());
+            if(windowList.containsKey(key[position])) {
+                final WindowStruct windowStruct = windowList.get(key[position]);
+                ((TextView) convertView.findViewById(R.id.title)).setText(windowStruct.getWindowTitle());
+                convertView.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        windowStruct.close();
+                    }
+                });
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        windowStruct.focusAndShowWindow();
+                    }
+                });
+            }
             return convertView;
         }
     }
