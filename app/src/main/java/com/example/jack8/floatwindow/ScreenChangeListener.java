@@ -35,8 +35,8 @@ public class ScreenChangeListener extends BroadcastReceiver {
                     WindowStruct windowStruct = entry.getValue();
                     if(windowStruct.nowState == WindowStruct.State.MAX){
                         windowStruct.enableAnimation(false);
-                        windowStruct.nowState = WindowStruct.State.MINI;
-                        windowStruct.maxOrUnMax();
+                        windowStruct.nowState = WindowStruct.State.GENERAL;
+                        windowStruct.max();
                         windowStruct.enableAnimation(true);
                     }
                 }

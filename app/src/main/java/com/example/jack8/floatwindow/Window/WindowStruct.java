@@ -31,6 +31,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     int Number;//視窗編號
     static int NOW_FOCUS_NUMBER=-1;//現在點視窗
     private int MINI_SIZE;//視窗最小化的寬度
+    private final int TITLE_LIFT_TO_EDGE_DISTANCE = 20;
     private int Second=500;//動畫持續時間
     //static final int START_POINT=60;//視窗預設座標
     private static int FOCUS_FLAGE=WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//上視窗超出螢幕
@@ -62,7 +63,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     private constructionAndDeconstructionWindow CDAW;
 
     //------------可隱藏或顯示的控制項物件------------------
-    private int display_oblect;
+    private int display_object;
     public final static int ALL_NOT_DISPLAY = 0x00;
     public final static int MENU_BUTTON = 0x01;
     public final static int HIDE_BUTTON = 0x02;
@@ -374,7 +375,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         this.windowTitle=windowPageTitles;
         this.CDAW=CDAW;
         this.Second=context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(WindowConfig.SECOND,500);
-        this.display_oblect=display_object;
+        this.display_object=display_object;
         windowList.put(Number,this);
         topMini=new Scroller(context);
         heightMini=new Scroller(context);
@@ -500,8 +501,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             CDAW.Construction(context,winconPage[i],i,(windowInitArgs != null && i < windowInitArgs.length) ? windowInitArgs[i] : new Object[0],this);
         //---------------------------------------------------------------------------------------------
         //---------------------------隱藏不顯示的控制項物件------------------------------------------
-        if((display_object & MENU_BUTTON) != MENU_BUTTON)
+        if((display_object & MENU_BUTTON) != MENU_BUTTON) {
             menu.setVisibility(View.GONE);
+            title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
+        }
         if((display_object & HIDE_BUTTON) != HIDE_BUTTON)
             hide.setVisibility(View.GONE);
         if((display_object & MINI_BUTTON) != MINI_BUTTON)
@@ -626,7 +629,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 if(wmlp.y < 0)
                     wmlp.y = 0;
                 if (nowState != State.MAX && nowState != State.MINI) {
-                    if((display_oblect & MENU_BUTTON) == MENU_BUTTON)
+                    if((display_object & MENU_BUTTON) == MENU_BUTTON)
                         wmlp.x -= menu.getLayoutParams().width;
                     left = wmlp.x;
                     top = wmlp.y;
@@ -648,10 +651,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 mini();
                 break;
             case R.id.max: //最大化或一般大小
-                maxOrUnMax();
+                switch (nowState){
+                    case MAX:
+                        general();
+                        break;
+                    default:
+                        max();
+                }
                 break;
             case R.id.title://還原視窗大小
-                reSize();
+                if(previousState != null && previousState == State.MAX)
+                    max();
+                else
+                    general();
                 break;
             case R.id.close_button://關閉視窗
                 close();
@@ -686,176 +698,193 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             wm.updateViewLayout(winform, wmlp);
             runUi.post(this);
         }else if(nowState == State.CLOSE){
-            wm.removeView(winform);
             for(int i=0;i<winconPage.length;i++)
                 CDAW.Deconstruction(context,winconPage[i],i);
             windowAction.goClose(this);
+            wm.removeView(winform);
+            windowList.remove(Number);
         }
     }
 
     /**
      * 視窗最小化
      */
-    public void mini(){
-        wmlp.flags=NO_FOCUS_FLAGE;
-        wm.updateViewLayout(winform,wmlp);
+    public void mini() {
         if (nowState != State.MINI) {
+            wmlp.flags = NO_FOCUS_FLAGE;
+            wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
             nowState = State.MINI;
-            if(previousState != State.MAX) {
-                topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, Second);
-                heightMini.startScroll(width, height, MINI_SIZE - width, -(height-title.getLayoutParams().height), Second);
-            }else{
+            if (previousState == State.MAX) {
                 int dy;
-                topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE),0, Second);
-                heightMini.startScroll( displayMetrics.widthPixels,
-                        dy=displayMetrics.heightPixels - getStatusBarHeight(),
-                        MINI_SIZE -displayMetrics.widthPixels, -(dy-title.getLayoutParams().height),Second);
+                topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE), 0, Second);
+                heightMini.startScroll(displayMetrics.widthPixels,
+                        dy = displayMetrics.heightPixels - getStatusBarHeight(),
+                        MINI_SIZE - displayMetrics.widthPixels, -(dy - title.getLayoutParams().height), Second);
+            } else if (previousState == State.GENERAL) {
+                topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, Second);
+                heightMini.startScroll(width, height, MINI_SIZE - width, -(height - title.getLayoutParams().height), Second);
+            } else if (previousState == State.HIDE) {
+                topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2,
+                         displayMetrics.widthPixels / 2 - MINI_SIZE, -(displayMetrics.heightPixels / 2), Second);
+                heightMini.startScroll(0, 0, MINI_SIZE, title.getLayoutParams().height, Second);
             }
-            if((display_oblect & MENU_BUTTON) == MENU_BUTTON)
-                menu.setVisibility(View.GONE);
-            close_button.setVisibility(View.GONE);
-            if((display_oblect & MINI_BUTTON) == MINI_BUTTON)
-                mini.setVisibility(View.GONE);
-            if((display_oblect & MAX_BUTTON) == MAX_BUTTON)
-                max.setVisibility(View.GONE);
-            if((display_oblect & HIDE_BUTTON) == HIDE_BUTTON)
-                hide.setVisibility(View.GONE);
-            if((display_oblect & SIZE_BAR) == SIZE_BAR)
-                sizeBar.setVisibility(View.GONE);
+            hideButtons();
+            runUi.post(this);
         }
-        runUi.post(this);
     }
 
     /**
-     * 視窗最大化或一般大小
+     * 視窗最大化
      */
-    public void maxOrUnMax(){
-        previousState = nowState;
+    public void max(){
         if(nowState != State.MAX) {
+            previousState = nowState;
             nowState = State.MAX;
-            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
-            else
-                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
-            topMini.startScroll(left, top, -left, -top, Second);
-            heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
-                    displayMetrics.heightPixels - height - getStatusBarHeight(), Second);
-            if((display_oblect & SIZE_BAR) == SIZE_BAR)
-                sizeBar.setVisibility(View.GONE);
-        }else{
-            nowState = State.GENERAL;
-            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
-            else
-                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
-            int dy;
-            topMini.startScroll(0, 0, left, top, Second);
-            heightMini.startScroll( displayMetrics.widthPixels,
-                    dy=displayMetrics.heightPixels - getStatusBarHeight(),
-                    width-displayMetrics.widthPixels, height-dy,Second);
-            if((display_oblect & SIZE_BAR) == SIZE_BAR)
-                sizeBar.setVisibility(View.VISIBLE);
+            if (previousState == State.GENERAL) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                    max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
+                else
+                    max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
+                topMini.startScroll(left, top, -left, -top, Second);
+                heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
+                        displayMetrics.heightPixels - height - getStatusBarHeight(), Second);
+                if ((display_object & SIZE_BAR) == SIZE_BAR)
+                    sizeBar.setVisibility(View.GONE);
+            } else if(previousState == State.MINI){
+                topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, Second);
+                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
+                        , displayMetrics.widthPixels - winform.getLayoutParams().width,
+                        displayMetrics.heightPixels - winform.getLayoutParams().height - getStatusBarHeight(), Second);
+            } else if(previousState == State.HIDE){
+                nowState = State.MAX;
+                topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 , -(displayMetrics.widthPixels / 2), -(displayMetrics.heightPixels / 2) , Second);
+                heightMini.startScroll(0,0, displayMetrics.widthPixels,displayMetrics.heightPixels - getStatusBarHeight(), Second);
+            }
+            recoveryButtons();
+            sizeBar.setVisibility(View.GONE);
+            runUi.post(this);
         }
-        runUi.post(this);
     }
 
     /**
      * 還原視窗大小
      */
-    public void reSize(){
-        wmlp.flags=FOCUS_FLAGE;
-        wm.updateViewLayout(winform,wmlp);
-        if(nowState == State.MINI){
-            if(previousState != State.MAX) {
-                nowState = State.GENERAL;
+    public void general(){
+        if(nowState != State.GENERAL){
+            previousState = nowState;
+            nowState = State.GENERAL;
+            if(previousState == State.MAX) {
+                if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                    max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
+                else
+                    max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
+                int dy;
+                topMini.startScroll(0, 0, left, top, Second);
+                heightMini.startScroll( displayMetrics.widthPixels,
+                        dy=displayMetrics.heightPixels - getStatusBarHeight(),
+                        width-displayMetrics.widthPixels, height-dy,Second);
+            }else if(previousState == State.MINI){
                 topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, Second);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
                         , width - winform.getLayoutParams().width,
                         height - winform.getLayoutParams().height, Second);
-                if((display_oblect & SIZE_BAR) == SIZE_BAR)
-                    sizeBar.setVisibility(View.VISIBLE);
-            }else{
-                nowState = State.MAX;
-                topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, Second);
-                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
-                        , displayMetrics.widthPixels - winform.getLayoutParams().width,
-                        displayMetrics.heightPixels - winform.getLayoutParams().height - getStatusBarHeight(), Second);
+            }else if(previousState == State.HIDE){
+                topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, Second);
+                heightMini.startScroll(0, 0, width, height, Second);
             }
-            previousState = State.MINI;
-            if((display_oblect & MENU_BUTTON) == MENU_BUTTON)
-                menu.setVisibility(View.VISIBLE);
-            close_button.setVisibility(View.VISIBLE);
-            if((display_oblect & MINI_BUTTON) == MINI_BUTTON)
-                mini.setVisibility(View.VISIBLE);
-            if((display_oblect & MAX_BUTTON) == MAX_BUTTON)
-                max.setVisibility(View.VISIBLE);
-            if((display_oblect & HIDE_BUTTON) == HIDE_BUTTON)
-                hide.setVisibility(View.VISIBLE);
+            recoveryButtons();
+            runUi.post(this);
         }
-        runUi.post(this);
-    }
-
-    /**
-     * 視窗關閉
-     */
-    public void close(){
-        windowList.remove(Number);
-        previousState = nowState;
-        nowState = State.CLOSE;
-        if(previousState != State.MAX) {
-            topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, Second);
-            heightMini.startScroll(width, height,
-                    - width, -height, Second);
-        }else{
-            topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , Second);
-            heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
-                    , - displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), Second);
-        }
-        runUi.post(this);
     }
 
     /**
      * 視窗隱藏
      */
     public void hide(){
-        previousState = nowState;
-        nowState = State.HIDE;
-        wmlp.flags=NO_FOCUS_FLAGE;
-        wm.updateViewLayout(winform,wmlp);
-        windowAction.goHide(this);
-        if(previousState != State.MAX) {
-            topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, Second);
-            heightMini.startScroll(width, height,
-                    - width, -height, Second);
-        }else{
-            topMini.startScroll(0, 0, displayMetrics.widthPixels / 2 , displayMetrics.heightPixels / 2 , Second);
-            heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
-                    , - displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), Second);
+        if(nowState != State.HIDE) {
+            wmlp.flags = NO_FOCUS_FLAGE;
+            wm.updateViewLayout(winform, wmlp);
+            previousState = nowState;
+            nowState = State.HIDE;
+            if (previousState == State.MAX) {
+                topMini.startScroll(0, 0, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, Second);
+                heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
+                        , -displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), Second);
+            } else if(previousState == State.GENERAL){
+                topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, Second);
+                heightMini.startScroll(width, height,
+                        -width, -height, Second);
+            }else if(previousState == State.MINI){
+                topMini.startScroll(wmlp.x, wmlp.y, displayMetrics.widthPixels / 2 - wmlp.x, displayMetrics.heightPixels / 2 - wmlp.y, Second);
+                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
+                        -winform.getLayoutParams().width, -winform.getLayoutParams().height, Second);
+            }
+            windowAction.goHide(this);
+            runUi.post(this);
         }
-        runUi.post(this);
     }
 
     /**
-     * 取消視窗隱藏
+     * 視窗關閉
      */
-    public void unHide(){
-        wmlp.flags=FOCUS_FLAGE;
-        wm.updateViewLayout(winform,wmlp);
-        focusWindow();
-        wm.removeView(winform);
-        wm.addView(winform,wmlp);
-        if(previousState != State.MAX) {
-            nowState = State.GENERAL;
-            topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, Second);
-            heightMini.startScroll(0, 0, width, height, Second);
-        }else{
-            nowState = State.MAX;
-            topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 , -(displayMetrics.widthPixels / 2), -(displayMetrics.heightPixels / 2) , Second);
-            heightMini.startScroll(0,0, displayMetrics.widthPixels,displayMetrics.heightPixels - getStatusBarHeight(), Second);
+    public void close(){
+        if(nowState != State.CLOSE) {
+            previousState = nowState;
+            nowState = State.CLOSE;
+            if (previousState == State.MAX) {
+                topMini.startScroll(0, 0, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, Second);
+                heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
+                        , -displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), Second);
+            } else if(previousState == State.GENERAL){
+                topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, Second);
+                heightMini.startScroll(width, height,
+                        -width, -height, Second);
+            }else if(previousState == State.MINI){
+                topMini.startScroll(wmlp.x, wmlp.y, displayMetrics.widthPixels / 2 - wmlp.x, displayMetrics.heightPixels / 2 - wmlp.y, Second);
+                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
+                        -winform.getLayoutParams().width, -winform.getLayoutParams().height, Second);
+            }
+            runUi.post(this);
         }
-        previousState = State.HIDE;
-        runUi.post(this);
+    }
+
+    /**
+     * 隱藏所有按鈕控制項
+     */
+    private void hideButtons(){
+        if((display_object & MENU_BUTTON) == MENU_BUTTON)
+            menu.setVisibility(View.GONE);
+        else
+            title.setPadding(0,0,0,0);
+        close_button.setVisibility(View.GONE);
+        if((display_object & MINI_BUTTON) == MINI_BUTTON)
+            mini.setVisibility(View.GONE);
+        if((display_object & MAX_BUTTON) == MAX_BUTTON)
+            max.setVisibility(View.GONE);
+        if((display_object & HIDE_BUTTON) == HIDE_BUTTON)
+            hide.setVisibility(View.GONE);
+        if((display_object & SIZE_BAR) == SIZE_BAR)
+            sizeBar.setVisibility(View.GONE);
+    }
+
+    /**
+     * 顯示所有按鈕控制項
+     */
+    private void recoveryButtons(){
+        if((display_object & MENU_BUTTON) == MENU_BUTTON)
+            menu.setVisibility(View.VISIBLE);
+        else
+            title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
+        close_button.setVisibility(View.VISIBLE);
+        if((display_object & MINI_BUTTON) == MINI_BUTTON)
+            mini.setVisibility(View.VISIBLE);
+        if((display_object & MAX_BUTTON) == MAX_BUTTON)
+            max.setVisibility(View.VISIBLE);
+        if((display_object & HIDE_BUTTON) == HIDE_BUTTON)
+            hide.setVisibility(View.VISIBLE);
+        if((display_object & SIZE_BAR) == SIZE_BAR)
+            sizeBar.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -880,14 +909,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      */
     public void focusAndShowWindow(){
         focusWindow();
-        switch (nowState){
-            case MINI:
-                reSize();
-                break;
-            case HIDE:
-                unHide();
-                break;
-        }
+        if(nowState == State.MINI || nowState == State.HIDE)
+            if(previousState != null && previousState == State.MAX)
+                max();
+            else
+                general();
     }
 
     /**
