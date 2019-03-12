@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_weight="1"
+        android:layout_margin="15dp"
         app:srcCompat="@drawable/icom" />
 
     <LinearLayout
@@ -20,30 +18,28 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="FloatWindow"
-            android:textSize="18sp"
-            android:textStyle="bold"
             android:shadowColor="#cefffefe"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="15" />
+            android:shadowRadius="15"
+            android:text="FloatWindow"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView5"
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="版本:1.0.4"
+            android:gravity="center_horizontal"
             android:shadowColor="#cefffefe"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="15" />
+            android:shadowRadius="15"
+            android:text="版本:1.1.0" />
     </LinearLayout>
 
 </LinearLayout>

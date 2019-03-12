@@ -250,8 +250,8 @@ public class Setup extends AppCompatActivity {
                         new String[]{"關於"},
                         60,
                         60,
-                        280,
-                        480,
+                        (int)(110*this.getResources().getDisplayMetrics().density),
+                        (int)(195*this.getResources().getDisplayMetrics().density),
                         WindowStruct.MINI_BUTTON,
                         new WindowStruct.WindowAction() {
                             @Override
