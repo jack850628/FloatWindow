@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:padding="15dip"
@@ -19,18 +19,10 @@
         android:textColor="#313131"
         android:textSize="18sp" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:background="#7dff0000"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/close"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/close_window" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/close_window" />
 
 </LinearLayout>

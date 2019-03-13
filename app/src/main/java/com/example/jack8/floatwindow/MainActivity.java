@@ -31,9 +31,11 @@ public class MainActivity extends AppCompatActivity {
         else if(extra_intent.getDataString() != null)//呼叫瀏覽器的的啟動方式
             url = extra_intent.getDataString();
         if(url == null) {
+            intent.putExtra("intent",FloatServer.OPEN_FLOAT_WINDOW);
             intent.putExtra("Layouts", new int[]{R.layout.webpage, R.layout.note_page, R.layout.window_context, R.layout.window_conetxt2});
             intent.putExtra("Titles", new String[]{"網頁瀏覽器", "便條紙", "溫度轉換", "BMI轉換"});
         }else{
+            intent.putExtra("intent",FloatServer.OPEN_EXTRA_URL);
             intent.putExtra("Layouts", new int[]{R.layout.webpage, R.layout.note_page});
             intent.putExtra("Titles", new String[]{"網頁瀏覽器", "便條紙"});
             intent.putExtra("extra_url",url);
