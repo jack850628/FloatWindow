@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -56,7 +57,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
     private TextView title;
     private String[] windowTitle;
 
-    private Handler runUi= new Handler();
+    private Handler runUi= new Handler(Looper.getMainLooper());
 
     private DisplayMetrics displayMetrics;
 
