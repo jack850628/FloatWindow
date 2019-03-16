@@ -740,6 +740,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      */
     public void max(){
         if(nowState != State.MAX) {
+            wmlp.flags = FOCUS_FLAGE;
+            wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
             nowState = State.MAX;
             if (previousState == State.GENERAL) {
@@ -773,6 +775,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      */
     public void general(){
         if(nowState != State.GENERAL){
+            wmlp.flags = FOCUS_FLAGE;
+            wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
             nowState = State.GENERAL;
             if(previousState == State.MAX) {
