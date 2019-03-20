@@ -661,10 +661,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 }
                 break;
             case R.id.title://還原視窗大小
-                if(previousState != null && previousState == State.MAX)
-                    max();
-                else
-                    general();
+                if(nowState == State.MINI) {
+                    if (previousState != null && previousState == State.MAX)
+                        max();
+                    else
+                        general();
+                }
                 break;
             case R.id.close_button://關閉視窗
                 close();
