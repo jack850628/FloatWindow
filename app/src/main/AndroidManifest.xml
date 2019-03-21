@@ -11,11 +11,6 @@
         android:roundIcon="@drawable/icom"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:enabled="true" android:name=".ScreenChangeListener">
-            <intent-filter>
-                <action android:name="android.intent.action.CONFIGURATION_CHANGED"/>
-            </intent-filter>
-        </receiver>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -15,8 +15,11 @@ import java.util.Map;
  */
 public class ScreenChangeListener extends BroadcastReceiver {
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
-    HashMap<Integer,WindowStruct> windowList;
-    public  ScreenChangeListener(){
+    private static final ScreenChangeListener instance = new ScreenChangeListener();
+
+    private HashMap<Integer,WindowStruct> windowList;
+
+    private  ScreenChangeListener(){
         try {//用反射取得所有視窗清單
             Field field = WindowStruct.class.getDeclaredField("windowList");
             field.setAccessible(true);
@@ -27,6 +30,11 @@ public class ScreenChangeListener extends BroadcastReceiver {
             e.printStackTrace();
         }
     }
+
+    public static ScreenChangeListener getInstance(){
+        return instance;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if(intent.getAction().equals(BCAST_CONFIGCHANGED)) {
