@@ -1,9 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/tools_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="#B1B1B1"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/copy"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_weight="0"
+            android:padding="10dp"
+            android:src="@drawable/copy" />
+
+        <ImageView
+            android:id="@+id/paste"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_weight="0"
+            android:padding="10dp"
+            android:src="@drawable/paste" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"></LinearLayout>
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_weight="0"
+            android:padding="5dp"
+            android:src="@drawable/close_window" />
+
+    </LinearLayout>
 
     <EditText
         android:id="@+id/note"
@@ -13,9 +55,9 @@
         android:gravity="top|left"
         android:inputType="textMultiLine"
         android:overScrollMode="always"
-        android:scrollHorizontally="false"
         android:scrollbarStyle="insideInset"
         android:scrollbars="vertical"
+        android:scrollHorizontally="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000000"/>
+        android:textColor="#000000" />
 </LinearLayout>

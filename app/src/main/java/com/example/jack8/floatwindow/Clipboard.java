@@ -28,6 +28,8 @@ public class Clipboard {
         if(android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
             android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             StringBuffer sb = new StringBuffer();
+            if(clipboard.getPrimaryClip() == null)
+                return "";
             for(int i = 0; i < clipboard.getPrimaryClip().getItemCount(); i++){
                 sb.append(clipboard.getPrimaryClip().getItemAt(i).getText());
             }

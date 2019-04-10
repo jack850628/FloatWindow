@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -354,7 +355,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
     Date dNow = new Date();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
     public void initWindow_Note_Page(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
-        EditText note=(EditText) pageView.findViewById(R.id.note);
+        final EditText note=(EditText) pageView.findViewById(R.id.note);
         note.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -382,6 +383,37 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 }
             }
         });
+
+        final View toolsBar = pageView.findViewById(R.id.tools_bar);
+        final Clipboard clipboard=new Clipboard(context);
+        final ImageView copy = toolsBar.findViewById(R.id.copy);
+        final ImageView paste = toolsBar.findViewById(R.id.paste);
+        final ImageView close = toolsBar.findViewById(R.id.close);
+        note.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                toolsBar.setVisibility(View.VISIBLE);
+                return true;
+            }
+        });
+        View.OnClickListener copy_paste = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.copy:
+                        clipboard.copyToClipboard(note.getText().toString());
+                        Toast.makeText(context,"以複製到剪貼簿",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.paste:
+                        note.setText(note.getText()+clipboard.copyFromClipboard());
+                }
+                toolsBar.setVisibility(View.GONE);
+            }
+        };
+        copy.setOnClickListener(copy_paste);
+        paste.setOnClickListener(copy_paste);
+        close.setOnClickListener(copy_paste);
+
         final String NOTE="Note";
         noteSpf=context.getSharedPreferences(NOTE,0);
         if(args == null || args.length == 0) {
