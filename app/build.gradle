@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId "com.example.jack8.floatwindow"
+        applicationId "com.jack850628.floatwindow"
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
