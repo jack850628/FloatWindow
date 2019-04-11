@@ -1,4 +1,4 @@
-![Alt text](master/app/src/main/res/drawable/icom.png)
+![Alt text](app/src/main/res/drawable/icom.png)
 # FloatWindow 浮動視窗
 Float Window app for Android\
 ![Alt text](https://raw.githubusercontent.com/jack850628/FloatWindow/master/Demonstration.png)
