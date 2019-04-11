@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -7,30 +7,38 @@
 
     <EditText
         android:id="@+id/Temperature"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:ems="10"
-        android:hint="溫度"
+        android:hint="@string/temperature"
         android:inputType="numberDecimal"
         android:textColor="#000000"
-        android:textColorHint="#AAAAAA"/>
+        android:textColorHint="#AAAAAA" />
 
-    <Button
-        android:id="@+id/toF"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/Temperature"
-        android:text="轉華氏" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/toC"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/Temperature"
-        android:text="轉攝氏" />
-</RelativeLayout>
+        <Button
+            android:id="@+id/toC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/conversion_to_celsius" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"></LinearLayout>
+
+        <Button
+            android:id="@+id/toF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/conversion_to_fah" />
+    </LinearLayout>
+
+</LinearLayout>

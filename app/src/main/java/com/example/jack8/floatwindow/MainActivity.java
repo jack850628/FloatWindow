@@ -33,11 +33,11 @@ public class MainActivity extends AppCompatActivity {
         if(url == null) {
             intent.putExtra("intent",FloatServer.OPEN_FLOAT_WINDOW);
             intent.putExtra("Layouts", new int[]{R.layout.webpage, R.layout.note_page, R.layout.window_context, R.layout.window_conetxt2});
-            intent.putExtra("Titles", new String[]{"網頁瀏覽器", "便條紙", "溫度轉換", "BMI轉換"});
+            intent.putExtra("Titles", new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.note), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)});
         }else{
             intent.putExtra("intent",FloatServer.OPEN_EXTRA_URL);
             intent.putExtra("Layouts", new int[]{R.layout.webpage, R.layout.note_page});
-            intent.putExtra("Titles", new String[]{"網頁瀏覽器", "便條紙"});
+            intent.putExtra("Titles", new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.note)});
             intent.putExtra("extra_url",url);
         }
 

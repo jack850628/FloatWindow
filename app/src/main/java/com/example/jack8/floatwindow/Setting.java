@@ -24,7 +24,7 @@ import net.margaritov.preference.colorpicker.ColorPickerDialog;
 
 import java.util.ArrayList;
 
-public class Setup extends AppCompatActivity {
+public class Setting extends AppCompatActivity {
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
@@ -33,13 +33,13 @@ public class Setup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.setup);
+        setContentView(R.layout.setting);
         wColor=new WindowColor(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
             getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
-        setTitle("浮動視窗設定");
+        setTitle(getString(R.string.float_window_setting));
 
         secondSet=(SeekBar) findViewById(R.id.secondSet);
         secondSet.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -64,12 +64,12 @@ public class Setup extends AppCompatActivity {
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
         TextView windowColorSetTitle=new TextView(this);
-        windowColorSetTitle.setText("視窗顏色:");
+        windowColorSetTitle.setText(getString(R.string.window_color));
         windowColorSetTitle.setTextSize(20f);
         content.addView(windowColorSetTitle);
         content.addView(FoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
         TextView windowNotFoucsColorNotFoucsSetTitle=new TextView(this);
-        windowNotFoucsColorNotFoucsSetTitle.setText("視窗失焦顏色:");
+        windowNotFoucsColorNotFoucsSetTitle.setText(getString(R.string.window_out_of_focus_color));
         windowNotFoucsColorNotFoucsSetTitle.setTextSize(20f);
         content.addView(windowNotFoucsColorNotFoucsSetTitle);
         content.addView(NotFoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
@@ -77,7 +77,7 @@ public class Setup extends AppCompatActivity {
 
         //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
-        prompt.setText("點選視窗設定顏色");
+        prompt.setText(getString(R.string.select_window_color));
         prompt.setTextSize(15f);
         ((ViewGroup) FoucsWindow.findViewById(R.id.wincon)).addView(prompt);
 
@@ -96,11 +96,11 @@ public class Setup extends AppCompatActivity {
         FoucsWindow.findViewById(R.id.menu).setOnClickListener(setColor);
         FoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColor);
         closeButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.close_button_background);
-        ((TextView)FoucsWindow.findViewById(R.id.title)).setText("視窗標題");
+        ((TextView)FoucsWindow.findViewById(R.id.title)).setText(getString(R.string.window_title));
         //---------------------------------------------------------------------------
         //-------------------------初始化失焦視窗設定畫面----------------------------
         TextView promptNotFoucs=new TextView(this);
-        promptNotFoucs.setText("點選視窗設定失焦顏色");
+        promptNotFoucs.setText(getString(R.string.select_window_out_of_focus_color));
         promptNotFoucs.setTextSize(15f);
         ((ViewGroup) NotFoucsWindow.findViewById(R.id.wincon)).addView(promptNotFoucs);
 
@@ -119,7 +119,7 @@ public class Setup extends AppCompatActivity {
         NotFoucsWindow.findViewById(R.id.menu).setOnClickListener(setColorForNotFoucs);
         NotFoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColorForNotFoucs);
         closeButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.close_button_background);
-        ((TextView)NotFoucsWindow.findViewById(R.id.title)).setText("視窗標題");
+        ((TextView)NotFoucsWindow.findViewById(R.id.title)).setText(getString(R.string.window_title));
 
         microMaxButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         titleBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
@@ -138,8 +138,8 @@ public class Setup extends AppCompatActivity {
                 case R.id.title_bar:
                 case R.id.size:
                 case R.id.menu:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getTitleBar());
-                    dialog.setTitle("選擇顏色");
+                    dialog = new ColorPickerDialog(Setting.this, wColor.getTitleBar());
+                    dialog.setTitle(getString(R.string.select_color));
                     dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
                         @Override
                         public void onColorChanged(int color) {
@@ -156,8 +156,8 @@ public class Setup extends AppCompatActivity {
                 case R.id.hide:
                 case R.id.max:
                 case R.id.mini:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getMicroMaxButtonBackground());
-                    dialog.setTitle("選擇顏色");
+                    dialog = new ColorPickerDialog(Setting.this, wColor.getMicroMaxButtonBackground());
+                    dialog.setTitle(getString(R.string.select_color));
                     dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
                         @Override
                         public void onColorChanged(int color) {
@@ -167,8 +167,8 @@ public class Setup extends AppCompatActivity {
                     });
                     break;
                 case R.id.close_button:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getCloseButtonBackground());
-                    dialog.setTitle("選擇顏色");
+                    dialog = new ColorPickerDialog(Setting.this, wColor.getCloseButtonBackground());
+                    dialog.setTitle(getString(R.string.select_color));
                     dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
                         @Override
                         public void onColorChanged(int color) {
@@ -178,8 +178,8 @@ public class Setup extends AppCompatActivity {
                     });
                     break;
                 case R.id.menu_list_and_context:
-                    dialog = new ColorPickerDialog(Setup.this, wColor.getWindowBackground());
-                    dialog.setTitle("選擇顏色");
+                    dialog = new ColorPickerDialog(Setting.this, wColor.getWindowBackground());
+                    dialog.setTitle(getString(R.string.select_color));
                     dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
                         @Override
                         public void onColorChanged(int color) {
@@ -197,8 +197,8 @@ public class Setup extends AppCompatActivity {
     View.OnClickListener setColorForNotFoucs=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ColorPickerDialog dialog = new ColorPickerDialog(Setup.this, wColor.getWindowNotFoucs());
-            dialog.setTitle("選擇顏色");
+            ColorPickerDialog dialog = new ColorPickerDialog(Setting.this, wColor.getWindowNotFoucs());
+            dialog.setTitle(getString(R.string.select_color));
             dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
                 @Override
                 public void onColorChanged(int color) {
@@ -217,7 +217,7 @@ public class Setup extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(v.getId()==R.id.ok) {
-                WindowConfig.setWindowSpeed(Setup.this,secondSet.getProgress());
+                WindowConfig.setWindowSpeed(Setting.this,secondSet.getProgress());
                 wColor.save();
             }
             finish();
@@ -233,7 +233,7 @@ public class Setup extends AppCompatActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0,0,0,"關於");
+        menu.add(0,0,0,getString(R.string.about));
         return true;
     }
     @Override
@@ -247,7 +247,7 @@ public class Setup extends AppCompatActivity {
                         this,
                         (WindowManager) getSystemService(Context.WINDOW_SERVICE),
                         new int[]{R.layout.about},
-                        new String[]{"關於"},
+                        new String[]{getString(R.string.about)},
                         60,
                         60,
                         (int)(110*this.getResources().getDisplayMetrics().density),

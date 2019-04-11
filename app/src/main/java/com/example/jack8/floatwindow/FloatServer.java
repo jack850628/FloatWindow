@@ -44,7 +44,7 @@ public class FloatServer extends Service {
     WindowManager wm;
     Notification NF;
     final int NOTIFY_ID=851262;
-    final String NOTIFY_CHANNEL_ID = "浮動視窗";
+    final String NOTIFY_CHANNEL_ID = "FloatWindow";
     int wm_count=0;//計算FloatServer總共開了多少次
     HashMap<Integer,WindowStruct> windowList;
     WindowStruct windowManager = null;//視窗管理員
@@ -70,7 +70,7 @@ public class FloatServer extends Service {
         super.onCreate();
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 
-        Intent toSetup = new Intent(this,Setup.class);
+        Intent toSetup = new Intent(this, Setting.class);
 
         Intent showWindowManager = new Intent(this,FloatServer.class);
         showWindowManager.putExtra("intent",SHOW_WINDOW_MANAGER);
@@ -81,24 +81,24 @@ public class FloatServer extends Service {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             NotificationCompat.Builder NFB = new NotificationCompat.Builder(this);
             NFB.setSmallIcon(R.drawable.mini_window).
-                    setContentTitle("浮動視窗").
-                    addAction(new NotificationCompat.Action.Builder(R.drawable.settings, "設定", PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    addAction(new NotificationCompat.Action.Builder(R.drawable.menu, "所有視窗清單", PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    setContentText("浮動視窗已啟用");
+                    setContentTitle(getString(R.string.app_name)).
+                    addAction(new NotificationCompat.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    addAction(new NotificationCompat.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    setContentText(getString(R.string.float_window_enabled));
             NFB.setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }else{
-            NotificationChannel NC = new NotificationChannel(NOTIFY_CHANNEL_ID,"浮動視窗",NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel NC = new NotificationChannel(NOTIFY_CHANNEL_ID,getString(R.string.app_name),NotificationManager.IMPORTANCE_HIGH);
             NC.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             ((NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(NC);
 
             Notification.Builder NFB = new Notification.Builder(this,NOTIFY_CHANNEL_ID);
             NFB.setSmallIcon(R.drawable.mini_window).
-                    setContentTitle("浮動視窗").
-                    addAction(new Notification.Action.Builder(R.drawable.settings, "設定", PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    addAction(new Notification.Action.Builder(R.drawable.menu, "所有視窗清單", PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    setContentText("浮動視窗已啟用");
+                    setContentTitle(getString(R.string.app_name)).
+                    addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    setContentText(getString(R.string.float_window_enabled));
             NFB.setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
@@ -138,7 +138,7 @@ public class FloatServer extends Service {
                 ListView menu_list = new ListView(this);
                 menu_list.setId(0);
                 menu_list.setAdapter(new ArrayAdapter<String>(this,R.layout.hide_menu_item,R.id.item_text,titles));
-                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{"要使用哪個頁面開啟?"}, new Object[][]{new Object[]{layouts,titles,extra_url}},60,60,(int)(getResources().getDisplayMetrics().density*70*layouts.length),(int)(getResources().getDisplayMetrics().density*200),WindowStruct.ALL_NOT_DISPLAY, windowAction, new ProcessShare(wm,windowAction));
+                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{getString(R.string.open_page_of)}, new Object[][]{new Object[]{layouts,titles,extra_url}},60,60,(int)(getResources().getDisplayMetrics().density*70*layouts.length),(int)(getResources().getDisplayMetrics().density*200),WindowStruct.ALL_NOT_DISPLAY, windowAction, new ProcessShare(wm,windowAction));
             }
         }else{
             //---------------------收起下拉選單-----------------------------
@@ -158,7 +158,7 @@ public class FloatServer extends Service {
             //-----------------------------------------------------------------------
             if(intent.getIntExtra("intent",-1) == SHOW_FLOAT_WINDOW_MENU){
                 ListView menuView = new ListView(this);
-                menuView.setAdapter(new ArrayAdapter<String>(FloatServer.this,R.layout.hide_menu_item,R.id.item_text,new String[]{"設定","所有視窗清單"}));
+                menuView.setAdapter(new ArrayAdapter<String>(FloatServer.this,R.layout.hide_menu_item,R.id.item_text,new String[]{getString(R.string.setting),getString(R.string.windows_list)}));
                 if(menu!=null)
                     menu.focusAndShowWindow();
                 else {
@@ -167,7 +167,7 @@ public class FloatServer extends Service {
                             this,
                             wm,
                             new View[]{menuView},
-                            new String[]{getResources().getString(R.string.app_name)},
+                            new String[]{getString(R.string.app_name)},
                             60,
                             60,
                             (int) (140 * this.getResources().getDisplayMetrics().density),
@@ -202,7 +202,7 @@ public class FloatServer extends Service {
                             menu.close();
                             switch (position) {
                                 case 0:
-                                    Intent intent = new Intent(FloatServer.this, Setup.class);
+                                    Intent intent = new Intent(FloatServer.this, Setting.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
                                     break;
@@ -238,7 +238,7 @@ public class FloatServer extends Service {
                     this,
                     wm,
                     new View[]{hideMenu},
-                    new String[]{"所有視窗清單"},
+                    new String[]{getString(R.string.windows_list)},
                     60,
                     60,
                     (int) (200 * this.getResources().getDisplayMetrics().density),

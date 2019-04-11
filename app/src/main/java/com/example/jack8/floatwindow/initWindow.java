@@ -113,8 +113,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         web.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message,final JsResult result) {
-                AlertDialog Alert=new AlertDialog.Builder(context).setTitle("網頁訊息").setMessage(message).
-                        setPositiveButton("確認", new DialogInterface.OnClickListener() {
+                AlertDialog Alert=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
+                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 result.confirm();
@@ -135,13 +135,13 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
             @Override
             public boolean onJsConfirm(WebView view, String url, String message,final JsResult result) {
-                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle("網頁訊息").setMessage(message).
-                        setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
+                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 result.confirm();
                             }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.cancel();
@@ -163,12 +163,12 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 final EditText editText=new EditText(context);
                 editText.setText(defaultValue);
                 AlertDialog Prompt=new AlertDialog.Builder(context).setTitle(message).setView(editText).
-                        setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 result.confirm(editText.getText().toString());
                             }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.cancel();
@@ -238,7 +238,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     final AlertDialog alertDialog=new AlertDialog.Builder(context).setView(listView).create();
                     alertDialog.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                     alertDialog.show();
-                    listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"開啟連結","在新的視窗開啟連結","複製連結網址"}));
+                    listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.open_link),context.getString(R.string.open_link_in_new_window),context.getString(R.string.copy_link)}));
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -250,7 +250,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     try {
                                         Field field = windowStruct.getClass().getDeclaredField("windowAction");
                                         field.setAccessible(true);
-                                        new WindowStruct(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE), new int[]{R.layout.webpage}, new String[]{"網頁瀏覽器"} ,new Object[][]{new String[]{result.getExtra()}} ,(WindowStruct.WindowAction) field.get(windowStruct), new WindowStruct.constructionAndDeconstructionWindow() {
+                                        new WindowStruct(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE), new int[]{R.layout.webpage}, new String[]{context.getString(R.string.web_browser)} ,new Object[][]{new String[]{result.getExtra()}} ,(WindowStruct.WindowAction) field.get(windowStruct), new WindowStruct.constructionAndDeconstructionWindow() {
                                             @Override
                                             public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
                                                 initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
@@ -271,7 +271,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     break;
                                 case 2:
                                     clipboard.copyToClipboard(result.getExtra());
-                                    Toast.makeText(context,"以複製到剪貼簿",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context,context.getString(R.string.copyed),Toast.LENGTH_SHORT).show();
                                     break;
                             }
                             alertDialog.dismiss();
@@ -314,7 +314,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{"分享此網頁","用其他瀏覽器開啟此網頁"}));
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
                 final AlertDialog menu = new AlertDialog.Builder(context).setView(menu_list).create();
                 menu.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                 menu.show();
@@ -326,7 +326,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
-                                Intent chooser = Intent.createChooser(sendIntent, "選擇APP");
+                                Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_APP));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
                                     context.startActivity(chooser);
@@ -335,7 +335,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                             }
                             case 1: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
-                                Intent chooser = Intent.createChooser(sendIntent, "選擇瀏覽器");
+                                Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
                                     context.startActivity(chooser);
@@ -402,7 +402,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 switch (v.getId()){
                     case R.id.copy:
                         clipboard.copyToClipboard(note.getText().toString());
-                        Toast.makeText(context,"以複製到剪貼簿",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,context.getString(R.string.copyed),Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.paste:
                         note.setText(note.getText()+clipboard.copyFromClipboard());

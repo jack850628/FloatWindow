@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">浮動視窗</string>
+    <string name="version">版本:1.1.0"</string>
+
+    <string name="web_browser">網頁瀏覽器</string>
+    <string name="note">便條紙</string>
+    <string name="temperature_conversion">溫度轉換</string>
+    <string name="BMI_conversion">BMI轉換</string>
+    <string name="setting">設定</string>
+    <string name="windows_list">所有視窗清單</string>
+    <string name="float_window_enabled">浮動視窗已啟用</string>
+    <string name="open_page_of">要使用哪個頁面開啟?</string>
+    <string name="web_say">網頁訊息</string>
+    <string name="confirm">確認</string>
+    <string name="cancel">取消</string>
+    <string name="open_link">開啟連結</string>
+    <string name="open_link_in_new_window">在新的視窗開啟連結</string>
+    <string name="copy_link">複製連結網址</string>
+    <string name="copyed">以複製到剪貼簿</string>
+    <string name="share_the_website">分享此網頁</string>
+    <string name="open_to_other_browser">用其他瀏覽器開啟此網頁</string>
+    <string name="select_APP">選擇APP</string>
+    <string name="select_browser">選擇瀏覽器</string>
+    <string name="temperature">溫度</string>
+    <string name="conversion_to_fah">轉華氏</string>
+    <string name="conversion_to_celsius">轉攝氏</string>
+    <string name="height">身高</string>
+    <string name="cm">公分</string>
+    <string name="weight">體重</string>
+    <string name="kg">公斤</string>
+    <string name="conversion">轉換</string>
+
+    <string name="window_animation_speed_sec">視窗動畫速度(秒):</string>
+    <string name="float_window_setting">浮動視窗設定</string>
+    <string name="window_color">視窗顏色:</string>
+    <string name="window_out_of_focus_color">視窗失焦顏色</string>
+    <string name="select_window_color">點選視窗設定顏色</string>
+    <string name="window_title">視窗標題</string>
+    <string name="select_window_out_of_focus_color">點選視窗設定失焦顏色</string>
+    <string name="select_color">選擇顏色</string>
+    <string name="about">關於</string>
+</resources>

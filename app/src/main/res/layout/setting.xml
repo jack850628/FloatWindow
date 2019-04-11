@@ -19,7 +19,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="視窗動畫速度(秒):" />
+                android:text="@string/window_animation_speed_sec" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="bottom"
-            android:text="確定" />
+            android:text="@string/confirm" />
 
         <Button
             android:id="@+id/no"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="bottom"
-            android:text="取消" />
+            android:text="@string/cancel" />
     </LinearLayout>
 
 </LinearLayout>
