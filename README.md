@@ -3,8 +3,7 @@
 Float Window app for Android\
 ![Alt text](https://raw.githubusercontent.com/jack850628/FloatWindow/master/Demonstration.png)
 \
-apk file\
- https://drive.google.com/file/d/1h-H6LNTVHNRi-uIEOjVuZuMNF-UZ88KP/view?usp=sharing \
+[<img src="https://raw.githubusercontent.com/jack850628/FloatWindow/master/google_play.png" width="200"></img>](https://play.google.com/store/apps/details?id=com.jack850628.floatwindow)
  \
 *Demonstration*\
   https://youtu.be/PzKY2Lm5T8A \
