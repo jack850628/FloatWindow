@@ -11,6 +11,12 @@
         android:roundIcon="@drawable/icom"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--=======================廣告ID============================-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4604853118314154~2222092369"/>
+        <!--=========================================================-->
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

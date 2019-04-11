@@ -19,12 +19,17 @@ import com.example.jack8.floatwindow.Window.WindowColor;
 import com.example.jack8.floatwindow.Window.WindowConfig;
 import com.example.jack8.floatwindow.Window.WindowFrom;
 import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
 
 import java.util.ArrayList;
 
 public class Setting extends AppCompatActivity {
+    private AdView mAdView;
+
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
@@ -34,6 +39,14 @@ public class Setting extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
+
+        MobileAds.initialize(this, "ca-app-pub-4604853118314154~2222092369");
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                .build();
+        mAdView.loadAd(adRequest);
+
         wColor=new WindowColor(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
