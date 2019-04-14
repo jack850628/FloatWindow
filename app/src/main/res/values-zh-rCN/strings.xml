@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="app_name">浮动视窗</string>
-        <string name="version">版本:1.1.0"</string>
+        <string name="version">版本:1.1.1"</string>
 
         <string name="web_browser">网页浏览器</string>
         <string name="note">便条纸</string>

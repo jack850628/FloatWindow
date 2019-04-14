@@ -132,13 +132,35 @@ public class FloatServer extends Service {
             wm_count++;
             String[] titles = intent.getExtras().getStringArray("Titles");
             if(intent.getIntExtra("intent",-1) == OPEN_FLOAT_WINDOW)
-                new WindowStruct(this, wm, layouts, titles, new Object[layouts.length][0], windowAction,new initWindow());
+                new WindowStruct.Builder(this,wm)
+                        .windowPages(layouts)
+                        .windowPageTitles(titles)
+                        .windowInitArgs(new Object[layouts.length][0])
+                        .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
+                        .animation(WindowAnimationSecond.getWindowAnimation(this))
+                        .windowAction(windowAction)
+                        .constructionAndDeconstructionWindow(new initWindow())
+                        .show();
+                //new WindowStruct(this, wm, layouts, titles, new Object[layouts.length][0], windowAction,new initWindow());
             else{
                 String extra_url = intent.getStringExtra("extra_url");
                 ListView menu_list = new ListView(this);
                 menu_list.setId(0);
                 menu_list.setAdapter(new ArrayAdapter<String>(this,R.layout.hide_menu_item,R.id.item_text,titles));
-                new WindowStruct(this, wm, new View[]{menu_list}, new String[]{getString(R.string.open_page_of)}, new Object[][]{new Object[]{layouts,titles,extra_url}},60,60,(int)(getResources().getDisplayMetrics().density*70*layouts.length),(int)(getResources().getDisplayMetrics().density*200),WindowStruct.ALL_NOT_DISPLAY, windowAction, new ProcessShare(wm,windowAction));
+                new WindowStruct.Builder(this,wm)
+                        .windowPages(new View[]{menu_list})
+                        .windowPageTitles(new String[]{getString(R.string.open_page_of)})
+                        .windowInitArgs(new Object[][]{new Object[]{layouts,titles,extra_url}})
+                        .top(60)
+                        .left(60)
+                        .height((int)(getResources().getDisplayMetrics().density*70*layouts.length))
+                        .width((int)(getResources().getDisplayMetrics().density*200))
+                        .displayObject(WindowStruct.ALL_NOT_DISPLAY)
+                        .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
+                        .animation(WindowAnimationSecond.getWindowAnimation(this))
+                        .windowAction(windowAction)
+                        .constructionAndDeconstructionWindow(new ProcessShare(wm,windowAction))
+                        .show();
             }
         }else{
             //---------------------收起下拉選單-----------------------------
@@ -163,17 +185,17 @@ public class FloatServer extends Service {
                     menu.focusAndShowWindow();
                 else {
                     wm_count++;
-                    menu = new WindowStruct(
-                            this,
-                            wm,
-                            new View[]{menuView},
-                            new String[]{getString(R.string.app_name)},
-                            60,
-                            60,
-                            (int) (140 * this.getResources().getDisplayMetrics().density),
-                            (int) (200 * this.getResources().getDisplayMetrics().density),
-                            0,
-                            new WindowStruct.WindowAction() {
+                    menu = new WindowStruct.Builder(this, wm)
+                            .windowPages(new View[]{menuView})
+                            .windowPageTitles(new String[]{getString(R.string.app_name)})
+                            .top(60)
+                            .left(60)
+                            .height((int) (140 * this.getResources().getDisplayMetrics().density))
+                            .width((int) (200 * this.getResources().getDisplayMetrics().density))
+                            .displayObject(WindowStruct.ALL_NOT_DISPLAY)
+                            .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
+                            .animation(WindowAnimationSecond.getWindowAnimation(this))
+                            .windowAction(new WindowStruct.WindowAction() {
                                 @Override
                                 public void goHide(WindowStruct windowStruct) {
 
@@ -184,8 +206,8 @@ public class FloatServer extends Service {
                                     menu = null;
                                     windowAction.goClose(windowStruct);
                                 }
-                            },
-                            new WindowStruct.constructionAndDeconstructionWindow() {
+                            })
+                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                 @Override
                                 public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
 
@@ -195,7 +217,7 @@ public class FloatServer extends Service {
                                 public void Deconstruction(Context context, View pageView, int position) {
 
                                 }
-                            });
+                            }).show();
                     menuView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -234,17 +256,17 @@ public class FloatServer extends Service {
         });*/
         if(windowManager == null) {
             wm_count++;
-            windowManager = new WindowStruct(
-                    this,
-                    wm,
-                    new View[]{hideMenu},
-                    new String[]{getString(R.string.windows_list)},
-                    60,
-                    60,
-                    (int) (200 * this.getResources().getDisplayMetrics().density),
-                    (int) (195 * this.getResources().getDisplayMetrics().density),
-                    WindowStruct.SIZE_BAR,
-                    new WindowStruct.WindowAction() {
+            windowManager = new WindowStruct.Builder(this, wm)
+                    .windowPages(new View[]{hideMenu})
+                    .windowPageTitles(new String[]{getString(R.string.windows_list)})
+                    .top(60)
+                    .left(60)
+                    .height((int) (200 * this.getResources().getDisplayMetrics().density))
+                    .width((int) (195 * this.getResources().getDisplayMetrics().density))
+                    .displayObject(WindowStruct.SIZE_BAR)
+                    .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
+                    .animation(WindowAnimationSecond.getWindowAnimation(this))
+                    .windowAction(new WindowStruct.WindowAction() {
                         @Override
                         public void goHide(WindowStruct windowStruct) {
 
@@ -255,8 +277,8 @@ public class FloatServer extends Service {
                             windowManager = null;
                             windowAction.goClose(windowStruct);
                         }
-                    },
-                    new WindowStruct.constructionAndDeconstructionWindow() {
+                    })
+                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         @Override
                         public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
 
@@ -266,7 +288,7 @@ public class FloatServer extends Service {
                         public void Deconstruction(Context context, View pageView, int position) {
 
                         }
-                    });
+                    }).show();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
