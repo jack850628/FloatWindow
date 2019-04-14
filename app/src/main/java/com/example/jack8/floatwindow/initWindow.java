@@ -250,18 +250,25 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     try {
                                         Field field = windowStruct.getClass().getDeclaredField("windowAction");
                                         field.setAccessible(true);
-                                        new WindowStruct(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE), new int[]{R.layout.webpage}, new String[]{context.getString(R.string.web_browser)} ,new Object[][]{new String[]{result.getExtra()}} ,(WindowStruct.WindowAction) field.get(windowStruct), new WindowStruct.constructionAndDeconstructionWindow() {
-                                            @Override
-                                            public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
-                                            }
+                                        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                                .windowPages(new int[]{R.layout.webpage})
+                                                .windowPageTitles(new String[]{context.getString(R.string.web_browser)})
+                                                .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
+                                                .windowAction((WindowStruct.WindowAction) field.get(windowStruct))
+                                                .animationSecond(WindowAnimationSecond.getWindowSpeed(context))
+                                                .animation(WindowAnimationSecond.getWindowAnimation(context))
+                                                .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                                    @Override
+                                                    public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
+                                                        initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
+                                                    }
 
-                                            @Override
-                                            public void Deconstruction(Context context, View pageView, int position) {
-                                                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                                                    ((WebView)pageView.findViewById(R.id.web)).onPause();
-                                            }
-                                        });
+                                                    @Override
+                                                    public void Deconstruction(Context context, View pageView, int position) {
+                                                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                                                            ((WebView)pageView.findViewById(R.id.web)).onPause();
+                                                    }
+                                                }).show();
                                         ((FloatServer)context).wm_count++;
                                     } catch (NoSuchFieldException e) {
                                         e.printStackTrace();

@@ -33,7 +33,14 @@ public class ProcessShare extends initWindow {
                         window_content_view.setId(layouts[position]);//將id設定跟Resource id相同
                         String[] titles = (String[])args[1];
                         String[] _args = new String[]{(String)args[2]};
-                        new WindowStruct(context, wm, new View[]{window_content_view}, new String[]{titles[position]}, new Object[][]{_args}, wa, ProcessShare.this);
+                        new WindowStruct.Builder(context, wm)
+                                .windowPages(new View[]{window_content_view})
+                                .windowPageTitles(new String[]{titles[position]})
+                                .animationSecond(WindowAnimationSecond.getWindowSpeed(context))
+                                .animation(WindowAnimationSecond.getWindowAnimation(context))
+                                .windowInitArgs(new Object[][]{_args}).windowAction(wa)
+                                .constructionAndDeconstructionWindow(ProcessShare.this)
+                                .show();
                         ((FloatServer)context).wm_count++;
                         windowStruct.close();
                     }

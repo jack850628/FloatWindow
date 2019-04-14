@@ -12,7 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.jack8.floatwindow.Window.WindowColor;
@@ -33,6 +35,8 @@ public class Setting extends AppCompatActivity {
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
+    ViewGroup animationSpeetBar;
+    Switch animationSpeet;
     SeekBar secondSet;
     ArrayList<WindowStruct> windowList = new ArrayList<>();
     @Override
@@ -54,6 +58,7 @@ public class Setting extends AppCompatActivity {
             getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
         setTitle(getString(R.string.float_window_setting));
 
+        animationSpeetBar = findViewById(R.id.animation_speet_bar);
         secondSet=(SeekBar) findViewById(R.id.secondSet);
         secondSet.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView secondText=(TextView) findViewById(R.id.second);
@@ -72,7 +77,16 @@ public class Setting extends AppCompatActivity {
 
             }
         });
-        secondSet.setProgress(WindowConfig.getWindowSpeed(this));
+        secondSet.setProgress(WindowAnimationSecond.getWindowSpeed(this));
+        animationSpeet = findViewById(R.id.animation_switch);
+        animationSpeet.setChecked(WindowAnimationSecond.getWindowAnimation(this));
+        animationSpeet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                animationSpeetBar.setVisibility(isChecked?View.VISIBLE:View.GONE);
+            }
+        });
+        animationSpeetBar.setVisibility(animationSpeet.isChecked()?View.VISIBLE:View.GONE);
 
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
@@ -86,7 +100,7 @@ public class Setting extends AppCompatActivity {
         windowNotFoucsColorNotFoucsSetTitle.setTextSize(20f);
         content.addView(windowNotFoucsColorNotFoucsSetTitle);
         content.addView(NotFoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
-        ((WindowFrom)NotFoucsWindow).isStart=false;
+        ((WindowFrom)NotFoucsWindow).setWindowStyleOfFocus();
 
         //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
@@ -230,7 +244,8 @@ public class Setting extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(v.getId()==R.id.ok) {
-                WindowConfig.setWindowSpeed(Setting.this,secondSet.getProgress());
+                WindowAnimationSecond.setWindowSpeed(Setting.this,secondSet.getProgress());
+                WindowAnimationSecond.setWindowAnimation(Setting.this,animationSpeet.isChecked());
                 wColor.save();
             }
             finish();
@@ -256,17 +271,17 @@ public class Setting extends AppCompatActivity {
                 finish();
                 return true;
             case 0:
-                windowList.add(new WindowStruct(
-                        this,
-                        (WindowManager) getSystemService(Context.WINDOW_SERVICE),
-                        new int[]{R.layout.about},
-                        new String[]{getString(R.string.about)},
-                        60,
-                        60,
-                        (int)(110*this.getResources().getDisplayMetrics().density),
-                        (int)(195*this.getResources().getDisplayMetrics().density),
-                        WindowStruct.MINI_BUTTON,
-                        new WindowStruct.WindowAction() {
+                windowList.add(new WindowStruct.Builder(this,(WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                        .windowPages(new int[]{R.layout.about})
+                        .windowPageTitles(new String[]{getString(R.string.about)})
+                        .top(60)
+                        .left(60)
+                        .height((int)(110*this.getResources().getDisplayMetrics().density))
+                        .width((int)(195*this.getResources().getDisplayMetrics().density))
+                        .displayObject(WindowStruct.MINI_BUTTON)
+                        .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
+                        .animation(WindowAnimationSecond.getWindowAnimation(this))
+                        .windowAction(new WindowStruct.WindowAction() {
                             @Override
                             public void goHide(WindowStruct windowStruct) {
 
@@ -276,8 +291,8 @@ public class Setting extends AppCompatActivity {
                             public void goClose(WindowStruct windowStruct) {
                                 windowList.remove(windowStruct);
                             }
-                        },
-                        new WindowStruct.constructionAndDeconstructionWindow() {
+                        })
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
 
@@ -287,7 +302,7 @@ public class Setting extends AppCompatActivity {
                             public void Deconstruction(Context context, View pageView, int position) {
 
                             }
-                        }));
+                        }).show());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
