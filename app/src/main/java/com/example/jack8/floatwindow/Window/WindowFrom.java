@@ -40,7 +40,7 @@ public class WindowFrom extends LinearLayout {
         if(!inited){
             inited = true;
             if(WS != null) {
-                if(WindowStruct.NOW_FOCUS_NUMBER == WS.Number)//如果被觸碰的視窗編號不是現在焦點視窗編號
+                if(WindowStruct.NOW_FOCUS_NUMBER == WS.Number)//如果被觸碰的視窗編號是現在焦點視窗編號
                     setWindowStyleOfFocus();
                 else
                     setWindowStyleOfUnFocus();

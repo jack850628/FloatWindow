@@ -87,7 +87,6 @@ public class Setting extends AppCompatActivity {
         windowNotFoucsColorNotFoucsSetTitle.setTextSize(20f);
         content.addView(windowNotFoucsColorNotFoucsSetTitle);
         content.addView(NotFoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
-        ((WindowFrom)NotFoucsWindow).setWindowStyleOfFocus();
 
         //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
@@ -111,6 +110,11 @@ public class Setting extends AppCompatActivity {
         FoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColor);
         closeButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.close_button_background);
         ((TextView)FoucsWindow.findViewById(R.id.title)).setText(getString(R.string.window_title));
+
+        microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
+        titleBar.setBackgroundColor(wColor.getTitleBar());
+        sizeBar.setBackgroundColor(wColor.getSizeBar());
+        closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
         //---------------------------------------------------------------------------
         //-------------------------初始化失焦視窗設定畫面----------------------------
         TextView promptNotFoucs=new TextView(this);
