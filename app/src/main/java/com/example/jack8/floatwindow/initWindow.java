@@ -255,8 +255,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                 .windowPageTitles(new String[]{context.getString(R.string.web_browser)})
                                                 .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
                                                 .windowAction((WindowStruct.WindowAction) field.get(windowStruct))
-                                                .animationSecond(WindowAnimationSecond.getWindowSpeed(context))
-                                                .animation(WindowAnimationSecond.getWindowAnimation(context))
+                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                                 .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                                     @Override
                                                     public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {

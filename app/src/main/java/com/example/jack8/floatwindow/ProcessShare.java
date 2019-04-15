@@ -36,8 +36,7 @@ public class ProcessShare extends initWindow {
                         new WindowStruct.Builder(context, wm)
                                 .windowPages(new View[]{window_content_view})
                                 .windowPageTitles(new String[]{titles[position]})
-                                .animationSecond(WindowAnimationSecond.getWindowSpeed(context))
-                                .animation(WindowAnimationSecond.getWindowAnimation(context))
+                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                 .windowInitArgs(new Object[][]{_args}).windowAction(wa)
                                 .constructionAndDeconstructionWindow(ProcessShare.this)
                                 .show();

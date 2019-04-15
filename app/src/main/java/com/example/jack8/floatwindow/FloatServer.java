@@ -136,8 +136,7 @@ public class FloatServer extends Service {
                         .windowPages(layouts)
                         .windowPageTitles(titles)
                         .windowInitArgs(new Object[layouts.length][0])
-                        .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
-                        .animation(WindowAnimationSecond.getWindowAnimation(this))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new initWindow())
                         .show();
@@ -156,8 +155,7 @@ public class FloatServer extends Service {
                         .height((int)(getResources().getDisplayMetrics().density*70*layouts.length))
                         .width((int)(getResources().getDisplayMetrics().density*200))
                         .displayObject(WindowStruct.ALL_NOT_DISPLAY)
-                        .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
-                        .animation(WindowAnimationSecond.getWindowAnimation(this))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new ProcessShare(wm,windowAction))
                         .show();
@@ -193,8 +191,7 @@ public class FloatServer extends Service {
                             .height((int) (140 * this.getResources().getDisplayMetrics().density))
                             .width((int) (200 * this.getResources().getDisplayMetrics().density))
                             .displayObject(WindowStruct.ALL_NOT_DISPLAY)
-                            .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
-                            .animation(WindowAnimationSecond.getWindowAnimation(this))
+                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
                                 public void goHide(WindowStruct windowStruct) {
@@ -264,8 +261,7 @@ public class FloatServer extends Service {
                     .height((int) (200 * this.getResources().getDisplayMetrics().density))
                     .width((int) (195 * this.getResources().getDisplayMetrics().density))
                     .displayObject(WindowStruct.SIZE_BAR)
-                    .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
-                    .animation(WindowAnimationSecond.getWindowAnimation(this))
+                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override
                         public void goHide(WindowStruct windowStruct) {

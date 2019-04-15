@@ -18,7 +18,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.jack8.floatwindow.Window.WindowColor;
-import com.example.jack8.floatwindow.Window.WindowConfig;
 import com.example.jack8.floatwindow.Window.WindowFrom;
 import com.example.jack8.floatwindow.Window.WindowStruct;
 import com.google.android.gms.ads.AdRequest;
@@ -35,8 +34,6 @@ public class Setting extends AppCompatActivity {
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
-    ViewGroup animationSpeetBar;
-    Switch animationSpeet;
     SeekBar secondSet;
     ArrayList<WindowStruct> windowList = new ArrayList<>();
     @Override
@@ -58,7 +55,6 @@ public class Setting extends AppCompatActivity {
             getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
         setTitle(getString(R.string.float_window_setting));
 
-        animationSpeetBar = findViewById(R.id.animation_speet_bar);
         secondSet=(SeekBar) findViewById(R.id.secondSet);
         secondSet.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView secondText=(TextView) findViewById(R.id.second);
@@ -77,16 +73,7 @@ public class Setting extends AppCompatActivity {
 
             }
         });
-        secondSet.setProgress(WindowAnimationSecond.getWindowSpeed(this));
-        animationSpeet = findViewById(R.id.animation_switch);
-        animationSpeet.setChecked(WindowAnimationSecond.getWindowAnimation(this));
-        animationSpeet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                animationSpeetBar.setVisibility(isChecked?View.VISIBLE:View.GONE);
-            }
-        });
-        animationSpeetBar.setVisibility(animationSpeet.isChecked()?View.VISIBLE:View.GONE);
+        secondSet.setProgress(WindowTransitionsDuration.getWindowTransitionsDuration(this));
 
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
@@ -244,8 +231,7 @@ public class Setting extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(v.getId()==R.id.ok) {
-                WindowAnimationSecond.setWindowSpeed(Setting.this,secondSet.getProgress());
-                WindowAnimationSecond.setWindowAnimation(Setting.this,animationSpeet.isChecked());
+                WindowTransitionsDuration.setWindowTransitionsDuration(Setting.this,secondSet.getProgress());
                 wColor.save();
             }
             finish();
@@ -255,7 +241,7 @@ public class Setting extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         for(WindowStruct windowStruct:windowList) {
-            windowStruct.enableAnimation(false);
+            windowStruct.setTransitionsDuration(0);
             windowStruct.close();
         }
     }
@@ -279,8 +265,7 @@ public class Setting extends AppCompatActivity {
                         .height((int)(110*this.getResources().getDisplayMetrics().density))
                         .width((int)(195*this.getResources().getDisplayMetrics().density))
                         .displayObject(WindowStruct.MINI_BUTTON)
-                        .animationSecond(WindowAnimationSecond.getWindowSpeed(this))
-                        .animation(WindowAnimationSecond.getWindowAnimation(this))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(new WindowStruct.WindowAction() {
                             @Override
                             public void goHide(WindowStruct windowStruct) {
