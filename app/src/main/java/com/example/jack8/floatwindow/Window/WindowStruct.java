@@ -27,7 +27,7 @@ import com.example.jack8.floatwindow.R;
 import java.util.HashMap;
 
 
-public class WindowStruct implements View.OnClickListener,View.OnTouchListener,Runnable{
+public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private static int Index=0;//計算視窗開啟數量
     int Number;//視窗編號
     static int NOW_FOCUS_NUMBER=-1;//現在點視窗
@@ -355,7 +355,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         //---------------------------視窗開啟動畫------------------------------------------------------
         topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, transitionsDuration);
         heightMini.startScroll(0, 0, width, height, transitionsDuration);
-        runUi.post(this);
+        runUi.post(new runTransitions(nowState));
         //---------------------------------------------------------------------------------------------
     }
 
@@ -514,38 +514,46 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
         }
     }
 
-    @Override
-    public void run() {//放大縮小動畫
-        if(transitionsDuration == 0){
-            //abortAnimation可以使Scroller終止動畫跳過滾動過程直接給出最後數值
-            topMini.abortAnimation();
-            heightMini.abortAnimation();
-            wmlp.x = topMini.getCurrX();
-            wmlp.y = topMini.getCurrY();
-            winform.getLayoutParams().width = heightMini.getCurrX();
-            winform.getLayoutParams().height = heightMini.getCurrY();
-            wm.updateViewLayout(winform, wmlp);
+    private class runTransitions implements Runnable{//執行轉場動畫
+        private State state;
+
+        public runTransitions(State state){
+            this.state = state;
         }
-        if(!topMini.isFinished()||!heightMini.isFinished()) {
-            if (topMini.computeScrollOffset()) {
+
+        @Override
+        public void run() {
+            if (transitionsDuration == 0) {
+                //abortAnimation可以使Scroller終止動畫跳過滾動過程直接給出最後數值
+                topMini.abortAnimation();
+                heightMini.abortAnimation();
                 wmlp.x = topMini.getCurrX();
                 wmlp.y = topMini.getCurrY();
-            }
-            if (heightMini.computeScrollOffset()) {
                 winform.getLayoutParams().width = heightMini.getCurrX();
                 winform.getLayoutParams().height = heightMini.getCurrY();
+                wm.updateViewLayout(winform, wmlp);
             }
-            wm.updateViewLayout(winform, wmlp);
-            runUi.post(this);
-        }else if(nowState == State.HIDE){
-            wmlp.alpha = 0.0f;
-            wm.updateViewLayout(winform,wmlp);
-        }else if(nowState == State.CLOSE){
-            for(int i=0;i<winconPage.length;i++)
-                CDAW.Deconstruction(context,winconPage[i],i);
-            windowAction.goClose(this);
-            wm.removeView(winform);
-            windowList.remove(Number);
+            if (!topMini.isFinished() || !heightMini.isFinished()) {
+                if (topMini.computeScrollOffset()) {
+                    wmlp.x = topMini.getCurrX();
+                    wmlp.y = topMini.getCurrY();
+                }
+                if (heightMini.computeScrollOffset()) {
+                    winform.getLayoutParams().width = heightMini.getCurrX();
+                    winform.getLayoutParams().height = heightMini.getCurrY();
+                }
+                wm.updateViewLayout(winform, wmlp);
+                runUi.post(this);
+            } else if (state == State.HIDE) {
+                wmlp.alpha = 0.0f;
+                wm.updateViewLayout(winform, wmlp);
+            } else if (state == State.CLOSE) {
+                for (int i = 0; i < winconPage.length; i++)
+                    CDAW.Deconstruction(context, winconPage[i], i);
+                windowAction.goClose(WindowStruct.this);
+                wm.removeView(winform);
+                windowList.remove(Number);
+            }
         }
     }
 
@@ -553,7 +561,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗最小化
      */
     public void mini() {
-        if (nowState != State.MINI) {
+        if (nowState != State.CLOSE && nowState != State.MINI) {
+            if(!topMini.isFinished())
+                topMini.abortAnimation();
+            if(!heightMini.isFinished())
+                heightMini.abortAnimation();
             wmlp.flags = NO_FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
@@ -574,7 +586,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 heightMini.startScroll(0, 0, MINI_SIZE, title.getLayoutParams().height, transitionsDuration);
             }
             hideButtons();
-            runUi.post(this);
+            runUi.post(new runTransitions(nowState));
         }
     }
 
@@ -582,7 +594,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗最大化
      */
     public void max(){
-        if(nowState != State.MAX) {
+        if(nowState != State.CLOSE && nowState != State.MAX) {
+            if(!topMini.isFinished())
+                topMini.abortAnimation();
+            if(!heightMini.isFinished())
+                heightMini.abortAnimation();
             wmlp.flags = FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
@@ -610,7 +626,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
             }
             recoveryButtons();
             sizeBar.setVisibility(View.GONE);
-            runUi.post(this);
+            runUi.post(new runTransitions(nowState));
         }
     }
 
@@ -618,7 +634,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 還原視窗大小
      */
     public void general(){
-        if(nowState != State.GENERAL){
+        if(nowState != State.CLOSE && nowState != State.GENERAL){
+            if(!topMini.isFinished())
+                topMini.abortAnimation();
+            if(!heightMini.isFinished())
+                heightMini.abortAnimation();
             wmlp.flags = FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
@@ -644,7 +664,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 heightMini.startScroll(0, 0, width, height, transitionsDuration);
             }
             recoveryButtons();
-            runUi.post(this);
+            runUi.post(new runTransitions(nowState));
         }
     }
 
@@ -652,7 +672,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 視窗隱藏
      */
     public void hide(){
-        if(nowState != State.HIDE) {
+        if(nowState != State.CLOSE && nowState != State.HIDE) {
+            if(!topMini.isFinished())
+                topMini.abortAnimation();
+            if(!heightMini.isFinished())
+                heightMini.abortAnimation();
             wmlp.flags = NO_FOCUS_FLAGE;
             wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
@@ -671,7 +695,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
             }
             windowAction.goHide(this);
-            runUi.post(this);
+            runUi.post(new runTransitions(nowState));
         }
     }
 
@@ -680,6 +704,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      */
     public void close(){
         if(nowState != State.CLOSE) {
+            if(!topMini.isFinished())
+                topMini.abortAnimation();
+            if(!heightMini.isFinished())
+                heightMini.abortAnimation();
             previousState = nowState;
             nowState = State.CLOSE;
             if (previousState == State.MAX) {
@@ -695,7 +723,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
             }
-            runUi.post(this);
+            runUi.post(new runTransitions(nowState));
         }
     }
 
@@ -741,7 +769,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener,R
      * 讓該視窗獲得焦點
      */
     public void focusWindow(){
-        if(WindowStruct.NOW_FOCUS_NUMBER!=this.Number) {//如果被觸碰的視窗編號不是現在焦點視窗編號
+        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER != this.Number) {//如果被觸碰的視窗編號不是現在焦點視窗編號
             if (windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)) {//如果現在焦點視窗編號在有視窗清單裡
                 WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
                 if (WS.nowState != State.MINI)
