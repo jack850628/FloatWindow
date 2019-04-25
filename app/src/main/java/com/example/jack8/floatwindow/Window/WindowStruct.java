@@ -28,16 +28,16 @@ import java.util.HashMap;
 
 
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
-    private static int Index=0;//計算視窗開啟數量
+    private static int Index = 0;//計算視窗開啟數量
     int Number;//視窗編號
-    static int NOW_FOCUS_NUMBER=-1;//現在點視窗
+    static int NOW_FOCUS_NUMBER =- 1;//現在點視窗
     private int MINI_SIZE;//視窗最小化的寬度
     private final int TITLE_LIFT_TO_EDGE_DISTANCE = 20;
-    //static final int START_POINT=60;//視窗預設座標
-    private static int FOCUS_FLAGE=WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//上視窗超出螢幕
+    //static final int START_POINT = 60;//視窗預設座標
+    private static int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//上視窗超出螢幕
             |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
             ;
-    private static int NO_FOCUS_FLAGE=WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+    private static int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
     private int top,left,height,width;//視窗的座標及大小
 
@@ -50,10 +50,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private ViewGroup wincon;//視窗內容框
     private View[] winconPage;//視窗子頁面
     private int transitionsDuration;//動畫持續時間
-    private int currentWindowPagePosition=0;
+    private int currentWindowPagePosition = 0;
     private Scroller topMini,heightMini;
     private Button menu,close_button,mini,max,hide;
-    private LinearLayout sizeBar;
+    private LinearLayout sizeBar,titleBarAndButtons;
     private TextView title;
     private String[] windowTitle;
 
@@ -65,19 +65,20 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
     //------------可隱藏或顯示的控制項物件------------------
     private int display_object;
-    public final static int ALL_NOT_DISPLAY = 0x00;
-    public final static int MENU_BUTTON = 0x01;
-    public final static int HIDE_BUTTON = 0x02;
-    public final static int MINI_BUTTON = 0x04;
-    public final static int MAX_BUTTON  = 0x08;
-    public final static int SIZE_BAR = 0x10;
+    public static final int ALL_NOT_DISPLAY = 0x00;
+    public static final int MENU_BUTTON = 0x01;
+    public static final int HIDE_BUTTON = 0x02;
+    public static final int MINI_BUTTON = 0x04;
+    public static final int MAX_BUTTON  = 0x08;
+    public static final int SIZE_BAR = 0x10;
+    public static final int TITLE_BAR_AND_BUTTONS = 0x20;
 //-------------------------------------------------------
 
     public enum State{MAX,MINI,HIDE,GENERAL,CLOSE}
     public State nowState = State.GENERAL;//當前狀態
     public State previousState = null;//前一次的狀態
 
-    static HashMap<Integer,WindowStruct> windowList=new HashMap<>();
+    static HashMap<Integer,WindowStruct> windowList = new HashMap<>();
 
     /**
      * 建構WindowStruct的工廠模式
@@ -92,7 +93,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private int left = 60;
         private int height;
         private int width;
-        private int displayObject = MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR;
+        private int displayObject = TITLE_BAR_AND_BUTTONS|MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR;
         private int transitionsDuration = 500;
         private WindowAction windowAction = new WindowAction() {
             @Override
@@ -113,6 +114,16 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
             @Override
             public void Deconstruction(Context context, View pageView, int position) {
+
+            }
+
+            @Override
+            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+            }
+
+            @Override
+            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
             }
         };
@@ -171,7 +182,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         public Builder windowPages(int[] windowPagesForLayoutResources){
             this.windowPages = new View[windowPagesForLayoutResources.length];
             View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
-            for(int i=0;i<windowPages.length;i++) {
+            for(int i = 0;i<windowPages.length;i++) {
                 this.windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
                 //windowPages[i].setTag(windowPageTitles[i]);
             }
@@ -200,45 +211,45 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int display_object, int transitionsDuration, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
          if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
-            WindowStruct WS=windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
+            WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             if(WS.nowState != State.MINI)
                 WS.getWindowFrom().setWindowStyleOfUnFocus();
         }
-        this.Number=Index++;
-        WindowStruct.NOW_FOCUS_NUMBER=this.Number;
-        this.context=context;
-        this.wm=wm;
-        this.winconPage=windowPages;
-        this.windowAction=windowAction;
-        this.windowTitle=windowPageTitles;
-        this.CDAW=CDAW;
-        this.display_object=display_object;
+        this.Number = Index++;
+        WindowStruct.NOW_FOCUS_NUMBER = this.Number;
+        this.context = context;
+        this.wm = wm;
+        this.winconPage = windowPages;
+        this.windowAction = windowAction;
+        this.windowTitle = windowPageTitles;
+        this.CDAW = CDAW;
+        this.display_object = display_object;
         this.transitionsDuration = transitionsDuration;
         windowList.put(Number,this);
-        topMini=new Scroller(context);
-        heightMini=new Scroller(context);
+        topMini = new Scroller(context);
+        heightMini = new Scroller(context);
         displayMetrics = context.getResources().getDisplayMetrics();
 
-        //wColor=new WindowColor(context);
+        //wColor = new WindowColor(context);
 
         wmlp = new WindowManager.LayoutParams();
         wmlp.type = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 ?WindowManager.LayoutParams.TYPE_PHONE
                 :WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;//類型
         wmlp.format = PixelFormat.RGBA_8888;//背景(透明)
-        wmlp.flags=FOCUS_FLAGE;
+        wmlp.flags = FOCUS_FLAGE;
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
-        wmlp.x=Top;//設定原點座標
-        wmlp.y=Left;
+        wmlp.x = Top;//設定原點座標
+        wmlp.y = Left;
         wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         winform= LayoutInflater.from(context).inflate(R.layout.window,null);
         ((WindowFrom)winform).seWindowStruct(this);
         /*winform.setOnTouchListener(new View.OnTouchListener() {
-            View titleBar=winform.findViewById(R.id.title_bar),
-                    microMaxButtonBackground=winform.findViewById(R.id.micro_max_button_background),
-                    closeButtonBackground=winform.findViewById(R.id.close_button_background);
+            View titleBar = winform.findViewById(R.id.title_bar),
+                    microMaxButtonBackground = winform.findViewById(R.id.micro_max_button_background),
+                    closeButtonBackground = winform.findViewById(R.id.close_button_background);
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Rect rect = new Rect();
@@ -255,21 +266,22 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
         });*/
         wm.addView(winform,wmlp);
-        wincon=(ViewGroup) winform.findViewById(R.id.wincon);
+        wincon = (ViewGroup) winform.findViewById(R.id.wincon);
 
-        top=Top;
-        left=Left;
-        width=Width;
-        height=Height;
-        MINI_SIZE=winform.findViewById(R.id.close_button).getLayoutParams().width;
+        top = Top;
+        left = Left;
+        width = Width;
+        height = Height;
+        MINI_SIZE = winform.findViewById(R.id.close_button).getLayoutParams().width;
 
-        menu=(Button) winform.findViewById(R.id.menu);
-        close_button=(Button) winform.findViewById(R.id.close_button);
-        mini=(Button) winform.findViewById(R.id.mini);
-        max=(Button) winform.findViewById(R.id.max);
-        hide=(Button) winform.findViewById(R.id.hide);
-        sizeBar=(LinearLayout) winform.findViewById(R.id.size);
-        title=(TextView) winform.findViewById(R.id.title);
+        menu = winform.findViewById(R.id.menu);
+        close_button = winform.findViewById(R.id.close_button);
+        mini = winform.findViewById(R.id.mini);
+        max = winform.findViewById(R.id.max);
+        hide = winform.findViewById(R.id.hide);
+        title = winform.findViewById(R.id.title);
+        sizeBar = winform.findViewById(R.id.size);
+        titleBarAndButtons = winform.findViewById(R.id.title_bar_and_buttons);
 
         //-------------------------建立視窗內容畫面----------------------------------------------------
         wincon.addView(winconPage[0]);
@@ -278,25 +290,25 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         title.setOnClickListener(this);//還原視窗大小
         close_button.setOnClickListener(this);
         winform.findViewById(R.id.size).setOnTouchListener(new View.OnTouchListener() {
-            float Wlength=-1,Hlength=-1;
+            float Wlength =- 1,Hlength =- 1;
             @Override
             public boolean onTouch(View v, MotionEvent event) {//調整視窗大小
                 //wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
                 if(event.getAction() == MotionEvent.ACTION_MOVE) {
-                    if(Wlength==-1||Hlength==-1){
-                        Wlength=wincon.getWidth()-event.getX();//取得點擊X點到視窗最右側的距離
-                        Hlength=(event.getRawY()-wmlp.y)-wincon.getHeight();//取得視窗標題列高度以及視窗大小調整列被點擊以上的高度，視窗內部框架高度-(點擊座標Y-視窗Top座標)
+                    if(Wlength == -1||Hlength == -1){
+                        Wlength = wincon.getWidth()-event.getX();//取得點擊X點到視窗最右側的距離
+                        Hlength = (event.getRawY()-wmlp.y)-wincon.getHeight();//取得視窗標題列高度以及視窗大小調整列被點擊以上的高度，視窗內部框架高度-(點擊座標Y-視窗Top座標)
                         return true;
                     }
                     Log.i("size",(int)(event.getX()+Wlength)+"   "+(int)(event.getRawY()-wmlp.y+Hlength));
                     int temp;
-                    winform.getLayoutParams().width=width=(temp=(int)(event.getX()+Wlength))>30?temp:30;
-                    winform.getLayoutParams().height=height=((temp=(int)(event.getRawY()-wmlp.y-Hlength))>=0?temp:0)
+                    winform.getLayoutParams().width = width = (temp = (int)(event.getX()+Wlength))>30?temp:30;
+                    winform.getLayoutParams().height = height = ((temp = (int)(event.getRawY()-wmlp.y-Hlength))>=0?temp:0)
                             +title.getLayoutParams().height+sizeBar.getLayoutParams().height;//Touch的Y減去視窗的Top再減去Hlength就是視窗內容區要調整的高度
                     Log.i("size2",wincon.getLayoutParams().width+"   "+wincon.getLayoutParams().height);
                 }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    Wlength=-1;
-                    Hlength=-1;
+                    Wlength =- 1;
+                    Hlength =- 1;
                 }
                 WindowStruct.this.wm.updateViewLayout(winform, wmlp);
                 return true;
@@ -304,20 +316,20 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         });
         //-----------------------------------------------------------------------------
         //-------------------------建立Menu-------------------------------
-        /*final PopupMenu pm=new PopupMenu(context,menu);
-        Menu m=pm.getMenu();
-        for(int i=0;i<winconPage.length;i++)
+        /*final PopupMenu pm = new PopupMenu(context,menu);
+        Menu m = pm.getMenu();
+        for(int i = 0;i<winconPage.length;i++)
             //參數1:群組id, 參數2:itemId, 參數3:item順序, 參數4:item名稱
             m.add(0,i,i,(String)winconPage[i].getTag());
         pm.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            int ViweIndex=0;
+            int ViweIndex = 0;
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                currentWindowPagePosition=item.getItemId();
+                currentWindowPagePosition = item.getItemId();
                 wincon.removeView(winconPage[ViweIndex]);
                 wincon.addView(winconPage[item.getItemId()]);
                 title.setText(windowTitle[item.getItemId()]);
-                ViweIndex=item.getItemId();
+                ViweIndex = item.getItemId();
                 return true;
             }
         });
@@ -335,7 +347,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         max.setOnClickListener(this);
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
-        for(int i=0;i<winconPage.length;i++)
+        for(int i = 0;i<winconPage.length;i++)
             CDAW.Construction(context,winconPage[i],i,(windowInitArgs != null && i < windowInitArgs.length) ? windowInitArgs[i] : new Object[0],this);
         //---------------------------------------------------------------------------------------------
         //---------------------------隱藏不顯示的控制項物件------------------------------------------
@@ -343,6 +355,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             menu.setVisibility(View.GONE);
             title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
         }
+        if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
+            titleBarAndButtons.setVisibility(View.GONE);
         if((display_object & HIDE_BUTTON) != HIDE_BUTTON)
             hide.setVisibility(View.GONE);
         if((display_object & MINI_BUTTON) != MINI_BUTTON)
@@ -367,17 +381,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public interface constructionAndDeconstructionWindow{
         void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct);
         void Deconstruction(Context context, View pageView, int position);
+
+        void onResume(Context context, View pageView, int position, WindowStruct windowStruct);
+        void onPause(Context context, View pageView, int position, WindowStruct windowStruct);
     }
 
     public class menuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
-        private int ViweIndex=0;
         private ListView menu;
         private LinearLayout menuListAndContext;
-        private Scroller scroller=new Scroller(context);
-        private boolean isOpen=false;
+        private Scroller scroller = new Scroller(context);
+        private boolean isOpen = false;
         public menuList(final String[] menuItems){
-            menuListAndContext=(LinearLayout) winform.findViewById(R.id.menu_list_and_context);
-            menu=(ListView) winform.findViewById(R.id.menu_list);
+            menuListAndContext = (LinearLayout) winform.findViewById(R.id.menu_list_and_context);
+            menu = (ListView) winform.findViewById(R.id.menu_list);
             menu.setAdapter(new BaseAdapter() {
                 @Override
                 public int getCount() {
@@ -396,9 +412,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
-                    if(convertView==null){
-                        convertView=LayoutInflater.from(context).inflate(R.layout.hide_menu_item,null,false);
-                        TextView itenText=(TextView) convertView.findViewById(R.id.item_text);
+                    if(convertView == null){
+                        convertView = LayoutInflater.from(context).inflate(R.layout.hide_menu_item,null,false);
+                        TextView itenText = (TextView) convertView.findViewById(R.id.item_text);
                         itenText.setText(menuItems[position]);
                     }
                     return convertView;
@@ -419,21 +435,22 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             Log.i("startMenu",isOpen+","+menu.getLayoutParams().width);
             if(!isOpen) {
                 showMenu();
-                isOpen=true;
+                isOpen = true;
             }else {
                 closeMenu();
-                isOpen=false;
+                isOpen = false;
             }
         }
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            isOpen=false;
-            currentWindowPagePosition=position;
-            wincon.removeView(winconPage[ViweIndex]);
+            isOpen = false;
+            CDAW.onPause(context,winconPage[currentWindowPagePosition],currentWindowPagePosition,WindowStruct.this);
+            wincon.removeView(winconPage[currentWindowPagePosition]);
             wincon.addView(winconPage[position]);
+            CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
             title.setText(windowTitle[position]);
-            ViweIndex=position;
+            currentWindowPagePosition = position;
             closeMenu();
         }
 
@@ -452,7 +469,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     關於getX,getY等等的含數用法:
     http://blog.csdn.net/u013872857/article/details/53750682
      */
-    private float H=-1,W=-1;
+    private float H =- 1,W =- 1;
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if(nowState != State.MAX || nowState == State.MINI) {
@@ -652,7 +669,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 int dy;
                 topMini.startScroll(0, 0, left, top, transitionsDuration);
                 heightMini.startScroll( displayMetrics.widthPixels,
-                        dy=displayMetrics.heightPixels - getStatusBarHeight(),
+                        dy = displayMetrics.heightPixels - getStatusBarHeight(),
                         width-displayMetrics.widthPixels, height-dy, transitionsDuration);
             }else if(previousState == State.MINI){
                 topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, transitionsDuration);
@@ -736,6 +753,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         else
             title.setPadding(0,0,0,0);
         close_button.setVisibility(View.GONE);
+        if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
+            titleBarAndButtons.setVisibility(View.GONE);
         if((display_object & MINI_BUTTON) == MINI_BUTTON)
             mini.setVisibility(View.GONE);
         if((display_object & MAX_BUTTON) == MAX_BUTTON)
@@ -755,6 +774,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         else
             title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
         close_button.setVisibility(View.VISIBLE);
+        if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
+            titleBarAndButtons.setVisibility(View.VISIBLE);
         if((display_object & MINI_BUTTON) == MINI_BUTTON)
             mini.setVisibility(View.VISIBLE);
         if((display_object & MAX_BUTTON) == MAX_BUTTON)
@@ -800,8 +821,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param titleText 標題文字
      */
     public void setWindowTitle(int position, String titleText){
-        windowTitle[position]=titleText;
-        if(currentWindowPagePosition==position)
+        windowTitle[position] = titleText;
+        if(currentWindowPagePosition == position)
             title.setText(titleText);
     }
 

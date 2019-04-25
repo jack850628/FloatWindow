@@ -268,7 +268,7 @@ public class Setting extends AppCompatActivity {
                         .left(60)
                         .height((int)(110*this.getResources().getDisplayMetrics().density))
                         .width((int)(195*this.getResources().getDisplayMetrics().density))
-                        .displayObject(WindowStruct.MINI_BUTTON)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS|WindowStruct.MINI_BUTTON)
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(new WindowStruct.WindowAction() {
                             @Override
@@ -289,6 +289,16 @@ public class Setting extends AppCompatActivity {
 
                             @Override
                             public void Deconstruction(Context context, View pageView, int position) {
+
+                            }
+
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                             }
                         }).show());

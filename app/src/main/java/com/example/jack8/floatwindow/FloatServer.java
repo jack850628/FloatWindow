@@ -154,7 +154,7 @@ public class FloatServer extends Service {
                         .left(60)
                         .height((int)(getResources().getDisplayMetrics().density*70*layouts.length))
                         .width((int)(getResources().getDisplayMetrics().density*200))
-                        .displayObject(WindowStruct.ALL_NOT_DISPLAY)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new ProcessShare(wm,windowAction))
@@ -190,7 +190,7 @@ public class FloatServer extends Service {
                             .left(60)
                             .height((int) (140 * this.getResources().getDisplayMetrics().density))
                             .width((int) (200 * this.getResources().getDisplayMetrics().density))
-                            .displayObject(WindowStruct.ALL_NOT_DISPLAY)
+                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
@@ -212,6 +212,16 @@ public class FloatServer extends Service {
 
                                 @Override
                                 public void Deconstruction(Context context, View pageView, int position) {
+
+                                }
+
+                                @Override
+                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                }
+
+                                @Override
+                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                                 }
                             }).show();
@@ -260,7 +270,7 @@ public class FloatServer extends Service {
                     .left(60)
                     .height((int) (200 * this.getResources().getDisplayMetrics().density))
                     .width((int) (195 * this.getResources().getDisplayMetrics().density))
-                    .displayObject(WindowStruct.SIZE_BAR)
+                    .displayObject(WindowStruct.SIZE_BAR|WindowStruct.TITLE_BAR_AND_BUTTONS)
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override
@@ -282,6 +292,16 @@ public class FloatServer extends Service {
 
                         @Override
                         public void Deconstruction(Context context, View pageView, int position) {
+
+                        }
+
+                        @Override
+                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                         }
                     }).show();
