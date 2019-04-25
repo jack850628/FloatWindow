@@ -23,8 +23,7 @@ public class ProcessShare extends initWindow {
     public void Construction(final Context context, View pageView, int position, final Object[] args, final WindowStruct windowStruct){
         switch (pageView.getId()){
             case 0: {//當id為0就是選擇頁面的畫面
-                ListView menu = (ListView) pageView.findViewById(0);
-                menu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                ((ListView)pageView).setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         int[] layouts = (int[])args[0];
@@ -61,6 +60,23 @@ public class ProcessShare extends initWindow {
                 break;
             case R.layout.note_page:
                 super.Deconstruction(context,pageView,1);
+                break;
+        }
+    }
+    @Override
+    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+        switch (pageView.getId()){
+            case R.layout.note_page:
+                super.onResume(context,pageView,1,windowStruct);
+                break;
+        }
+    }
+
+    @Override
+    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+        switch (pageView.getId()){
+            case R.layout.note_page:
+                super.onPause(context,pageView,1,windowStruct);
                 break;
         }
     }

@@ -433,7 +433,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     e.printStackTrace();
                                 }
                                 ListView nodeList = new ListView(context);
-                                nodeList.setAdapter(new ArrayAdapter(context,android.R.layout.simple_list_item_1,notes.toArray()));
+                                nodeList.setAdapter(new ArrayAdapter(context,R.layout.hide_menu_item,R.id.item_text,notes.toArray()));
                                 new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                         .windowPages(new View[]{nodeList})
                                         .windowPageTitles(new String[]{context.getString(R.string.all_notes)})
