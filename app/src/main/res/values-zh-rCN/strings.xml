@@ -40,4 +40,6 @@
         <string name="select_window_out_of_focus_color">点选视窗设定失焦颜色</string>
         <string name="select_color">选择颜色</string>
         <string name="about">关于</string>
+    <string name="web_url">網址</string>
+    <string name="all_notes">所有便条纸</string>
 </resources>

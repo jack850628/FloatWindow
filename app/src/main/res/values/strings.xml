@@ -39,4 +39,6 @@
     <string name="select_window_out_of_focus_color">Select window out of focus color</string>
     <string name="select_color">select color</string>
     <string name="about">About</string>
+    <string name="web_url">Web url</string>
+    <string name="all_notes">All notes</string>
 </resources>

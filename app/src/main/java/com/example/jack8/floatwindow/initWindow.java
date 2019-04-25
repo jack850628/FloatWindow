@@ -27,16 +27,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;;import org.json.JSONException;
+import com.example.jack8.floatwindow.Window.WindowStruct;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -267,6 +271,16 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                                                             ((WebView)pageView.findViewById(R.id.web)).onPause();
                                                     }
+
+                                                    @Override
+                                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                                    }
                                                 }).show();
                                         ((FloatServer)context).wm_count++;
                                     } catch (NoSuchFieldException e) {
@@ -360,6 +374,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
     static LinkedList<String> noteIdList=new LinkedList<>();
     Date dNow = new Date();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
+    Button nodePageMenuButton;
     public void initWindow_Note_Page(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
         final EditText note=(EditText) pageView.findViewById(R.id.note);
         note.addTextChangedListener(new TextWatcher() {
@@ -387,6 +402,54 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        nodePageMenuButton = new Button(context);
+        nodePageMenuButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+        nodePageMenuButton.setPadding(0,0,0,0);
+        nodePageMenuButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.menu));
+        nodePageMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final PopupWindow popupWindow =new PopupWindow(context);
+                ListView listView = new ListView(context);
+                listView.setAdapter(new ArrayAdapter(context,android.R.layout.simple_list_item_1,new String[]{context.getString(R.string.all_notes)}));
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        switch (position){
+                            case 0:{
+                                ArrayList notes = new ArrayList<String>();
+                                try {
+                                    JSONObject noteJson=new JSONObject(noteSpf.getString("Notes","{}"));
+                                    Iterator<String> keys = noteJson.keys();
+                                    while (keys.hasNext()){
+                                        String key = keys.next();
+                                        if(!noteIdList.contains(key))
+                                            notes.add(noteJson.getString(key));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                ListView nodeList = new ListView(context);
+                                nodeList.setAdapter(new ArrayAdapter(context,android.R.layout.simple_list_item_1,notes.toArray()));
+                                new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                        .windowPages(new View[]{nodeList})
+                                        .windowPageTitles(new String[]{context.getString(R.string.all_notes)})
+                                        .show();
+                                break;
+                            }
+                        }
+                        popupWindow.dismiss();
+                    }
+                });
+                listView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);//先量測
+                popupWindow.setWidth(listView.getMeasuredWidth());//再取寬度
+                popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                popupWindow.setContentView(listView);
+                popupWindow.setFocusable(true);
+                popupWindow.showAsDropDown(v);
             }
         });
 
@@ -488,6 +551,22 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             ((WebView)pageView.findViewById(R.id.web)).onPause();
         }else if(position==1){
             noteIdList.remove(noteId);
+        }
+    }
+
+    @Override
+    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+        if(position == 1) {
+            ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
+            micro_max_button.addView(nodePageMenuButton,0);
+        }
+    }
+
+    @Override
+    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+        if(position == 1){
+            ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
+            micro_max_button.removeView(nodePageMenuButton);
         }
     }
 }
