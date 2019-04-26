@@ -41,11 +41,12 @@ public class FloatServer extends Service {
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
+    static int wm_count=0;//計算FloatServer總共開了多少次
+
     WindowManager wm;
     Notification NF;
     final int NOTIFY_ID=851262;
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
-    int wm_count=0;//計算FloatServer總共開了多少次
     HashMap<Integer,WindowStruct> windowList;
     WindowStruct windowManager = null;//視窗管理員
     WindowStruct menu;

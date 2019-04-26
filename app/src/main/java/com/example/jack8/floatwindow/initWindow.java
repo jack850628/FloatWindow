@@ -10,6 +10,9 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -23,6 +26,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,7 +40,6 @@ import com.example.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -251,43 +254,35 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     web.loadUrl(result.getExtra());
                                     break;
                                 case 1:
-                                    try {
-                                        Field field = windowStruct.getClass().getDeclaredField("windowAction");
-                                        field.setAccessible(true);
-                                        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                                .windowPages(new int[]{R.layout.webpage})
-                                                .windowPageTitles(new String[]{context.getString(R.string.web_browser)})
-                                                .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
-                                                .windowAction((WindowStruct.WindowAction) field.get(windowStruct))
-                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                                .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                                                    @Override
-                                                    public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                        initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
-                                                    }
+                                    FloatServer.wm_count++;
+                                    new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                            .windowPages(new int[]{R.layout.webpage})
+                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser)})
+                                            .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
+                                            .windowAction(((FloatServer)context).windowAction)
+                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                                @Override
+                                                public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
+                                                    initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
+                                                }
 
-                                                    @Override
-                                                    public void Deconstruction(Context context, View pageView, int position) {
-                                                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                                                            ((WebView)pageView.findViewById(R.id.web)).onPause();
-                                                    }
+                                                @Override
+                                                public void Deconstruction(Context context, View pageView, int position) {
+                                                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                                                        ((WebView)pageView.findViewById(R.id.web)).onPause();
+                                                }
 
-                                                    @Override
-                                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                @Override
+                                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                                                    }
+                                                }
 
-                                                    @Override
-                                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                @Override
+                                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                                                    }
-                                                }).show();
-                                        ((FloatServer)context).wm_count++;
-                                    } catch (NoSuchFieldException e) {
-                                        e.printStackTrace();
-                                    } catch (IllegalAccessException e) {
-                                        e.printStackTrace();
-                                    }
+                                                }
+                                            }).show();
                                     break;
                                 case 2:
                                     clipboard.copyToClipboard(result.getExtra());
@@ -348,18 +343,16 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                 sendIntent.setType("text/plain");
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_APP));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null)
                                     context.startActivity(chooser);
-                                }
                                 break;
                             }
                             case 1: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null)
                                     context.startActivity(chooser);
-                                }
                                 break;
                             }
                         }
@@ -369,14 +362,93 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
         });
     }
+
+
+    final static int ADD_NOTE = 0,OPEN_NOTE = 1;
+    static LinkedList<String> showingNoteIdList = new LinkedList<>();
+    static WindowStruct otherNoteList = null;//其他便條紙清單視窗
+    static class OtherNodeListAdapter extends BaseAdapter{//其他便條紙清單所使用的Adapter
+
+        public ArrayList<String[]> noteList = null;
+
+        Context context;
+
+        public OtherNodeListAdapter(Context context, SharedPreferences noteSpf,LinkedList<String> showingNoteIdList){
+            this.context = context;
+            updateNodeList(noteSpf,showingNoteIdList);
+        }
+
+        public void update(SharedPreferences noteSpf,LinkedList<String> showingNoteIdList){
+            updateNodeList(noteSpf,showingNoteIdList);
+            this.notifyDataSetChanged();
+        }
+
+        public void updateNodeList(SharedPreferences noteSpf,LinkedList<String> showingNoteIdList){
+            if(noteList == null)
+                noteList = new ArrayList();
+            else
+                noteList.clear();
+            noteList.add(new String[]{"ADD_NEW",context.getString(R.string.create_new_note)});
+            try {
+                JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
+                Iterator<String> keys = notes.keys();
+                while (keys.hasNext()){
+                    String key = keys.next();
+                    if (!showingNoteIdList.contains(key)) {
+                        noteList.add(new String[]{key,notes.getString(key)});
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return noteList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return noteList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if(convertView == null)
+                convertView = LayoutInflater.from(context).inflate(R.layout.hide_menu_item, parent, false);
+            TextView item_text = ((TextView)convertView.findViewById(R.id.item_text));
+            item_text.setText(noteList.get(position)[1]);
+            item_text.setGravity(
+                    position == 0
+                    ?Gravity.CENTER_HORIZONTAL
+                    :Gravity.NO_GRAVITY
+            );
+
+            return convertView;
+        }
+    }
+    static OtherNodeListAdapter otherNodeListAdapter = null;
     SharedPreferences noteSpf;
     String noteId=null;
-    static LinkedList<String> noteIdList=new LinkedList<>();
     Date dNow = new Date();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
     Button nodePageMenuButton;
+    MoveWindow moveWindow;
+    int nodePageDisplayObj;
     public void initWindow_Note_Page(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
-        final EditText note=(EditText) pageView.findViewById(R.id.note);
+        final EditText note=(EditText) pageView.findViewById(R.id.note);final View toolsBar = pageView.findViewById(R.id.tools_bar);
+        final Clipboard clipboard=new Clipboard(context);
+        final ImageView copy = toolsBar.findViewById(R.id.copy);
+        final ImageView paste = toolsBar.findViewById(R.id.paste);
+        final ImageView showFrame = toolsBar.findViewById(R.id.show_frame);
+        final ImageView close = toolsBar.findViewById(R.id.close);
+
         note.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -391,9 +463,9 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void afterTextChanged(Editable s) {
                 try {
-                    JSONObject notes=new JSONObject(noteSpf.getString("Notes","{}"));
+                    JSONObject notes = new JSONObject(noteSpf.getString("Notes","{}"));
                     if(!s.toString().matches("^\\s*$"))
-                        notes.put(noteId,s);
+                        notes.put(noteId, s);
                     else
                         notes.remove(noteId);
                     SharedPreferences.Editor spfe=noteSpf.edit();
@@ -405,6 +477,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
         });
 
+        moveWindow = new MoveWindow(context,windowStruct);
         nodePageMenuButton = new Button(context);
         nodePageMenuButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
         nodePageMenuButton.setPadding(0,0,0,0);
@@ -414,32 +487,90 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             public void onClick(View v) {
                 final PopupWindow popupWindow =new PopupWindow(context);
                 ListView listView = new ListView(context);
-                listView.setAdapter(new ArrayAdapter(context,android.R.layout.simple_list_item_1,new String[]{context.getString(R.string.all_notes)}));
+                listView.setAdapter(new ArrayAdapter(context,android.R.layout.simple_list_item_1,new String[]{context.getString(R.string.other_notes),context.getString(R.string.share),context.getString(R.string.hide_frame)}));
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
                             case 0:{
-                                ArrayList notes = new ArrayList<String>();
-                                try {
-                                    JSONObject noteJson=new JSONObject(noteSpf.getString("Notes","{}"));
-                                    Iterator<String> keys = noteJson.keys();
-                                    while (keys.hasNext()){
-                                        String key = keys.next();
-                                        if(!noteIdList.contains(key))
-                                            notes.add(noteJson.getString(key));
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                ListView nodeList = new ListView(context);
-                                nodeList.setAdapter(new ArrayAdapter(context,R.layout.hide_menu_item,R.id.item_text,notes.toArray()));
-                                new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                        .windowPages(new View[]{nodeList})
-                                        .windowPageTitles(new String[]{context.getString(R.string.all_notes)})
-                                        .show();
+                                if(otherNoteList == null) {
+                                    ListView nodeList = new ListView(context);
+                                    nodeList.setAdapter(otherNodeListAdapter);
+                                    nodeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                            FloatServer.wm_count++;
+                                            new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                                    .windowPageTitles(new String[]{context.getString(R.string.note)})
+                                                    .windowPages(new int[]{R.layout.note_page})
+                                                    .windowInitArgs(
+                                                            position == 0
+                                                            ?new Object[][]{{initWindow.ADD_NOTE,""}}
+                                                            :new Object[][]{{initWindow.OPEN_NOTE,otherNodeListAdapter.noteList.get(position)[0]}}
+                                                    )
+                                                    .windowAction(((FloatServer)context).windowAction)
+                                                    .constructionAndDeconstructionWindow(new initWindow(){
+                                                        @Override
+                                                        public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
+                                                            super.Construction(context,pageView,1,args,windowStruct);
+                                                        }
+
+                                                        @Override
+                                                        public void Deconstruction(Context context, View pageView, int position) {
+                                                            super.Deconstruction(context, pageView, 1);
+                                                        }
+
+                                                        @Override
+                                                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                            super.onResume(context, pageView, 1, windowStruct);
+                                                        }
+
+                                                        @Override
+                                                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                            super.onPause(context, pageView, 1, windowStruct);
+                                                        }
+                                                    })
+                                                    .show();
+                                        }
+                                    });
+                                   FloatServer.wm_count++;
+                                    otherNoteList = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                            .windowPages(new View[]{nodeList})
+                                            .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR)
+                                            .windowAction(new WindowStruct.WindowAction() {
+                                                @Override
+                                                public void goHide(WindowStruct windowStruct) {
+
+                                                }
+
+                                                @Override
+                                                public void goClose(WindowStruct windowStruct) {
+                                                    otherNoteList = null;
+                                                    ((FloatServer)context).windowAction.goClose(windowStruct);
+                                                }
+                                            })
+                                            .show();
+                                }else
+                                    otherNoteList.focusAndShowWindow();
                                 break;
                             }
+                            case 1:{
+                                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                                sendIntent.putExtra(Intent.EXTRA_TEXT, note.getText().toString());
+                                sendIntent.setType("text/plain");
+                                Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_APP));
+                                chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null)
+                                    context.startActivity(chooser);
+                                break;
+                            }
+                            case 2:
+                                nodePageDisplayObj = windowStruct.getDisplayObject();
+                                windowStruct.setDisplayObject(WindowStruct.ALL_NOT_DISPLAY);
+                                showFrame.setVisibility(View.VISIBLE);
+                                note.setOnTouchListener(moveWindow);
+                                break;
                         }
                         popupWindow.dismiss();
                     }
@@ -453,11 +584,6 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
         });
 
-        final View toolsBar = pageView.findViewById(R.id.tools_bar);
-        final Clipboard clipboard=new Clipboard(context);
-        final ImageView copy = toolsBar.findViewById(R.id.copy);
-        final ImageView paste = toolsBar.findViewById(R.id.paste);
-        final ImageView close = toolsBar.findViewById(R.id.close);
         note.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -475,42 +601,71 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                         break;
                     case R.id.paste:
                         note.setText(note.getText()+clipboard.copyFromClipboard());
+                        break;
+                    case R.id.show_frame:
+                        windowStruct.setDisplayObject(nodePageDisplayObj);
+                        showFrame.setVisibility(View.GONE);
+                        note.setOnTouchListener(null);
                 }
                 toolsBar.setVisibility(View.GONE);
             }
         };
         copy.setOnClickListener(copy_paste);
         paste.setOnClickListener(copy_paste);
+        showFrame.setOnClickListener(copy_paste);
         close.setOnClickListener(copy_paste);
 
         final String NOTE="Note";
-        noteSpf=context.getSharedPreferences(NOTE,0);
+        noteSpf = context.getSharedPreferences(NOTE,0);
+        if(otherNodeListAdapter == null)
+            otherNodeListAdapter = new OtherNodeListAdapter(context,noteSpf,showingNoteIdList);
         if(args == null || args.length == 0) {
             try {
                 JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
-                if (notes.names() != null)
-                    for (int i = 0; i < notes.names().length(); i++) {
-                        if (!noteIdList.contains(notes.names().getString(i))) {
-                            noteId = notes.names().getString(i);
-                            noteIdList.add(noteId);
-                            break;
-                        }
+                Iterator<String> keys = notes.keys();
+                while (keys.hasNext()){
+                    String key = keys.next();
+                    if (!showingNoteIdList.contains(key)) {
+                        noteId = key;
+                        showingNoteIdList.add(noteId);
+                        break;
                     }
-                if (noteId != null)
+                }
+                if (noteId != null) {
                     note.setText(notes.getString(noteId));
-                else {
+                    otherNodeListAdapter.update(noteSpf,showingNoteIdList);
+                }else{
                     noteId = formatter.format(dNow);
-                    noteIdList.add(noteId);
+                    showingNoteIdList.add(noteId);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }else{
-            noteId = formatter.format(dNow);
-            noteIdList.add(noteId);
-            note.setText((String)args[0]);
+            int flag = (int)args[0];
+            switch (flag){
+                case ADD_NOTE: {
+                    noteId = formatter.format(dNow);
+                    showingNoteIdList.add(noteId);
+                    note.setText((String) args[1]);
+                    break;
+                }
+                case OPEN_NOTE:{
+                    noteId = (String)args[1];
+                    showingNoteIdList.add(noteId);
+                    try {
+                        JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
+                        note.setText(notes.getString(noteId));
+                        otherNodeListAdapter.update(noteSpf,showingNoteIdList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
+
+
     public void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
         final EditText et=(EditText)pageView.findViewById(R.id.Temperature);
         View.OnClickListener oc=new View.OnClickListener() {
@@ -550,7 +705,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             ((WebView)pageView.findViewById(R.id.web)).onPause();
         }else if(position==1){
-            noteIdList.remove(noteId);
+            showingNoteIdList.remove(noteId);
+            otherNodeListAdapter.update(noteSpf,showingNoteIdList);
         }
     }
 

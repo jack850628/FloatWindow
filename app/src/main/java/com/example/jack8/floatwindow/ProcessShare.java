@@ -31,15 +31,18 @@ public class ProcessShare extends initWindow {
                         View window_content_view = LayoutInflater.from(context).inflate(layouts[position],(ViewGroup) winform,false);
                         window_content_view.setId(layouts[position]);//將id設定跟Resource id相同
                         String[] titles = (String[])args[1];
-                        String[] _args = new String[]{(String)args[2]};
+                        Object[] _args = position == 0
+                                ? new Object[]{args[2]}
+                                : new Object[]{initWindow.ADD_NOTE,args[2]};
+                        FloatServer.wm_count++;
                         new WindowStruct.Builder(context, wm)
                                 .windowPages(new View[]{window_content_view})
                                 .windowPageTitles(new String[]{titles[position]})
                                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                .windowInitArgs(new Object[][]{_args}).windowAction(wa)
+                                .windowInitArgs(new Object[][]{_args})
+                                .windowAction(wa)
                                 .constructionAndDeconstructionWindow(ProcessShare.this)
                                 .show();
-                        ((FloatServer)context).wm_count++;
                         windowStruct.close();
                     }
                 });

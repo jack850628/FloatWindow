@@ -34,8 +34,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private int MINI_SIZE;//視窗最小化的寬度
     private final int TITLE_LIFT_TO_EDGE_DISTANCE = 20;
     //static final int START_POINT = 60;//視窗預設座標
-    private static int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//上視窗超出螢幕
+    private static int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
             |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
+            |WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH//如果你已經設置了FLAG_NOT_TOUCH_MODAL,那麼你可以設置FLAG_WATCH_OUTSIDE_TOUCH這個flag, 這樣一個點擊事件如果發生在你的window之外的範圍,你就會接收到一個特殊的MotionEvent,MotionEvent.ACTION_OUTSIDE 注意,你只會接收到點擊事件的第一下,而之後的DOWN/MOVE/UP等手勢全都不會接收到
             ;
     private static int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
@@ -53,7 +54,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private int currentWindowPagePosition = 0;
     private Scroller topMini,heightMini;
     private Button menu,close_button,mini,max,hide;
-    private LinearLayout sizeBar,titleBarAndButtons;
+    private LinearLayout sizeBar,titleBarAndButtons,microMaxButtonBackground;
     private TextView title;
     private String[] windowTitle;
 
@@ -244,8 +245,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+        winform = LayoutInflater.from(context).inflate(R.layout.window,null);
         ((WindowFrom)winform).seWindowStruct(this);
+        winform.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {//當點擊視窗以外的地方時，必須配和WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH以及WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL一同使用
+                    WindowStruct.this.unFocusWindow();
+                    return true;
+                }
+                return false;
+            }
+        });
         /*winform.setOnTouchListener(new View.OnTouchListener() {
             View titleBar = winform.findViewById(R.id.title_bar),
                     microMaxButtonBackground = winform.findViewById(R.id.micro_max_button_background),
@@ -282,6 +293,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         title = winform.findViewById(R.id.title);
         sizeBar = winform.findViewById(R.id.size);
         titleBarAndButtons = winform.findViewById(R.id.title_bar_and_buttons);
+        microMaxButtonBackground = winform.findViewById(R.id.micro_max_button_background);
 
         //-------------------------建立視窗內容畫面----------------------------------------------------
         wincon.addView(winconPage[0]);
@@ -352,20 +364,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         CDAW.onResume(context,winconPage[0],0,this);
         //---------------------------------------------------------------------------------------------
         //---------------------------隱藏不顯示的控制項物件------------------------------------------
-        if((display_object & MENU_BUTTON) != MENU_BUTTON) {
-            menu.setVisibility(View.GONE);
-            title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
-        }
-        if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
-            titleBarAndButtons.setVisibility(View.GONE);
-        if((display_object & HIDE_BUTTON) != HIDE_BUTTON)
-            hide.setVisibility(View.GONE);
-        if((display_object & MINI_BUTTON) != MINI_BUTTON)
-            mini.setVisibility(View.GONE);
-        if((display_object & MAX_BUTTON) != MAX_BUTTON)
-            max.setVisibility(View.GONE);
-        if((display_object & SIZE_BAR) != SIZE_BAR)
-            sizeBar.setVisibility(View.GONE);
+        setDisplayObject();
         //-------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
         topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, transitionsDuration);
@@ -473,7 +472,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private float H =- 1,W =- 1;
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(nowState != State.MAX || nowState == State.MINI) {
+        if(nowState == State.GENERAL || nowState == State.MINI) {
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 if (H == -1 || W == -1) {
                     H = event.getX();//取得點擊的X座標到視窗頂點的距離
@@ -484,7 +483,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 wmlp.y = (int) (event.getRawY() - W - getStatusBarHeight());//60為狀態列高度
                 if(wmlp.y < 0)
                     wmlp.y = 0;
-                if (nowState != State.MAX && nowState != State.MINI) {
+                if (nowState != State.MINI) {
                     if((display_object & MENU_BUTTON) == MENU_BUTTON)
                         wmlp.x -= menu.getLayoutParams().width;
                     left = wmlp.x;
@@ -497,7 +496,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wm.updateViewLayout(winform, wmlp);
         }
         return false;
-
     }
 
     @Override
@@ -585,7 +583,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
             wmlp.flags = NO_FOCUS_FLAGE;
-            wmlp.alpha =1.0f;
+            wmlp.alpha = 1.0f;
             wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
             nowState = State.MINI;
@@ -754,6 +752,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         else
             title.setPadding(0,0,0,0);
         close_button.setVisibility(View.GONE);
+        microMaxButtonBackground.setVisibility(View.GONE);
         if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
             titleBarAndButtons.setVisibility(View.GONE);
         if((display_object & MINI_BUTTON) == MINI_BUTTON)
@@ -775,6 +774,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         else
             title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
         close_button.setVisibility(View.VISIBLE);
+        microMaxButtonBackground.setVisibility(View.VISIBLE);
         if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
             titleBarAndButtons.setVisibility(View.VISIBLE);
         if((display_object & MINI_BUTTON) == MINI_BUTTON)
@@ -786,6 +786,40 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if((display_object & SIZE_BAR) == SIZE_BAR)
             sizeBar.setVisibility(View.VISIBLE);
     }
+
+    /**
+     * 隱藏或顯示的控制項物件
+     */
+    private void setDisplayObject(){
+        if((display_object & MENU_BUTTON) != MENU_BUTTON) {
+            menu.setVisibility(View.GONE);
+            title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
+        }else {
+            menu.setVisibility(View.VISIBLE);
+            title.setPadding(0,0,0,0);
+        }
+        if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
+            titleBarAndButtons.setVisibility(View.GONE);
+        else
+            titleBarAndButtons.setVisibility(View.VISIBLE);
+        if((display_object & HIDE_BUTTON) != HIDE_BUTTON)
+            hide.setVisibility(View.GONE);
+        else
+            hide.setVisibility(View.VISIBLE);
+        if((display_object & MINI_BUTTON) != MINI_BUTTON)
+            mini.setVisibility(View.GONE);
+        else
+            mini.setVisibility(View.VISIBLE);
+        if((display_object & MAX_BUTTON) != MAX_BUTTON)
+            max.setVisibility(View.GONE);
+        else
+            max.setVisibility(View.VISIBLE);
+        if((display_object & SIZE_BAR) != SIZE_BAR)
+            sizeBar.setVisibility(View.GONE);
+        else
+            sizeBar.setVisibility(View.VISIBLE);
+    }
+
 
     /**
      * 讓該視窗獲得焦點
@@ -800,6 +834,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             WindowStruct.NOW_FOCUS_NUMBER = this.Number;
             ((WindowFrom) winform).setWindowStyleOfFocus();
             wm.removeView(winform);
+            wmlp.flags = FOCUS_FLAGE;
+            wmlp.alpha =1.0f;
             wm.addView(winform,wmlp);
         }
     }
@@ -814,6 +850,77 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 max();
             else
                 general();
+    }
+
+    /**
+     * 讓該視窗失去焦點
+     */
+    public void unFocusWindow(){
+        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER == this.Number) {//如果被觸碰的視窗編號是現在焦點視窗編號
+            WindowStruct.NOW_FOCUS_NUMBER = -1;
+            ((WindowFrom) winform).setWindowStyleOfUnFocus();
+            wmlp.flags = NO_FOCUS_FLAGE;
+            wm.updateViewLayout(winform,wmlp);
+        }
+    }
+
+    /**
+     * 隱藏或顯示的控制項物件
+     * @param display_object 要顯示的控制物件
+     */
+    public void setDisplayObject(int display_object){
+        this.display_object = display_object;
+        setDisplayObject();
+    }
+
+    /**
+     * 取得的控制項物件
+     * @return  顯示的控制物件
+     */
+    public int getDisplayObject(){
+        return display_object;
+    }
+
+
+    /**
+     * 設定視窗位置
+     * @param x X座標
+     * @param y Y座標
+     */
+    public void setPosition(int x,int y){
+        if(nowState != State.MINI){
+            left = x;
+            top = y;
+        }
+        if(nowState == State.GENERAL || nowState == State.MINI) {
+            wmlp.x = x;
+            wmlp.y = y;
+            wm.updateViewLayout(winform, wmlp);
+        }
+    }
+
+    /**
+     * 設定視窗寬度
+     * @param width 寬度
+     */
+    public void setWidth(int width){
+        this.width = width;
+        if(nowState == State.GENERAL) {
+            winform.getLayoutParams().width = width;
+            wm.updateViewLayout(winform, wmlp);
+        }
+    }
+
+    /**
+     * 設定視窗高度
+     * @param height 高度
+     */
+    public void setHeight(int height){
+        this.height = height;
+        if(nowState == State.GENERAL) {
+            winform.getLayoutParams().height = height;
+            wm.updateViewLayout(winform, wmlp);
+        }
     }
 
     /**

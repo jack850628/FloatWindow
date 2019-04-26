@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">FloatWindow</string>
-    <string name="version">ver:1.1.2"</string>
+    <string name="version">ver:1.1.5</string>
 
     <string name="web_browser">Web Browser</string>
     <string name="note">Note</string>
@@ -40,5 +40,8 @@
     <string name="select_color">select color</string>
     <string name="about">About</string>
     <string name="web_url">Web url</string>
-    <string name="all_notes">All notes</string>
+    <string name="other_notes">Other notes</string>
+    <string name="create_new_note">Create new note</string>
+    <string name="share">Share</string>
+    <string name="hide_frame">Hide frame</string>
 </resources>

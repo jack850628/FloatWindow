@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="app_name">浮动视窗</string>
-        <string name="version">版本:1.1.2"</string>
+        <string name="version">版本:1.1.5</string>
 
         <string name="web_browser">网页浏览器</string>
         <string name="note">便条纸</string>
@@ -41,5 +41,8 @@
         <string name="select_color">选择颜色</string>
         <string name="about">关于</string>
     <string name="web_url">網址</string>
-    <string name="all_notes">所有便条纸</string>
+    <string name="other_notes">其他便条纸</string>
+    <string name="create_new_note">新增便条纸</string>
+    <string name="share">分享</string>
+    <string name="hide_frame">隐藏外框</string>
 </resources>
