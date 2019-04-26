@@ -834,7 +834,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             WindowStruct.NOW_FOCUS_NUMBER = this.Number;
             ((WindowFrom) winform).setWindowStyleOfFocus();
             wm.removeView(winform);
-            wmlp.flags = FOCUS_FLAGE;
+            wmlp.flags = (nowState == State.MINI) ? NO_FOCUS_FLAGE : FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.addView(winform,wmlp);
         }
@@ -858,7 +858,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public void unFocusWindow(){
         if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER == this.Number) {//如果被觸碰的視窗編號是現在焦點視窗編號
             WindowStruct.NOW_FOCUS_NUMBER = -1;
-            ((WindowFrom) winform).setWindowStyleOfUnFocus();
+            if(nowState != State.MINI)
+                ((WindowFrom) winform).setWindowStyleOfUnFocus();
             wmlp.flags = NO_FOCUS_FLAGE;
             wm.updateViewLayout(winform,wmlp);
         }
