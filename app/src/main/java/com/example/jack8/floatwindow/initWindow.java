@@ -509,6 +509,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                             :new Object[][]{{initWindow.OPEN_NOTE,otherNodeListAdapter.noteList.get(position)[0]}}
                                                     )
                                                     .windowAction(((FloatServer)context).windowAction)
+                                                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                                     .constructionAndDeconstructionWindow(new initWindow(){
                                                         @Override
                                                         public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
@@ -533,11 +534,12 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                     .show();
                                         }
                                     });
-                                   FloatServer.wm_count++;
+                                    FloatServer.wm_count++;
                                     otherNoteList = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                             .windowPages(new View[]{nodeList})
                                             .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
                                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR)
+                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                             .windowAction(new WindowStruct.WindowAction() {
                                                 @Override
                                                 public void goHide(WindowStruct windowStruct) {
