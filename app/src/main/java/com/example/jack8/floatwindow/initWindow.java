@@ -365,6 +365,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
 
 
     final static int ADD_NOTE = 0,OPEN_NOTE = 1;
+    final static String NOTE = "Note",NOTES = "Notes";
     static LinkedList<String> showingNoteIdList = new LinkedList<>();
     static WindowStruct otherNoteList = null;//其他便條紙清單視窗
     static class OtherNodeListAdapter extends BaseAdapter{//其他便條紙清單所使用的Adapter
@@ -373,24 +374,24 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
 
         Context context;
 
-        public OtherNodeListAdapter(Context context, SharedPreferences noteSpf,LinkedList<String> showingNoteIdList){
+        public OtherNodeListAdapter(Context context,LinkedList<String> showingNoteIdList){
             this.context = context;
-            updateNodeList(noteSpf,showingNoteIdList);
+            updateNodeList(showingNoteIdList);
         }
 
-        public void update(SharedPreferences noteSpf,LinkedList<String> showingNoteIdList){
-            updateNodeList(noteSpf,showingNoteIdList);
+        public void update(LinkedList<String> showingNoteIdList){
+            updateNodeList(showingNoteIdList);
             this.notifyDataSetChanged();
         }
 
-        public void updateNodeList(SharedPreferences noteSpf,LinkedList<String> showingNoteIdList){
+        public void updateNodeList(LinkedList<String> showingNoteIdList){
             if(noteList == null)
                 noteList = new ArrayList();
             else
                 noteList.clear();
             noteList.add(new String[]{"ADD_NEW",context.getString(R.string.create_new_note)});
             try {
-                JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
+                JSONObject notes = new JSONObject(context.getSharedPreferences(NOTE,0).getString(NOTES, "{}"));
                 Iterator<String> keys = notes.keys();
                 while (keys.hasNext()){
                     String key = keys.next();
@@ -419,22 +420,43 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             if(convertView == null)
-                convertView = LayoutInflater.from(context).inflate(R.layout.hide_menu_item, parent, false);
-            TextView item_text = ((TextView)convertView.findViewById(R.id.item_text));
+                convertView = LayoutInflater.from(context).inflate(R.layout.note_list_item, parent, false);
+            TextView item_text = convertView.findViewById(R.id.item_text);
+            Button removeNode = convertView.findViewById(R.id.remove_node);
             item_text.setText(noteList.get(position)[1]);
-            item_text.setGravity(
-                    position == 0
-                    ?Gravity.CENTER_HORIZONTAL
-                    :Gravity.NO_GRAVITY
-            );
+            if(position != 0) {
+                item_text.setGravity(Gravity.NO_GRAVITY);
+                item_text.setPadding(0,0,0,(int)(15*context.getResources().getDisplayMetrics().density));
+                removeNode.setVisibility(View.VISIBLE);
+                removeNode.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SharedPreferences noteSpf = context.getSharedPreferences(initWindow.NOTE,0);
+                        try {
+                            JSONObject notes = new JSONObject(noteSpf.getString(NOTES,"{}"));
+                            notes.remove(noteList.get(position)[0]);
+                            SharedPreferences.Editor spfe=noteSpf.edit();
+                            spfe.putString(NOTES,notes.toString());
+                            spfe.apply();
+                            noteList.remove(position);
+                            OtherNodeListAdapter.this.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }else {
+                item_text.setPadding(0,(int)(15*context.getResources().getDisplayMetrics().density),0,(int)(15*context.getResources().getDisplayMetrics().density));
+                item_text.setGravity(Gravity.CENTER_HORIZONTAL);
+                removeNode.setVisibility(View.GONE);
+            }
 
             return convertView;
         }
     }
     static OtherNodeListAdapter otherNodeListAdapter = null;
-    SharedPreferences noteSpf;
     String noteId=null;
     Date dNow = new Date();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
@@ -442,12 +464,14 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
     MoveWindow moveWindow;
     int nodePageDisplayObj;
     public void initWindow_Note_Page(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
-        final EditText note=(EditText) pageView.findViewById(R.id.note);final View toolsBar = pageView.findViewById(R.id.tools_bar);
+        final EditText note=(EditText) pageView.findViewById(R.id.note);
         final Clipboard clipboard=new Clipboard(context);
+        final View toolsBar = pageView.findViewById(R.id.tools_bar);
         final ImageView copy = toolsBar.findViewById(R.id.copy);
         final ImageView paste = toolsBar.findViewById(R.id.paste);
         final ImageView showFrame = toolsBar.findViewById(R.id.show_frame);
         final ImageView close = toolsBar.findViewById(R.id.close);
+        final SharedPreferences noteSpf = context.getSharedPreferences(NOTE,0);
 
         note.addTextChangedListener(new TextWatcher() {
             @Override
@@ -463,13 +487,13 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void afterTextChanged(Editable s) {
                 try {
-                    JSONObject notes = new JSONObject(noteSpf.getString("Notes","{}"));
+                    JSONObject notes = new JSONObject(noteSpf.getString(NOTES,"{}"));
                     if(!s.toString().matches("^\\s*$"))
                         notes.put(noteId, s);
                     else
                         notes.remove(noteId);
                     SharedPreferences.Editor spfe=noteSpf.edit();
-                    spfe.putString("Notes",notes.toString());
+                    spfe.putString(NOTES,notes.toString());
                     spfe.apply();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -617,13 +641,11 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         showFrame.setOnClickListener(copy_paste);
         close.setOnClickListener(copy_paste);
 
-        final String NOTE="Note";
-        noteSpf = context.getSharedPreferences(NOTE,0);
         if(otherNodeListAdapter == null)
-            otherNodeListAdapter = new OtherNodeListAdapter(context,noteSpf,showingNoteIdList);
+            otherNodeListAdapter = new OtherNodeListAdapter(context,showingNoteIdList);
         if(args == null || args.length == 0) {
             try {
-                JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
+                JSONObject notes = new JSONObject(noteSpf.getString(NOTES, "{}"));
                 Iterator<String> keys = notes.keys();
                 while (keys.hasNext()){
                     String key = keys.next();
@@ -635,7 +657,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 }
                 if (noteId != null) {
                     note.setText(notes.getString(noteId));
-                    otherNodeListAdapter.update(noteSpf,showingNoteIdList);
+                    otherNodeListAdapter.update(showingNoteIdList);
                 }else{
                     noteId = formatter.format(dNow);
                     showingNoteIdList.add(noteId);
@@ -656,9 +678,9 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     noteId = (String)args[1];
                     showingNoteIdList.add(noteId);
                     try {
-                        JSONObject notes = new JSONObject(noteSpf.getString("Notes", "{}"));
+                        JSONObject notes = new JSONObject(noteSpf.getString(NOTES, "{}"));
                         note.setText(notes.getString(noteId));
-                        otherNodeListAdapter.update(noteSpf,showingNoteIdList);
+                        otherNodeListAdapter.update(showingNoteIdList);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -708,7 +730,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             ((WebView)pageView.findViewById(R.id.web)).onPause();
         }else if(position==1){
             showingNoteIdList.remove(noteId);
-            otherNodeListAdapter.update(noteSpf,showingNoteIdList);
+            otherNodeListAdapter.update(showingNoteIdList);
         }
     }
 

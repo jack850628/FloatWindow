@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="right"
+    android:orientation="vertical"
+    android:descendantFocusability="blocksDescendants">
+
+    <Button
+        android:id="@+id/remove_node"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/close_window" />
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="15dip"
+        android:shadowColor="#cefffefe"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="15"
+        android:textColor="#313131"
+        android:textSize="18sp" />
+</LinearLayout>
