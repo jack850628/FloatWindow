@@ -38,7 +38,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
             |WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH//如果你已經設置了FLAG_NOT_TOUCH_MODAL,那麼你可以設置FLAG_WATCH_OUTSIDE_TOUCH這個flag, 這樣一個點擊事件如果發生在你的window之外的範圍,你就會接收到一個特殊的MotionEvent,MotionEvent.ACTION_OUTSIDE 注意,你只會接收到點擊事件的第一下,而之後的DOWN/MOVE/UP等手勢全都不會接收到
             ;
-    private static int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+    private static int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
+            |WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            ;
+    private static int NO_FOCUS_FLAGE_FOR_MINI_STATE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
     private int top,left,height,width;//視窗的座標及大小
 
@@ -213,11 +216,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int display_object, int transitionsDuration, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
          if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
             WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
-            if(WS.nowState != State.MINI)
-                WS.getWindowFrom().setWindowStyleOfUnFocus();
+            WS.unFocusWindow();
         }
-        this.Number = Index++;
-        WindowStruct.NOW_FOCUS_NUMBER = this.Number;
+        WindowStruct.NOW_FOCUS_NUMBER = this.Number = Index++;
         this.context = context;
         this.wm = wm;
         this.winconPage = windowPages;
@@ -582,7 +583,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            wmlp.flags = NO_FOCUS_FLAGE;
+            wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
             wmlp.alpha = 1.0f;
             wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
@@ -825,16 +826,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * 讓該視窗獲得焦點
      */
     public void focusWindow(){
-        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER != this.Number) {//如果被觸碰的視窗編號不是現在焦點視窗編號
+        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER != this.Number) {//如果視窗編號不是現在焦點視窗編號
             if (windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)) {//如果現在焦點視窗編號在有視窗清單裡
                 WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
-                if (WS.nowState != State.MINI)
-                    WS.getWindowFrom().setWindowStyleOfUnFocus();
+                WS.unFocusWindow();
             }
             WindowStruct.NOW_FOCUS_NUMBER = this.Number;
             ((WindowFrom) winform).setWindowStyleOfFocus();
             wm.removeView(winform);
-            wmlp.flags = (nowState == State.MINI) ? NO_FOCUS_FLAGE : FOCUS_FLAGE;
+            wmlp.flags = (nowState == State.MINI) ? NO_FOCUS_FLAGE_FOR_MINI_STATE : FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.addView(winform,wmlp);
         }
@@ -856,11 +856,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * 讓該視窗失去焦點
      */
     public void unFocusWindow(){
-        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER == this.Number) {//如果被觸碰的視窗編號是現在焦點視窗編號
+        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER == this.Number) {//如果視窗編號是現在焦點視窗編號
             WindowStruct.NOW_FOCUS_NUMBER = -1;
-            if(nowState != State.MINI)
+            if(nowState == State.MINI)
+                wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
+            else {
                 ((WindowFrom) winform).setWindowStyleOfUnFocus();
-            wmlp.flags = NO_FOCUS_FLAGE;
+                wmlp.flags = NO_FOCUS_FLAGE;
+            }
             wm.updateViewLayout(winform,wmlp);
         }
     }
@@ -979,6 +982,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         int height = resources.getDimensionPixelSize(resourceId);
         return height;
     }
+
+    /**
+     * 取得視窗的View
+     * @return 視窗的View
+     */
     public WindowFrom getWindowFrom(){
         return (WindowFrom)winform;
     }
