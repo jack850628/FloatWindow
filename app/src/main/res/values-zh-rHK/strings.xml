@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">浮動視窗</string>
-    <string name="version">版本:1.1.0"</string>
+    <string name="version">版本:1.1.6</string>
 
     <string name="web_browser">網頁瀏覽器</string>
     <string name="note">便條紙</string>
@@ -40,4 +40,9 @@
     <string name="select_window_out_of_focus_color">點選視窗設定失焦顏色</string>
     <string name="select_color">選擇顏色</string>
     <string name="about">關於</string>
+    <string name="web_url">網址</string>
+    <string name="other_notes">其他便條紙</string>
+    <string name="create_new_note">新增便條紙</string>
+    <string name="share">分享</string>
+    <string name="hide_frame">隱藏外框</string>
 </resources>

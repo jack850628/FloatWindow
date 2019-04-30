@@ -23,8 +23,7 @@ public class ProcessShare extends initWindow {
     public void Construction(final Context context, View pageView, int position, final Object[] args, final WindowStruct windowStruct){
         switch (pageView.getId()){
             case 0: {//當id為0就是選擇頁面的畫面
-                ListView menu = (ListView) pageView.findViewById(0);
-                menu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                ((ListView)pageView).setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         int[] layouts = (int[])args[0];
@@ -32,9 +31,18 @@ public class ProcessShare extends initWindow {
                         View window_content_view = LayoutInflater.from(context).inflate(layouts[position],(ViewGroup) winform,false);
                         window_content_view.setId(layouts[position]);//將id設定跟Resource id相同
                         String[] titles = (String[])args[1];
-                        String[] _args = new String[]{(String)args[2]};
-                        new WindowStruct(context, wm, new View[]{window_content_view}, new String[]{titles[position]}, new Object[][]{_args}, wa, ProcessShare.this);
-                        ((FloatServer)context).wm_count++;
+                        Object[] _args = position == 0
+                                ? new Object[]{args[2]}
+                                : new Object[]{initWindow.ADD_NOTE,args[2]};
+                        FloatServer.wm_count++;
+                        new WindowStruct.Builder(context, wm)
+                                .windowPages(new View[]{window_content_view})
+                                .windowPageTitles(new String[]{titles[position]})
+                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                .windowInitArgs(new Object[][]{_args})
+                                .windowAction(wa)
+                                .constructionAndDeconstructionWindow(ProcessShare.this)
+                                .show();
                         windowStruct.close();
                     }
                 });
@@ -55,6 +63,23 @@ public class ProcessShare extends initWindow {
                 break;
             case R.layout.note_page:
                 super.Deconstruction(context,pageView,1);
+                break;
+        }
+    }
+    @Override
+    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+        switch (pageView.getId()){
+            case R.layout.note_page:
+                super.onResume(context,pageView,1,windowStruct);
+                break;
+        }
+    }
+
+    @Override
+    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+        switch (pageView.getId()){
+            case R.layout.note_page:
+                super.onPause(context,pageView,1,windowStruct);
                 break;
         }
     }

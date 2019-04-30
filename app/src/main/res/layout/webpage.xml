@@ -26,7 +26,7 @@
                 android:layout_toLeftOf="@+id/goback"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="網址"
+                android:hint="@string/web_url"
                 android:inputType="textPersonName"
                 android:textColor="#000000"
                 android:textColorHint="#AAAAAA" />

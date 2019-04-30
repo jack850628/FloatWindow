@@ -12,19 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.jack8.floatwindow.Window.WindowColor;
-import com.example.jack8.floatwindow.Window.WindowConfig;
 import com.example.jack8.floatwindow.Window.WindowFrom;
 import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
 
 import java.util.ArrayList;
 
 public class Setting extends AppCompatActivity {
+    private AdView mAdView;
+
     WindowColor wColor;
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
@@ -34,6 +40,14 @@ public class Setting extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
+
+        MobileAds.initialize(this, "ca-app-pub-4604853118314154~2222092369");
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                .build();
+        mAdView.loadAd(adRequest);
+
         wColor=new WindowColor(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
@@ -59,7 +73,7 @@ public class Setting extends AppCompatActivity {
 
             }
         });
-        secondSet.setProgress(WindowConfig.getWindowSpeed(this));
+        secondSet.setProgress(WindowTransitionsDuration.getWindowTransitionsDuration(this));
 
         ViewGroup content = (ViewGroup)findViewById(R.id.content);
         View FoucsWindow,NotFoucsWindow;
@@ -73,7 +87,6 @@ public class Setting extends AppCompatActivity {
         windowNotFoucsColorNotFoucsSetTitle.setTextSize(20f);
         content.addView(windowNotFoucsColorNotFoucsSetTitle);
         content.addView(NotFoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
-        ((WindowFrom)NotFoucsWindow).isStart=false;
 
         //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
@@ -97,6 +110,11 @@ public class Setting extends AppCompatActivity {
         FoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColor);
         closeButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.close_button_background);
         ((TextView)FoucsWindow.findViewById(R.id.title)).setText(getString(R.string.window_title));
+
+        microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
+        titleBar.setBackgroundColor(wColor.getTitleBar());
+        sizeBar.setBackgroundColor(wColor.getSizeBar());
+        closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
         //---------------------------------------------------------------------------
         //-------------------------初始化失焦視窗設定畫面----------------------------
         TextView promptNotFoucs=new TextView(this);
@@ -217,7 +235,7 @@ public class Setting extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(v.getId()==R.id.ok) {
-                WindowConfig.setWindowSpeed(Setting.this,secondSet.getProgress());
+                WindowTransitionsDuration.setWindowTransitionsDuration(Setting.this,secondSet.getProgress());
                 wColor.save();
             }
             finish();
@@ -227,7 +245,7 @@ public class Setting extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         for(WindowStruct windowStruct:windowList) {
-            windowStruct.enableAnimation(false);
+            windowStruct.setTransitionsDuration(0);
             windowStruct.close();
         }
     }
@@ -243,17 +261,16 @@ public class Setting extends AppCompatActivity {
                 finish();
                 return true;
             case 0:
-                windowList.add(new WindowStruct(
-                        this,
-                        (WindowManager) getSystemService(Context.WINDOW_SERVICE),
-                        new int[]{R.layout.about},
-                        new String[]{getString(R.string.about)},
-                        60,
-                        60,
-                        (int)(110*this.getResources().getDisplayMetrics().density),
-                        (int)(195*this.getResources().getDisplayMetrics().density),
-                        WindowStruct.MINI_BUTTON,
-                        new WindowStruct.WindowAction() {
+                windowList.add(new WindowStruct.Builder(this,(WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                        .windowPages(new int[]{R.layout.about})
+                        .windowPageTitles(new String[]{getString(R.string.about)})
+                        .top(60)
+                        .left(60)
+                        .height((int)(110*this.getResources().getDisplayMetrics().density))
+                        .width((int)(195*this.getResources().getDisplayMetrics().density))
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS|WindowStruct.MINI_BUTTON)
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .windowAction(new WindowStruct.WindowAction() {
                             @Override
                             public void goHide(WindowStruct windowStruct) {
 
@@ -263,8 +280,8 @@ public class Setting extends AppCompatActivity {
                             public void goClose(WindowStruct windowStruct) {
                                 windowList.remove(windowStruct);
                             }
-                        },
-                        new WindowStruct.constructionAndDeconstructionWindow() {
+                        })
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
 
@@ -274,7 +291,17 @@ public class Setting extends AppCompatActivity {
                             public void Deconstruction(Context context, View pageView, int position) {
 
                             }
-                        }));
+
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+                        }).show());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

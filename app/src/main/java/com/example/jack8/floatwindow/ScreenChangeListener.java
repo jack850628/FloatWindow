@@ -42,10 +42,11 @@ public class ScreenChangeListener extends BroadcastReceiver {
                 for(Map.Entry<Integer,WindowStruct> entry : windowList.entrySet()){
                     WindowStruct windowStruct = entry.getValue();
                     if(windowStruct.nowState == WindowStruct.State.MAX){
-                        windowStruct.enableAnimation(false);
+                        int transitionsDuration = windowStruct.getTransitionsDuration();
+                        windowStruct.setTransitionsDuration(0);
                         windowStruct.nowState = WindowStruct.State.GENERAL;
                         windowStruct.max();
-                        windowStruct.enableAnimation(true);
+                        windowStruct.setTransitionsDuration(transitionsDuration);
                     }
                 }
             /*if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
