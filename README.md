@@ -1,4 +1,4 @@
-![Alt text](app/src/main/res/drawable/icom.png)
+<img src="app/src/main/res/drawable/icom.png" width="100"></img>
 # FloatWindow 浮動視窗
 Float Window app for Android\
 ![Alt text](Demonstration.png)
@@ -64,7 +64,7 @@ com.example.jack8.floatwindow
 最後讓您的應用程式取得ACTION_MANAGE_OVERLAY_PERMISSION權限就完成了
 
 
-使用WindowStruct.Builder可以創建一個視窗
+使用WindowStruct.Builder可以創建一個視窗 \
 創建一個Window最簡當的方式為
 ```
 WindowStruct windowStruct = new WindowStruct.Builder(this,(WindowManager) getSystemService(Context.WINDOW_SERVICE)).show();
