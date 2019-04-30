@@ -42,7 +42,7 @@ com.example.jack8.floatwindow
 ```
 並將window.xml裡面的 com.example.jack8.floatwindow.Window.WindowFrom 改成 <您專案的package name>.Window.WindowFrom
 
-再來將
+再來將您專案中的
 ```
    res
     |-values
@@ -56,7 +56,7 @@ com.example.jack8.floatwindow
     <color name="closeButton">#FF0000</color>
 ```
 
-然後再AndroidManifest.xml貼上
+然後再您專案中的AndroidManifest.xml裡面貼上
 ```
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 ```
