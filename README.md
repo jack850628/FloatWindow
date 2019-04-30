@@ -40,7 +40,7 @@ com.example.jack8.floatwindow
         |-micro_window.xml
         |-mini_window.xml
 ```
-並將window.xml裡面的 com.example.testwindow.Window.WindowFrom 改成 <您專案的package name>.Window.WindowFrom
+並將window.xml裡面的 com.example.jack8.floatwindow.Window.WindowFrom 改成 <您專案的package name>.Window.WindowFrom
 
 再來將
 ```
