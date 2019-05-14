@@ -32,7 +32,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     int Number;//視窗編號
     static int NOW_FOCUS_NUMBER =- 1;//現在點視窗
     private int MINI_SIZE;//視窗最小化的寬度
-    private final int TITLE_LIFT_TO_EDGE_DISTANCE = 20;
+    private final int TITLE_LIFT_TO_EDGE_DISTANCE = 10;
     //static final int START_POINT = 60;//視窗預設座標
     private static int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
             |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
@@ -773,7 +773,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if((display_object & MENU_BUTTON) == MENU_BUTTON)
             menu.setVisibility(View.VISIBLE);
         else
-            title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
+            title.setPadding((int)(context.getResources().getDisplayMetrics().density*TITLE_LIFT_TO_EDGE_DISTANCE),0,0,0);
         close_button.setVisibility(View.VISIBLE);
         microMaxButtonBackground.setVisibility(View.VISIBLE);
         if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
@@ -794,7 +794,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private void setDisplayObject(){
         if((display_object & MENU_BUTTON) != MENU_BUTTON) {
             menu.setVisibility(View.GONE);
-            title.setPadding(TITLE_LIFT_TO_EDGE_DISTANCE,0,0,0);
+            title.setPadding((int)(context.getResources().getDisplayMetrics().density*TITLE_LIFT_TO_EDGE_DISTANCE),0,0,0);
         }else {
             menu.setVisibility(View.VISIBLE);
             title.setPadding(0,0,0,0);
