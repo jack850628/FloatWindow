@@ -330,9 +330,13 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
                 menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
-                final AlertDialog menu = new AlertDialog.Builder(context).setView(menu_list).create();
-                menu.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                menu.show();
+                final PopupWindow popupWindow =new PopupWindow(context);
+                menu_list.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);//先量測
+                popupWindow.setWidth(menu_list.getMeasuredWidth());//再取寬度
+                popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                popupWindow.setContentView(menu_list);
+                popupWindow.setFocusable(true);
+                popupWindow.showAsDropDown(v);
                 menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -356,7 +360,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                 break;
                             }
                         }
-                        menu.dismiss();
+                        popupWindow.dismiss();
                     }
                 });
             }
