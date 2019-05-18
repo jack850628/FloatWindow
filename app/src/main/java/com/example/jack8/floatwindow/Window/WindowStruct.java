@@ -755,7 +755,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         close_button.setVisibility(View.GONE);
         microMaxButtonBackground.setVisibility(View.GONE);
         if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
-            titleBarAndButtons.setVisibility(View.GONE);
+            titleBarAndButtons.setVisibility(View.VISIBLE);
         if((display_object & MINI_BUTTON) == MINI_BUTTON)
             mini.setVisibility(View.GONE);
         if((display_object & MAX_BUTTON) == MAX_BUTTON)
@@ -778,6 +778,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         microMaxButtonBackground.setVisibility(View.VISIBLE);
         if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
             titleBarAndButtons.setVisibility(View.VISIBLE);
+        else
+            titleBarAndButtons.setVisibility(View.GONE);
         if((display_object & MINI_BUTTON) == MINI_BUTTON)
             mini.setVisibility(View.VISIBLE);
         if((display_object & MAX_BUTTON) == MAX_BUTTON)
@@ -792,6 +794,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * 隱藏或顯示的控制項物件
      */
     private void setDisplayObject(){
+        if(nowState == State.MINI)
+            return;
         if((display_object & MENU_BUTTON) != MENU_BUTTON) {
             menu.setVisibility(View.GONE);
             title.setPadding((int)(context.getResources().getDisplayMetrics().density*TITLE_LIFT_TO_EDGE_DISTANCE),0,0,0);
@@ -815,7 +819,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             max.setVisibility(View.GONE);
         else
             max.setVisibility(View.VISIBLE);
-        if((display_object & SIZE_BAR) != SIZE_BAR)
+        if((display_object & SIZE_BAR) != SIZE_BAR || nowState == State.MAX)
             sizeBar.setVisibility(View.GONE);
         else
             sizeBar.setVisibility(View.VISIBLE);
