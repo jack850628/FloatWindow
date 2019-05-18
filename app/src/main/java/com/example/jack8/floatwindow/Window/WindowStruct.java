@@ -896,15 +896,33 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param y Y座標
      */
     public void setPosition(int x,int y){
-        if(nowState != State.MINI){
-            left = x;
-            top = y;
+        if(nowState != State.CLOSE) {
+            if (nowState != State.MINI) {
+                left = x;
+                top = y;
+            }
+            if (nowState == State.GENERAL || nowState == State.MINI) {
+                wmlp.x = x;
+                wmlp.y = y;
+                wm.updateViewLayout(winform, wmlp);
+            }
         }
-        if(nowState == State.GENERAL || nowState == State.MINI) {
-            wmlp.x = x;
-            wmlp.y = y;
-            wm.updateViewLayout(winform, wmlp);
-        }
+    }
+
+    /**
+     * 視窗X座標
+     * @return X座標
+     */
+    public int getPositionX(){
+        return wmlp.x;
+    }
+
+    /**
+     * 視窗Y座標
+     * @return Y座標
+     */
+    public int getPositionY(){
+        return wmlp.y;
     }
 
     /**
@@ -920,6 +938,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     }
 
     /**
+     * 取得視窗寬度
+     * @return  寬度
+     */
+    public int getWidth(){
+        return this.width;
+    }
+
+    /**
      * 設定視窗高度
      * @param height 高度
      */
@@ -929,6 +955,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             winform.getLayoutParams().height = height;
             wm.updateViewLayout(winform, wmlp);
         }
+    }
+
+    /**
+     * 取得視窗高度
+     * @return  高度
+     */
+    public int getHeight(){
+        return this.height;
     }
 
     /**
