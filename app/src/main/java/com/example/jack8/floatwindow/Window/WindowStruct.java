@@ -247,7 +247,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         winform = LayoutInflater.from(context).inflate(R.layout.window,null);
-        ((WindowFrom)winform).seWindowStruct(this);
+        ((WindowFrom)winform).setWindowStruct(this);
         winform.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

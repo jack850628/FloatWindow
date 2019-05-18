@@ -23,7 +23,7 @@ public class WindowFrom extends LinearLayout {
         wColor = new WindowColor(context);
         wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
-    public void seWindowStruct(WindowStruct WS){
+    public void setWindowStruct(WindowStruct WS){
         this.WS = WS;
     }
     View titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
