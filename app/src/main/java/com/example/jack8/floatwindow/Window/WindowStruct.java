@@ -621,11 +621,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
             nowState = State.MAX;
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
+            else
+                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
             if (previousState == State.GENERAL) {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                    max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
-                else
-                    max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
                 topMini.startScroll(left, top, -left, -top, transitionsDuration);
                 heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
                         displayMetrics.heightPixels - height - getStatusBarHeight(), transitionsDuration);
@@ -661,11 +661,11 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wm.updateViewLayout(winform, wmlp);
             previousState = nowState;
             nowState = State.GENERAL;
+            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
+            else
+                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
             if(previousState == State.MAX) {
-                if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
-                    max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
-                else
-                    max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
                 int dy;
                 topMini.startScroll(0, 0, left, top, transitionsDuration);
                 heightMini.startScroll( displayMetrics.widthPixels,
