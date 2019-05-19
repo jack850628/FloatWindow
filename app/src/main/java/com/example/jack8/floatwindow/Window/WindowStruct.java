@@ -213,7 +213,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles ,Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int display_object, int transitionsDuration, WindowAction windowAction,constructionAndDeconstructionWindow CDAW){
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, final int display_object, int transitionsDuration, WindowAction windowAction, constructionAndDeconstructionWindow CDAW){
          if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
             WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             WS.unFocusWindow();
@@ -317,7 +317,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     int temp;
                     winform.getLayoutParams().width = width = (temp = (int)(event.getX()+Wlength))>30?temp:30;
                     winform.getLayoutParams().height = height = ((temp = (int)(event.getRawY()-wmlp.y-Hlength))>=0?temp:0)
-                            +title.getLayoutParams().height+sizeBar.getLayoutParams().height;//Touch的Y減去視窗的Top再減去Hlength就是視窗內容區要調整的高度
+                            +((View)wincon.getParent()).getTop()+sizeBar.getLayoutParams().height;//Touch的Y減去視窗的Top再減去Hlength就是視窗內容區要調整的高度
                     Log.i("size2",wincon.getLayoutParams().width+"   "+wincon.getLayoutParams().height);
                 }else if(event.getAction() == MotionEvent.ACTION_UP){
                     Wlength =- 1;
@@ -897,6 +897,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void setPosition(int x,int y){
         if(nowState != State.CLOSE) {
+            y = Math.max(y,0);
             if (nowState != State.MINI) {
                 left = x;
                 top = y;
@@ -930,9 +931,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param width 寬度
      */
     public void setWidth(int width){
-        this.width = width;
+        this.width = Math.max(width,30);
         if(nowState == State.GENERAL) {
-            winform.getLayoutParams().width = width;
+            winform.getLayoutParams().width = this.width;
             wm.updateViewLayout(winform, wmlp);
         }
     }
@@ -950,9 +951,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param height 高度
      */
     public void setHeight(int height){
-        this.height = height;
+        this.height = Math.max(height,winform.getHeight()-wincon.getHeight());
         if(nowState == State.GENERAL) {
-            winform.getLayoutParams().height = height;
+            winform.getLayoutParams().height = this.height;
             wm.updateViewLayout(winform, wmlp);
         }
     }
