@@ -18,8 +18,8 @@
     <string name="open_link_in_new_window">在新的視窗開啟連結</string>
     <string name="copy_link">複製連結網址</string>
     <string name="copyed">以複製到剪貼簿</string>
-    <string name="share_the_website">分享此網頁</string>
-    <string name="open_to_other_browser">用其他瀏覽器開啟此網頁</string>
+    <string name="share_the_website">分享</string>
+    <string name="open_to_other_browser">用其他瀏覽器開啟</string>
     <string name="select_APP">選擇APP</string>
     <string name="select_browser">選擇瀏覽器</string>
     <string name="temperature">溫度</string>

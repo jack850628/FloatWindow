@@ -78,8 +78,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
     }
     public void initWindow1(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
         final EditText path=(EditText)pageView.findViewById(R.id.webpath);
-        Button go=(Button)pageView.findViewById(R.id.go);
-        Button goBack=(Button)pageView.findViewById(R.id.goback);
+        final Button go=(Button)pageView.findViewById(R.id.go);
+        final Button goBack=(Button)pageView.findViewById(R.id.goback);
         final Button menu=(Button) pageView.findViewById(R.id.menu);
         final WebView web=(WebView)pageView.findViewById(R.id.web);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
@@ -331,12 +331,11 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 ListView menu_list = new ListView(context);
                 menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
                 final PopupWindow popupWindow =new PopupWindow(context);
-                menu_list.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);//先量測
-                popupWindow.setWidth(menu_list.getMeasuredWidth());//再取寬度
+                popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
                 popupWindow.setContentView(menu_list);
                 popupWindow.setFocusable(true);
-                popupWindow.showAsDropDown(v);
+                popupWindow.showAsDropDown(v,-popupWindow.getWidth() + v.getWidth(),0);//需要-popupWindow.getWidth() + v.getWidth()是因為在Android 6上PopupWindow的anchor view下方以anchor view最左邊往右算的寬度如果不足popupWindow的寬度，popupWindow就會跑到anchor view的上方
                 menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
