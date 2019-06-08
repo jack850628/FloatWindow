@@ -24,13 +24,19 @@ import android.widget.TextView;
 
 import com.example.jack8.floatwindow.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private static int Index = 0;//計算視窗開啟數量
+
     int Number;//視窗編號
-    static int NOW_FOCUS_NUMBER =- 1;//現在點視窗
+    static int NOW_FOCUS_NUMBER = -1;//現在點視窗
+
+    private final int parentWindowNumber;//父視窗編號
+    private HashSet<Integer> subWindowNumbers = new HashSet<>();//所有子視窗編號
     private int MINI_SIZE;//視窗最小化的寬度
     private final int TITLE_LIFT_TO_EDGE_DISTANCE = 10;
     //static final int START_POINT = 60;//視窗預設座標
@@ -99,6 +105,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private int width;
         private int displayObject = TITLE_BAR_AND_BUTTONS|MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR;
         private int transitionsDuration = 500;
+        private int parentWindowNumber = -1;
         private WindowAction windowAction = new WindowAction() {
             @Override
             public void goHide(WindowStruct windowStruct) {
@@ -192,8 +199,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
             return this;
         }
+        public Builder parentWindowNumber(WindowStruct parentWindow){
+            this.parentWindowNumber = parentWindow.Number;
+            return this;
+        }
         public WindowStruct show(){
-            return new WindowStruct(context,windowManager,windowPages,windowPageTitles,windowInitArgs,top,left,height,width,displayObject,transitionsDuration,windowAction,constructionAndDeconstructionWindow);
+            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, displayObject, transitionsDuration, windowAction, constructionAndDeconstructionWindow, parentWindowNumber);
         }
     }
 
@@ -213,8 +224,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, final int display_object, int transitionsDuration, WindowAction windowAction, constructionAndDeconstructionWindow CDAW){
-         if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, final int display_object, int transitionsDuration, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber){
+        if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
             WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             WS.unFocusWindow();
         }
@@ -372,6 +383,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         heightMini.startScroll(0, 0, width, height, transitionsDuration);
         runUi.post(new runTransitions(nowState));
         //---------------------------------------------------------------------------------------------
+        this.parentWindowNumber = parentWindowNumber;
+        if(parentWindowNumber != -1)
+            windowList.get(parentWindowNumber).subWindowNumbers.add(Number);
     }
 
     public interface WindowAction{
@@ -579,6 +593,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void mini() {
         if (nowState != State.CLOSE && nowState != State.MINI) {
+            previousState = nowState;
+            nowState = State.MINI;
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -586,8 +602,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
             wmlp.alpha = 1.0f;
             wm.updateViewLayout(winform, wmlp);
-            previousState = nowState;
-            nowState = State.MINI;
             if (previousState == State.MAX) {
                 int dy;
                 topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE), 0, transitionsDuration);
@@ -612,6 +626,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void max(){
         if(nowState != State.CLOSE && nowState != State.MAX) {
+            previousState = nowState;
+            nowState = State.MAX;
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -619,8 +635,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.flags = FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
-            previousState = nowState;
-            nowState = State.MAX;
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
                 max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
             else
@@ -652,6 +666,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void general(){
         if(nowState != State.CLOSE && nowState != State.GENERAL){
+            previousState = nowState;
+            nowState = State.GENERAL;
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -659,8 +675,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.flags = FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
-            previousState = nowState;
-            nowState = State.GENERAL;
             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
                 max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
             else
@@ -690,14 +704,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void hide(){
         if(nowState != State.CLOSE && nowState != State.HIDE) {
+            previousState = nowState;
+            nowState = State.HIDE;
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
             wmlp.flags = NO_FOCUS_FLAGE;
             wm.updateViewLayout(winform, wmlp);
-            previousState = nowState;
-            nowState = State.HIDE;
             if (previousState == State.MAX) {
                 topMini.startScroll(0, 0, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, transitionsDuration);
                 heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
@@ -721,12 +735,17 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void close(){
         if(nowState != State.CLOSE) {
+            previousState = nowState;
+            nowState = State.CLOSE;
+            if(parentWindowNumber != -1)
+                windowList.get(this.parentWindowNumber).subWindowNumbers.remove(Number);
+            for(int key : this.subWindowNumbers.toArray(new Integer[this.subWindowNumbers.size()]))
+                if(windowList.containsKey(key))
+                    windowList.get(key).close();
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            previousState = nowState;
-            nowState = State.CLOSE;
             if (previousState == State.MAX) {
                 topMini.startScroll(0, 0, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, transitionsDuration);
                 heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
@@ -842,6 +861,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha =1.0f;
             wm.addView(winform,wmlp);
         }
+        for(int key : this.subWindowNumbers)
+            windowList.get(key).focusWindow();
     }
 
     /**
@@ -849,11 +870,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void focusAndShowWindow(){
         focusWindow();
-        if(nowState == State.MINI || nowState == State.HIDE)
-            if(previousState != null && previousState == State.MAX)
+        if(nowState == State.MINI || nowState == State.HIDE) {
+            if (previousState != null && previousState == State.MAX)
                 max();
             else
                 general();
+        }
+        for(int key : this.subWindowNumbers)
+            windowList.get(key).focusAndShowWindow();
     }
 
     /**
@@ -931,8 +955,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param width 寬度
      */
     public void setWidth(int width){
-        this.width = Math.max(width,30);
         if(nowState == State.GENERAL) {
+            this.width = Math.max(width,30);
             winform.getLayoutParams().width = this.width;
             wm.updateViewLayout(winform, wmlp);
         }
@@ -943,7 +967,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @return  寬度
      */
     public int getWidth(){
-        return this.width;
+        return wmlp.width;
     }
 
     /**
@@ -951,8 +975,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param height 高度
      */
     public void setHeight(int height){
-        this.height = Math.max(height,winform.getHeight()-wincon.getHeight());
         if(nowState == State.GENERAL) {
+            this.height = Math.max(height,winform.getHeight()-wincon.getHeight());
             winform.getLayoutParams().height = this.height;
             wm.updateViewLayout(winform, wmlp);
         }
@@ -963,7 +987,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @return  高度
      */
     public int getHeight(){
-        return this.height;
+        return wmlp.height;
+    }
+
+    /**
+     * 取得該視窗的所有子視窗
+     * @return 所有子視窗
+     */
+    public ArrayList<WindowStruct> getSubWindow(){
+        ArrayList<WindowStruct> subWindows = new ArrayList<>();
+        for(int key : this.subWindowNumbers)
+            subWindows.add(windowList.get(key));
+        return subWindows;
     }
 
     /**
