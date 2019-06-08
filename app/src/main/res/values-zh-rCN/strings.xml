@@ -45,4 +45,6 @@
     <string name="create_new_note">新增便条纸</string>
     <string name="share">分享</string>
     <string name="hide_frame">隐藏外框</string>
+    <string name="bookmarks">书签</string>
+    <string name="history">历史纪录</string>
 </resources>

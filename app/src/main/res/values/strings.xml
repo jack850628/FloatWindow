@@ -44,4 +44,6 @@
     <string name="create_new_note">Create new note</string>
     <string name="share">Share</string>
     <string name="hide_frame">Hide frame</string>
+    <string name="bookmarks">Bokmarks</string>
+    <string name="history">History</string>
 </resources>

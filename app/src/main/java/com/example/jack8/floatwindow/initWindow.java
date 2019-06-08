@@ -1,8 +1,8 @@
 package com.example.jack8.floatwindow;
 
 import android.app.AlertDialog;
+import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -12,7 +12,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -36,6 +35,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jack8.floatwindow.Window.HistoryList;
 import com.example.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,15 +76,31 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 break;
         }
     }
+
+    EditText path;
+    Button go;
+    Button goBack;
+    Button menu;
+    WebView web;
+    ProgressBar PB;
+
+    public void loadUrl(String url){
+        PB.setVisibility(View.VISIBLE);
+        PB.setProgress(0);
+        path.setText(url);
+        web.loadUrl(url);
+    }
+
     public void initWindow1(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
-        final EditText path=(EditText)pageView.findViewById(R.id.webpath);
-        final Button go=(Button)pageView.findViewById(R.id.go);
-        final Button goBack=(Button)pageView.findViewById(R.id.goback);
-        final Button menu=(Button) pageView.findViewById(R.id.menu);
-        final WebView web=(WebView)pageView.findViewById(R.id.web);
+        path = (EditText)pageView.findViewById(R.id.webpath);
+        go = (Button)pageView.findViewById(R.id.go);
+        goBack = (Button)pageView.findViewById(R.id.goback);
+        menu = (Button) pageView.findViewById(R.id.menu);
+        web = (WebView)pageView.findViewById(R.id.web);
+        PB = (ProgressBar) pageView.findViewById(R.id.progressBar);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
-        final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
-        final Clipboard clipboard=new Clipboard(context);
+        final Clipboard clipboard = new Clipboard(context);
+        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME).build();
 
         WebSettings webSettings = web.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -96,45 +112,98 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
-                PB.setVisibility(View.VISIBLE);
-                PB.setProgress(0);
-                path.setText(url);
-                web.loadUrl(url);
+                loadUrl(url);
                 return true;
             }
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){//當點擊WebView內的連結時處理
-                PB.setVisibility(View.VISIBLE);
-                PB.setProgress(0);
-                path.setText(request.getUrl().toString());
-                web.loadUrl(request.getUrl().toString());
+                loadUrl(request.getUrl().toString());
                 return true;
             }
             @Override
-            public void onPageFinished(WebView wed, String url) {
-                pageView.setTag(web.getTitle());
+            public void onPageFinished(WebView wed, final String url) {
+                final String title = web.getTitle();
+                pageView.setTag(title);
                 windowStruct.setWindowTitle(position,web.getTitle());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataBaseForBrowser.historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
+                    }
+                }).start();
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsAlert(WebView view, String url, String message,final JsResult result) {
-                AlertDialog Alert=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
-                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
-                            }
-                        }).create();
-                Alert.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                Alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        result.cancel();
-                    }
-                });
-                Alert.show();
+            public boolean onJsAlert(WebView view, String url, final String message, final JsResult result) {
+//                AlertDialog Alert=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
+//                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                result.confirm();
+//                            }
+//                        }).create();
+//                Alert.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+//                Alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        result.cancel();
+//                    }
+//                });
+//                Alert.show();
+                if(windowStruct.nowState == WindowStruct.State.CLOSE)
+                    return false;
+                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(message);
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+               new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                       .parentWindowNumber(windowStruct)
+                       .windowPageTitles(new String[]{context.getString(R.string.web_say)})
+                       .windowPages(new View[]{messageView})
+                       .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                       .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
+                       .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
+                       .width(messageView.getMeasuredWidth())
+                       .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)))
+                       .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                       .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                           @Override
+                           public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                               pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View v) {
+                                       ws.close();
+                                   }
+                               });
+                           }
+
+                           @Override
+                           public void Deconstruction(Context context, View pageView, int position) {
+
+                           }
+
+                           @Override
+                           public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                           }
+
+                           @Override
+                           public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                           }
+                       })
+                       .windowAction(new WindowStruct.WindowAction() {
+                           @Override
+                           public void goHide(WindowStruct windowStruct) {
+
+                           }
+                           @Override
+                           public void goClose(WindowStruct windowStruct) {
+                               result.cancel();
+                           }
+                       })
+                       .show();
                 //return true後絕對不能少了result.confirm()或result.cancel()，不然網頁會卡住
                 //Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
                 //return super.onJsAlert(view, url, message, result);
@@ -142,53 +211,174 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
             @Override
             public boolean onJsConfirm(WebView view, String url, String message,final JsResult result) {
-                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
-                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
+//                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                result.confirm();
+//                            }
+//                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        result.cancel();
+//                    }
+//                }).create();
+//                Confirm.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        result.cancel();
+//                    }
+//                });
+//                Confirm.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+//                Confirm.show();
+                if(windowStruct.nowState == WindowStruct.State.CLOSE)
+                    return false;
+                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(message);
+                messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                        .parentWindowNumber(windowStruct)
+                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
+                        .windowPages(new View[]{messageView})
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
+                        .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
+                        .width(messageView.getMeasuredWidth())
+                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
+                            public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                                pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        result.confirm();
+                                        ws.close();
+                                    }
+                                });
+                                pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ws.close();
+                                    }
+                                });
                             }
-                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                }).create();
-                Confirm.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        result.cancel();
-                    }
-                });
-                Confirm.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                Confirm.show();
+
+                            @Override
+                            public void Deconstruction(Context context, View pageView, int position) {
+
+                            }
+
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+                        })
+                        .windowAction(new WindowStruct.WindowAction() {
+                            @Override
+                            public void goHide(WindowStruct windowStruct) {
+
+                            }
+                            @Override
+                            public void goClose(WindowStruct windowStruct) {
+                                result.cancel();
+                            }
+                        })
+                        .show();
                 //return super.onJsConfirm(view,url,message,result);
                 return true;
             }
             @Override
             public boolean onJsPrompt(WebView view, String url, String message,String defaultValue, final JsPromptResult result) {
-                final EditText editText=new EditText(context);
-                editText.setText(defaultValue);
-                AlertDialog Prompt=new AlertDialog.Builder(context).setTitle(message).setView(editText).
-                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                final EditText editText=new EditText(context);
+//                editText.setText(defaultValue);
+//                AlertDialog Prompt=new AlertDialog.Builder(context).setTitle(message).setView(editText).
+//                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                result.confirm(editText.getText().toString());
+//                            }
+//                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        result.cancel();
+//                    }
+//                }).create();
+//                Prompt.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        result.cancel();
+//                    }
+//                });
+//                Prompt.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+//                Prompt.show();
+                if(windowStruct.nowState == WindowStruct.State.CLOSE)
+                    return false;
+                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(message);
+                messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
+                messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                        .parentWindowNumber(windowStruct)
+                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
+                        .windowPages(new View[]{messageView})
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
+                        .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
+                        .width(messageView.getMeasuredWidth())
+                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm(editText.getText().toString());
+                            public void Construction(Context context, final View pageView, int position, Object[] args, final WindowStruct ws) {
+                                pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        result.confirm(((EditText)pageView.findViewById(R.id.input_text)).getText().toString());
+                                        ws.close();
+                                    }
+                                });
+                                pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ws.close();
+                                    }
+                                });
                             }
-                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                }).create();
-                Prompt.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        result.cancel();
-                    }
-                });
-                Prompt.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                Prompt.show();
+
+                            @Override
+                            public void Deconstruction(Context context, View pageView, int position) {
+
+                            }
+
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+                        })
+                        .windowAction(new WindowStruct.WindowAction() {
+                            @Override
+                            public void goHide(WindowStruct windowStruct) {
+
+                            }
+                            @Override
+                            public void goClose(WindowStruct windowStruct) {
+                                result.cancel();
+                            }
+                        })
+                        .show();
                 //return super.onJsPrompt(view,url,message,defaultValue,result);
                 return true;
             }
@@ -329,7 +519,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
                 final PopupWindow popupWindow =new PopupWindow(context);
                 popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -340,7 +530,11 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
-                            case 0: {
+                            case 0:{
+                                HistoryList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.historyDao());
+                                break;
+                            }
+                            case 1: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
@@ -350,7 +544,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 1: {
+                            case 2: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -729,8 +923,9 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
 
     public void Deconstruction(Context context, View pageView, int position){
         if(position==0){
+            ((WebView)pageView.findViewById(R.id.web)).getSettings().setJavaScriptEnabled(false);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            ((WebView)pageView.findViewById(R.id.web)).onPause();
+                ((WebView)pageView.findViewById(R.id.web)).onPause();
         }else if(position==1){
             showingNoteIdList.remove(noteId);
             otherNodeListAdapter.update(showingNoteIdList);
