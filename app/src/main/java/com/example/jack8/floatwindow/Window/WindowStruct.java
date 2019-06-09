@@ -199,7 +199,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
             return this;
         }
-        public Builder parentWindowNumber(WindowStruct parentWindow){
+        public Builder parentWindow(WindowStruct parentWindow){
             this.parentWindowNumber = parentWindow.Number;
             return this;
         }
