@@ -3,7 +3,9 @@ package com.example.jack8.floatwindow;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Database;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -45,6 +47,18 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         public String title;
         @ColumnInfo(name = "url")
         public String url;
+
+        public Bookmark(long id, String title, String url){
+            this.id = id;
+            this.title = title;
+            this.url = url;
+        }
+
+        @Ignore
+        public Bookmark(String title, String url){
+            this.title = title;
+            this.url = url;
+        }
     }
     @Dao
     public interface BookmarksDao{
@@ -52,8 +66,16 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         List<Bookmark> getBookmarks();
         @Query("select * from "+Bookmark.TABLE_NAME+" where id = :id")
         List<Bookmark> getBookmark(int id);
+        @Query("select * from "+Bookmark.TABLE_NAME+" where url = :url")
+        List<Bookmark> getBookmark(String url);
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        void addBookmark(Bookmark bookmark);
+        long addBookmark(Bookmark bookmark);
+        @Delete
+        void deleteBookmark(Bookmark... bookmarks);
+        @Query("delete from "+Bookmark.TABLE_NAME+" where url = :url")
+        void deleteBookmark(String url);
+        @Query("update "+Bookmark.TABLE_NAME+" set title = :title, url = :url where id = :id")
+        void upDataBookmark(long id,String title, String url);
     }
 
     @Entity(tableName = History.TABLE_NAME, indices = {@Index(value = {"url"}, unique = true)})
@@ -69,6 +91,14 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         @ColumnInfo(name = "browser_date")
         public Date browserDate;
 
+        public History(long id, String title, String url, Date browserDate){
+            this.id= id;
+            this.title = title;
+            this.url = url;
+            this.browserDate = browserDate;
+        }
+
+        @Ignore
         public History(String title, String url, Date browserDate){
             this.title = title;
             this.url = url;
@@ -80,6 +110,8 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         @Query("select * from "+History.TABLE_NAME+" order by browser_date desc")
         List<History> getAllHistory();
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        void addHistory(History history);
+        long addHistory(History history);
+        @Delete
+        void deleteHistory(History... histories);
     }
 }

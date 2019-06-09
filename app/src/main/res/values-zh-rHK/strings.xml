@@ -47,4 +47,12 @@
     <string name="hide_frame">隱藏外框</string>
     <string name="bookmarks">書籤</string>
     <string name="history">歷史紀錄</string>
+    <string name="delete">刪除</string>
+    <string name="add_to_bookmarks">加入至書籤</string>
+    <string name="title">標題</string>
+    <string name="add">加入</string>
+    <string name="edit">編輯</string>
+    <string name="no_data">沒有資料</string>
+    <string name="bookmark_added">已加入書籤</string>
+    <string name="edit_bookmark">編輯書籤</string>
 </resources>

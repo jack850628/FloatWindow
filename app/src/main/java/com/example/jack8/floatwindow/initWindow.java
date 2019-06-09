@@ -5,8 +5,12 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,7 +39,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jack8.floatwindow.Window.HistoryList;
 import com.example.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +56,8 @@ import java.util.regex.Pattern;
  * 初始化視窗內容
  */
 public class initWindow implements WindowStruct.constructionAndDeconstructionWindow {
+    public Handler handler = new Handler(Looper.getMainLooper());
+
     /**
      * 初始化視窗子頁面內容
      * @param context 視窗所在的Activity或Service的Context
@@ -158,7 +164,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 ((TextView)messageView.findViewById(R.id.message)).setText(message);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                       .parentWindowNumber(windowStruct)
+                       .parentWindow(windowStruct)
                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                        .windowPages(new View[]{messageView})
                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
@@ -238,7 +244,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                        .parentWindowNumber(windowStruct)
+                        .parentWindow(windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                         .windowPages(new View[]{messageView})
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
@@ -326,7 +332,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                        .parentWindowNumber(windowStruct)
+                        .parentWindow(windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                         .windowPages(new View[]{messageView})
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
@@ -451,26 +457,26 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                             .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                                            .constructionAndDeconstructionWindow(new initWindow(){
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                    initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
+                                                    super.Construction(context,pageView,0,args,windowStruct);
                                                 }
 
                                                 @Override
                                                 public void Deconstruction(Context context, View pageView, int position) {
-                                                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                                                        ((WebView)pageView.findViewById(R.id.web)).onPause();
+                                                    super.Deconstruction(context, pageView, 0);
                                                 }
 
                                                 @Override
                                                 public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+                                                    super.onResume(context, pageView, 0, windowStruct);
                                                 }
 
                                                 @Override
                                                 public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+                                                    super.onPause(context, pageView, 0, windowStruct);
                                                 }
                                             }).show();
                                     break;
@@ -519,7 +525,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
                 final PopupWindow popupWindow =new PopupWindow(context);
                 popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -531,10 +537,99 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
                             case 0:{
+                                final String title = web.getTitle(), url = web.getUrl();
+                                new AsyncTask<DataBaseForBrowser.Bookmark, Void, DataBaseForBrowser.Bookmark>(){
+
+                                    @Override
+                                    protected DataBaseForBrowser.Bookmark doInBackground(DataBaseForBrowser.Bookmark... bookmark) {
+                                        List<DataBaseForBrowser.Bookmark> oldBookmark = dataBaseForBrowser.bookmarksDao().getBookmark(bookmark[0].url);
+                                        if(oldBookmark.size() == 0){
+                                            bookmark[0].id = dataBaseForBrowser.bookmarksDao().addBookmark(bookmark[0]);
+                                            return bookmark[0];
+                                        }else
+                                            return oldBookmark.get(0);
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(final DataBaseForBrowser.Bookmark result){
+                                        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                                .parentWindow(windowStruct)
+                                                .windowPageTitles(new String[]{context.getString(R.string.bookmark_added)})
+                                                .windowPages(new int[]{R.layout.add_to_bookmark})
+                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                                                .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
+                                                .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (int)(context.getResources().getDisplayMetrics().density*170) / 2)
+                                                .width((int)(context.getResources().getDisplayMetrics().density*280))
+                                                .height((int)(context.getResources().getDisplayMetrics().density*170))
+                                                .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                                    @Override
+                                                    public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                                                        final EditText title_box = pageView.findViewById(R.id.title);
+                                                        final EditText url_box = pageView.findViewById(R.id.url);
+
+                                                        title_box.setText(result.title);
+                                                        url_box.setText(result.url);
+                                                        pageView.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                new Thread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        try {
+                                                                            dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                        }catch (SQLiteConstraintException e){
+                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());
+                                                                            dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                        }
+                                                                    }
+                                                                }).start();
+                                                                windowStruct.close();
+                                                            }
+                                                        });
+                                                        pageView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                new Thread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        dataBaseForBrowser.bookmarksDao().deleteBookmark(result);
+                                                                    }
+                                                                }).start();
+                                                                windowStruct.close();
+                                                            }
+                                                        });
+                                                    }
+
+                                                    @Override
+                                                    public void Deconstruction(Context context, View pageView, int position) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                                    }
+                                                })
+                                                .show();
+                                    }
+                                }.execute(new DataBaseForBrowser.Bookmark(title,url));
+                                break;
+                            }
+                            case 1:{
+                                BookmarkList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.bookmarksDao());
+                                break;
+                            }
+                            case 2:{
                                 HistoryList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.historyDao());
                                 break;
                             }
-                            case 1: {
+                            case 3: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
@@ -544,7 +639,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 2: {
+                            case 4: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
