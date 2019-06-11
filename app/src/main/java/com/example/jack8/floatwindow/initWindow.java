@@ -457,7 +457,6 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                             .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
                                             .constructionAndDeconstructionWindow(new initWindow(){
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
