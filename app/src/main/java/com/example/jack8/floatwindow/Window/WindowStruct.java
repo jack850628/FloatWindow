@@ -613,7 +613,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 heightMini.startScroll(width, height, MINI_SIZE - width, -(height - title.getLayoutParams().height), transitionsDuration);
             } else if (previousState == State.HIDE) {
                 topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2,
-                         displayMetrics.widthPixels / 2 - MINI_SIZE, -(displayMetrics.heightPixels / 2), transitionsDuration);
+                        displayMetrics.widthPixels / 2 - MINI_SIZE, -(displayMetrics.heightPixels / 2), transitionsDuration);
                 heightMini.startScroll(0, 0, MINI_SIZE, title.getLayoutParams().height, transitionsDuration);
             }
             hideButtons();
@@ -1063,5 +1063,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public WindowFrom getWindowFrom(){
         return (WindowFrom)winform;
+    }
+
+    /**
+     * 取得視窗編號
+     * @return 視窗編號
+     */
+    public int getNumber(){
+        return Number;
     }
 }
