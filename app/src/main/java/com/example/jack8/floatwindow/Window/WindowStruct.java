@@ -249,7 +249,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         wmlp.type = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 ?WindowManager.LayoutParams.TYPE_PHONE
                 :WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;//類型
-        wmlp.format = PixelFormat.RGBA_8888;//背景(透明)
+        wmlp.format = PixelFormat.TRANSPARENT;//背景(透明)
         wmlp.flags = FOCUS_FLAGE;
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
         wmlp.x = Top;//設定原點座標
@@ -856,9 +856,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
             WindowStruct.NOW_FOCUS_NUMBER = this.Number;
             ((WindowFrom) winform).setWindowStyleOfFocus();
-            wm.removeView(winform);
             wmlp.flags = (nowState == State.MINI) ? NO_FOCUS_FLAGE_FOR_MINI_STATE : FOCUS_FLAGE;
             wmlp.alpha =1.0f;
+            wm.removeView(winform);
             wm.addView(winform,wmlp);
         }
         for(int key : this.subWindowNumbers)
