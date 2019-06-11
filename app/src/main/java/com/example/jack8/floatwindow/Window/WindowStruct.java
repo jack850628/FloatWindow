@@ -1072,4 +1072,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public int getNumber(){
         return Number;
     }
+
+    /**
+     * 取得視窗實體
+     * @param number 視窗編號'
+     * @return 視窗實體
+     */
+    public static WindowStruct getWindowStruct(int number){
+        return windowList.get(number);
+    }
 }
