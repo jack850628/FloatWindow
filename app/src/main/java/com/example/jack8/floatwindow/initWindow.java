@@ -23,6 +23,7 @@ import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
+import android.webkit.WebHistoryItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -512,12 +513,12 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WebBackForwardList WBFL = web.copyBackForwardList();
-                if(WBFL.getCurrentIndex()==0)//當目前顯示的是WebView第一個顯示的網址
-                    return;
-                path.setText(WBFL.getItemAtIndex(WBFL.getCurrentIndex()-1).getUrl());//取得上一頁的網址連結
-                web.goBack();
-
+                WebBackForwardList webBackForwardList = web.copyBackForwardList();
+                WebHistoryItem webHistoryItem = webBackForwardList.getItemAtIndex(webBackForwardList.getCurrentIndex() - 1);
+                if(webHistoryItem != null){
+                    path.setText(webHistoryItem.getUrl());//取得上一頁的網址連結
+                    web.goBack();
+                }
             }
         });
         menu.setOnClickListener(new View.OnClickListener() {
