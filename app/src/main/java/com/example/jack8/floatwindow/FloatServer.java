@@ -122,6 +122,7 @@ public class FloatServer extends Service {
             e.printStackTrace();
         }
     }
+
     /*
     關於onStartCommand的說明
     http://www.cnblogs.com/not-code/archive/2011/05/21/2052713.html

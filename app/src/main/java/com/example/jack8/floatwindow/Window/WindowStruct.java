@@ -55,6 +55,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     //private WindowColor wColor;//視窗顏色
     private WindowManager wm;
     private WindowManager.LayoutParams wmlp;
+    private ScreenSize screenSize;
     private WindowAction windowAction;
     private View winform;//視窗外框
     private ViewGroup wincon;//視窗內容框
@@ -68,8 +69,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private String[] windowTitle;
 
     private Handler runUi= new Handler(Looper.getMainLooper());
-
-    private DisplayMetrics displayMetrics;
 
     private constructionAndDeconstructionWindow CDAW;
 
@@ -138,13 +137,31 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
             }
         };
+        private ScreenSize screenSize;
 
-        public Builder(Context context,WindowManager windowManager){
+        public Builder(Context context, final WindowManager windowManager){
             this.context = context;
             this.windowManager = windowManager;
             this.height = (int)(context.getResources().getDisplayMetrics().density*240);
             this.width = (int)(context.getResources().getDisplayMetrics().density*200);
             this.windowPages = new View[]{new LinearLayout(context)};
+            this.screenSize = new ScreenSize(context){
+                @Override
+                public int getWidth() {
+                    return super.context.getResources().getDisplayMetrics().widthPixels;
+                }
+
+                @Override
+                public int getHeight() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        DisplayMetrics displayMetrics = new DisplayMetrics();
+                        windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
+                        if(super.context.getResources().getDisplayMetrics().heightPixels > super.context.getResources().getDisplayMetrics().widthPixels)
+                            return displayMetrics.heightPixels - getStatusBarHeight() - getNavigationBarHeight();
+                    }
+                    return super.context.getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
+                }
+            };
         }
         public Builder windowPages(View[] windowPages){
             this.windowPages = windowPages;
@@ -199,12 +216,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
             return this;
         }
+
+        public Builder screenSize(ScreenSize screenSize){
+            this.screenSize = screenSize;
+            return this;
+        }
+
         public Builder parentWindow(WindowStruct parentWindow){
             this.parentWindowNumber = parentWindow.Number;
             return this;
         }
         public WindowStruct show(){
-            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, displayObject, transitionsDuration, windowAction, constructionAndDeconstructionWindow, parentWindowNumber);
+            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, displayObject, transitionsDuration, screenSize, windowAction, constructionAndDeconstructionWindow, parentWindowNumber);
         }
     }
 
@@ -224,7 +247,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, final int display_object, int transitionsDuration, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber){
+    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber){
         if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
             WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
             WS.unFocusWindow();
@@ -238,10 +261,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         this.CDAW = CDAW;
         this.display_object = display_object;
         this.transitionsDuration = transitionsDuration;
+        this.screenSize = screenSize;
         windowList.put(Number,this);
         topMini = new Scroller(context);
         heightMini = new Scroller(context);
-        displayMetrics = context.getResources().getDisplayMetrics();
 
         //wColor = new WindowColor(context);
 
@@ -314,27 +337,23 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         title.setOnClickListener(this);//還原視窗大小
         close_button.setOnClickListener(this);
         winform.findViewById(R.id.size).setOnTouchListener(new View.OnTouchListener() {
-            float Wlength =- 1,Hlength =- 1;
+            float W =- 1,H =- 1;
             @Override
             public boolean onTouch(View v, MotionEvent event) {//調整視窗大小
-                //wmlp.flags = WindowManager.LayoutParams.FLAG_LOCAL_FOCUS_MODE;
-                if(event.getAction() == MotionEvent.ACTION_MOVE) {
-                    if(Wlength == -1||Hlength == -1){
-                        Wlength = wincon.getWidth()-event.getX();//取得點擊X點到視窗最右側的距離
-                        Hlength = (event.getRawY()-wmlp.y)-wincon.getHeight();//取得視窗標題列高度以及視窗大小調整列被點擊以上的高度，視窗內部框架高度-(點擊座標Y-視窗Top座標)
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    if (H == -1 || W == -1) {
+                        W = event.getRawX();
+                        H = event.getRawY();
                         return true;
                     }
-                    Log.i("size",(int)(event.getX()+Wlength)+"   "+(int)(event.getRawY()-wmlp.y+Hlength));
-                    int temp;
-                    winform.getLayoutParams().width = width = (temp = (int)(event.getX()+Wlength))>30?temp:30;
-                    winform.getLayoutParams().height = height = ((temp = (int)(event.getRawY()-wmlp.y-Hlength))>=0?temp:0)
-                            +((View)wincon.getParent()).getTop()+sizeBar.getLayoutParams().height;//Touch的Y減去視窗的Top再減去Hlength就是視窗內容區要調整的高度
-                    Log.i("size2",wincon.getLayoutParams().width+"   "+wincon.getLayoutParams().height);
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    Wlength =- 1;
-                    Hlength =- 1;
+                    setWidth(getWidth() - (int) (W - event.getRawX()));
+                    setHeight(getHeight() - (int) (H - event.getRawY()));
+                    W = event.getRawX();
+                    H = event.getRawY();
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    W = -1;
+                    H = -1;
                 }
-                WindowStruct.this.wm.updateViewLayout(winform, wmlp);
                 return true;
             }
         });
@@ -379,7 +398,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         setDisplayObject();
         //-------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
-        topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, transitionsDuration);
+        topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
         heightMini.startScroll(0, 0, width, height, transitionsDuration);
         runUi.post(new runTransitions(nowState));
         //---------------------------------------------------------------------------------------------
@@ -401,6 +420,42 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         void onPause(Context context, View pageView, int position, WindowStruct windowStruct);
     }
 
+    public static abstract class ScreenSize{
+        public  abstract int getWidth();
+        public  abstract int getHeight();
+
+        protected Context context;
+
+        public ScreenSize(Context context){
+            this.context = context;
+        }
+
+        /**
+             * 取得狀態列的高度
+             * @return 狀態列的高度
+             */
+        protected int getStatusBarHeight() {
+            Resources resources = context.getResources();
+            int resourceId = resources.getIdentifier("status_bar_height", "dimen","android");
+            if (resourceId > 0) {
+                return resources.getDimensionPixelSize(resourceId);
+            }
+            return  0;
+        }
+
+        /**
+             * 取得導覽的高度
+             * @return 狀態列的高度
+             */
+        protected int getNavigationBarHeight() {
+            Resources resources = context.getResources();
+            int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                return resources.getDimensionPixelSize(resourceId);
+            }
+            return 0;
+        }
+    }
     public class menuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
         private ListView menu;
         private LinearLayout menuListAndContext;
@@ -490,26 +545,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState == State.GENERAL || nowState == State.MINI) {
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 if (H == -1 || W == -1) {
-                    H = event.getX();//取得點擊的X座標到視窗頂點的距離
-                    W = event.getY();//取得點擊的Y座標到視窗頂點的距離
+                    W = event.getRawX();
+                    H = event.getRawY();
                     return true;
                 }
-                wmlp.x = (int) (event.getRawX() - H);
-                wmlp.y = (int) (event.getRawY() - W - getStatusBarHeight());//60為狀態列高度
-                if(wmlp.y < 0)
-                    wmlp.y = 0;
-                if (nowState != State.MINI) {
-                    if((display_object & MENU_BUTTON) == MENU_BUTTON)
-                        wmlp.x -= menu.getLayoutParams().width;
-                    left = wmlp.x;
-                    top = wmlp.y;
-                }
+                setPosition(getPositionX()-(int) (W-event.getRawX()),getPositionY()-(int) (H-event.getRawY()));
+                W = event.getRawX();
+                H = event.getRawY();
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                H = -1;
                 W = -1;
+                H= -1;
             }
-            wm.updateViewLayout(winform, wmlp);
-        }
+    }
         return false;
     }
 
@@ -604,16 +651,16 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wm.updateViewLayout(winform, wmlp);
             if (previousState == State.MAX) {
                 int dy;
-                topMini.startScroll(0, 0, (displayMetrics.widthPixels - MINI_SIZE), 0, transitionsDuration);
-                heightMini.startScroll(displayMetrics.widthPixels,
-                        dy = displayMetrics.heightPixels - getStatusBarHeight(),
-                        MINI_SIZE - displayMetrics.widthPixels, -(dy - title.getLayoutParams().height), transitionsDuration);
+                topMini.startScroll(0, 0, (screenSize.getWidth() - MINI_SIZE), 0, transitionsDuration);
+                heightMini.startScroll(screenSize.getWidth(),
+                        dy = screenSize.getHeight(),
+                        MINI_SIZE - screenSize.getWidth(), -(dy - title.getLayoutParams().height), transitionsDuration);
             } else if (previousState == State.GENERAL) {
-                topMini.startScroll(left, top, (displayMetrics.widthPixels - MINI_SIZE) - left, -top, transitionsDuration);
+                topMini.startScroll(left, top, (screenSize.getWidth() - MINI_SIZE) - left, -top, transitionsDuration);
                 heightMini.startScroll(width, height, MINI_SIZE - width, -(height - title.getLayoutParams().height), transitionsDuration);
             } else if (previousState == State.HIDE) {
-                topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2,
-                        displayMetrics.widthPixels / 2 - MINI_SIZE, -(displayMetrics.heightPixels / 2), transitionsDuration);
+                topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2,
+                        screenSize.getWidth() / 2 - MINI_SIZE, -(screenSize.getHeight() / 2), transitionsDuration);
                 heightMini.startScroll(0, 0, MINI_SIZE, title.getLayoutParams().height, transitionsDuration);
             }
             hideButtons();
@@ -641,19 +688,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
             if (previousState == State.GENERAL) {
                 topMini.startScroll(left, top, -left, -top, transitionsDuration);
-                heightMini.startScroll(width, height, displayMetrics.widthPixels - width,
-                        displayMetrics.heightPixels - height - getStatusBarHeight(), transitionsDuration);
+                heightMini.startScroll(width, height, screenSize.getWidth() - width,
+                        screenSize.getHeight() - height, transitionsDuration);
                 if ((display_object & SIZE_BAR) == SIZE_BAR)
                     sizeBar.setVisibility(View.GONE);
             } else if(previousState == State.MINI){
                 topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
-                        , displayMetrics.widthPixels - winform.getLayoutParams().width,
-                        displayMetrics.heightPixels - winform.getLayoutParams().height - getStatusBarHeight(), transitionsDuration);
+                        , screenSize.getWidth() - winform.getLayoutParams().width,
+                        screenSize.getHeight() - winform.getLayoutParams().height, transitionsDuration);
             } else if(previousState == State.HIDE){
                 nowState = State.MAX;
-                topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 , -(displayMetrics.widthPixels / 2), -(displayMetrics.heightPixels / 2) , transitionsDuration);
-                heightMini.startScroll(0,0, displayMetrics.widthPixels,displayMetrics.heightPixels - getStatusBarHeight(), transitionsDuration);
+                topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 , -(screenSize.getWidth() / 2), -(screenSize.getHeight() / 2) , transitionsDuration);
+                heightMini.startScroll(0,0, screenSize.getWidth(),screenSize.getHeight(), transitionsDuration);
             }
             recoveryButtons();
             sizeBar.setVisibility(View.GONE);
@@ -682,16 +729,16 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             if(previousState == State.MAX) {
                 int dy;
                 topMini.startScroll(0, 0, left, top, transitionsDuration);
-                heightMini.startScroll( displayMetrics.widthPixels,
-                        dy = displayMetrics.heightPixels - getStatusBarHeight(),
-                        width-displayMetrics.widthPixels, height-dy, transitionsDuration);
+                heightMini.startScroll( screenSize.getWidth(),
+                        dy = screenSize.getHeight(),
+                        width-screenSize.getWidth(), height-dy, transitionsDuration);
             }else if(previousState == State.MINI){
                 topMini.startScroll(wmlp.x, wmlp.y, left - wmlp.x, top - wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
                         , width - winform.getLayoutParams().width,
                         height - winform.getLayoutParams().height, transitionsDuration);
             }else if(previousState == State.HIDE){
-                topMini.startScroll(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2 ,left - displayMetrics.widthPixels / 2, top - displayMetrics.heightPixels / 2, transitionsDuration);
+                topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(0, 0, width, height, transitionsDuration);
             }
             recoveryButtons();
@@ -713,15 +760,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.flags = NO_FOCUS_FLAGE;
             wm.updateViewLayout(winform, wmlp);
             if (previousState == State.MAX) {
-                topMini.startScroll(0, 0, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, transitionsDuration);
-                heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
-                        , -displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), transitionsDuration);
+                topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
+                heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
+                        , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
             } else if(previousState == State.GENERAL){
-                topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, transitionsDuration);
+                topMini.startScroll(left, top, screenSize.getWidth() / 2 - left, screenSize.getHeight() / 2 - top, transitionsDuration);
                 heightMini.startScroll(width, height,
                         -width, -height, transitionsDuration);
             }else if(previousState == State.MINI){
-                topMini.startScroll(wmlp.x, wmlp.y, displayMetrics.widthPixels / 2 - wmlp.x, displayMetrics.heightPixels / 2 - wmlp.y, transitionsDuration);
+                topMini.startScroll(wmlp.x, wmlp.y, screenSize.getWidth() / 2 - wmlp.x, screenSize.getHeight() / 2 - wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
             }
@@ -747,15 +794,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
             if (previousState == State.MAX) {
-                topMini.startScroll(0, 0, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, transitionsDuration);
-                heightMini.startScroll(displayMetrics.widthPixels, displayMetrics.heightPixels - getStatusBarHeight()
-                        , -displayMetrics.widthPixels, -(displayMetrics.heightPixels - getStatusBarHeight()), transitionsDuration);
+                topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
+                heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
+                        , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
             } else if(previousState == State.GENERAL){
-                topMini.startScroll(left, top, displayMetrics.widthPixels / 2 - left, displayMetrics.heightPixels / 2 - top, transitionsDuration);
+                topMini.startScroll(left, top, screenSize.getWidth() / 2 - left, screenSize.getHeight() / 2 - top, transitionsDuration);
                 heightMini.startScroll(width, height,
                         -width, -height, transitionsDuration);
             }else if(previousState == State.MINI){
-                topMini.startScroll(wmlp.x, wmlp.y, displayMetrics.widthPixels / 2 - wmlp.x, displayMetrics.heightPixels / 2 - wmlp.y, transitionsDuration);
+                topMini.startScroll(wmlp.x, wmlp.y, screenSize.getWidth() / 2 - wmlp.x, screenSize.getHeight() / 2 - wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
             }
@@ -1043,18 +1090,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public int getTransitionsDuration(){
         return transitionsDuration;
-    }
-
-
-    /**
-     * 取得狀態列的高度
-     * @return 狀態列的高度
-     */
-    private int getStatusBarHeight() {
-        Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("status_bar_height", "dimen","android");
-        int height = resources.getDimensionPixelSize(resourceId);
-        return height;
     }
 
     /**
