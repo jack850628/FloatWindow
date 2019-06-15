@@ -99,8 +99,8 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                                                 }
 
                                                 @Override
-                                                public void Deconstruction(Context context, View pageView, int position) {
-                                                    super.Deconstruction(context, pageView, 0);
+                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                    super.Deconstruction(context, pageView, 0, windowStruct);
                                                 }
 
                                                 @Override
@@ -130,7 +130,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
                                                     final EditText title_box = pageView.findViewById(R.id.title);
-                                                    final EditText url_box = pageView.findViewById(R.id.url);
+                                                    final EditText url_box = pageView.findViewById(R.id.home_link);
 
                                                     title_box.setText(bookmarkList.get(viewHolder.getAdapterPosition()).title);
                                                     url_box.setText(bookmarkList.get(viewHolder.getAdapterPosition()).url);
@@ -173,7 +173,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                                                 }
 
                                                 @Override
-                                                public void Deconstruction(Context context, View pageView, int position) {
+                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                                                 }
 
@@ -214,7 +214,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                 super(v);
                 this.v = v;
                 title = (TextView) v.findViewById(R.id.title);
-                url = (TextView) v.findViewById(R.id.url);
+                url = (TextView) v.findViewById(R.id.home_link);
                 date = (TextView) v.findViewById(R.id.date);
             }
         }
@@ -307,7 +307,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
     }
 
     @Override
-    public void Deconstruction(Context context, View pageView, int position) {
+    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
     }
 

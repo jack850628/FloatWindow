@@ -55,4 +55,10 @@
     <string name="no_data">沒有資料</string>
     <string name="bookmark_added">已加入書籤</string>
     <string name="edit_bookmark">編輯書籤</string>
+    <string name="home_page">首頁</string>
+    <string name="enable_javascript">啟用JavaScript</string>
+    <string name="enable_zoom">啟用縮放</string>
+    <string name="display_zoom_button">顯示縮放按鈕</string>
+    <string name="web_browser_setting">網頁瀏覽器設定</string>
+    <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
 </resources>

@@ -41,7 +41,7 @@ public class Setting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
 
-        MobileAds.initialize(this, "ca-app-pub-4604853118314154~2222092369");
+        MobileAds.initialize(this, getString(R.string.AD_ID));
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
@@ -244,6 +244,7 @@ public class Setting extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        mAdView.destroy();
         for(WindowStruct windowStruct:windowList) {
             windowStruct.setTransitionsDuration(0);
             windowStruct.close();
@@ -288,7 +289,7 @@ public class Setting extends AppCompatActivity {
                             }
 
                             @Override
-                            public void Deconstruction(Context context, View pageView, int position) {
+                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                             }
 

@@ -18,7 +18,7 @@
         android:textColor="#313131"
         android:textSize="18sp"/>
 
-    <EditText
+    <com.example.jack8.floatwindow.FwEditView
         android:id="@+id/input_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

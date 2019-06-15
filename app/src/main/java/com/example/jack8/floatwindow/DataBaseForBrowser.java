@@ -1,5 +1,6 @@
 package com.example.jack8.floatwindow;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Database;
@@ -14,16 +15,26 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
+import android.arch.persistence.room.Update;
+import android.arch.persistence.room.migration.Migration;
 
 import java.util.Date;
 import java.util.List;
 
-@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class}, version = 1)
+@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class}, version = 2)
 @TypeConverters({DataBaseForBrowser.Converters.class})
 public abstract class DataBaseForBrowser extends RoomDatabase {
     public static String DATABASE_NAME = "browser_data";
     public abstract BookmarksDao bookmarksDao();
     public abstract HistoryDao historyDao();
+    public abstract SettingDao settingDao();
+
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE "+Setting.TABLE_NAME+" (id INTEGER NOT NULL, home_link TEXT, javascript_enabled INTEGER NOT NULL, support_zoom INTEGER NOT NULL, display_zoom_controls INTEGER NOT NULL, PRIMARY KEY(id))");
+        }
+    };
 
     static class Converters {
         @TypeConverter
@@ -113,5 +124,38 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         long addHistory(History history);
         @Delete
         void deleteHistory(History... histories);
+    }
+
+    @Entity(tableName = Setting.TABLE_NAME)
+    public static class Setting{
+        public static final String TABLE_NAME = "Setting";
+
+        @PrimaryKey(autoGenerate = true)
+        public long id;
+
+        @ColumnInfo(name = "home_link")
+        public String homeLink;
+        @ColumnInfo(name = "javascript_enabled")
+        public boolean javaScriptEnabled;
+        @ColumnInfo(name = "support_zoom")
+        public boolean supportZoom;
+        @ColumnInfo(name = "display_zoom_controls")
+        public boolean displayZoomControls;
+
+        public Setting(String homeLink, boolean javaScriptEnabled, boolean supportZoom, boolean displayZoomControls){
+            this.homeLink = homeLink;
+            this.javaScriptEnabled = javaScriptEnabled;
+            this.supportZoom = supportZoom;
+            this.displayZoomControls = displayZoomControls;
+        }
+    }
+    @Dao
+    public interface SettingDao{
+        @Query("select * from "+Setting.TABLE_NAME)
+        List<Setting> getSetting();
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        long setSetting(Setting setting);
+        @Update
+        void updateSetting(Setting setting);
     }
 }

@@ -100,8 +100,8 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                                                 }
 
                                                 @Override
-                                                public void Deconstruction(Context context, View pageView, int position) {
-                                                    super.Deconstruction(context, pageView, 0);
+                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                    super.Deconstruction(context, pageView, 0, windowStruct);
                                                 }
 
                                                 @Override
@@ -140,7 +140,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                 super(v);
                 this.v = v;
                 title = (TextView) v.findViewById(R.id.title);
-                url = (TextView) v.findViewById(R.id.url);
+                url = (TextView) v.findViewById(R.id.home_link);
                 date = (TextView) v.findViewById(R.id.date);
             }
         }
@@ -244,7 +244,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
     }
 
     @Override
-    public void Deconstruction(Context context, View pageView, int position) {
+    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
     }
 

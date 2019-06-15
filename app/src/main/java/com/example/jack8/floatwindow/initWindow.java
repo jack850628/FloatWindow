@@ -25,7 +25,6 @@ import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -107,15 +106,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         PB = (ProgressBar) pageView.findViewById(R.id.progressBar);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
         final Clipboard clipboard = new Clipboard(context);
-        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME).build();
-
-        WebSettings webSettings = web.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setDisplayZoomControls(false);
-        webSettings.setUseWideViewPort(true);
-
+        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME).addMigrations(DataBaseForBrowser.MIGRATION_1_2).build();
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
@@ -164,7 +155,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
                 ((TextView)messageView.findViewById(R.id.message)).setText(message);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-               new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+               new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                        .parentWindow(windowStruct)
                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                        .windowPages(new View[]{messageView})
@@ -186,7 +177,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                            }
 
                            @Override
-                           public void Deconstruction(Context context, View pageView, int position) {
+                           public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
 
                            }
 
@@ -273,7 +264,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                             }
 
                             @Override
-                            public void Deconstruction(Context context, View pageView, int position) {
+                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
 
                             }
 
@@ -361,7 +352,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                             }
 
                             @Override
-                            public void Deconstruction(Context context, View pageView, int position) {
+                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
 
                             }
 
@@ -465,8 +456,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                 }
 
                                                 @Override
-                                                public void Deconstruction(Context context, View pageView, int position) {
-                                                    super.Deconstruction(context, pageView, 0);
+                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+                                                    super.Deconstruction(context, pageView, 0, windowStruct);
                                                 }
 
                                                 @Override
@@ -493,17 +484,29 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return false;
             }
         });
-        String url;
-        if(args != null && args.length != 0 && args[0] instanceof String) {
-            url = (String) args[0];
-            Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
-            Matcher matcher = pattern.matcher(url);
-            if(matcher.find())
-                url = matcher.group();
-        }else
-            url = "https://www.google.com.tw/?gws_rd=ssl";
-        path.setText(url);
-        web.loadUrl(url);
+
+        WebBrowserSetting.init(dataBaseForBrowser, windowStruct.getNumber(), new Runnable() {
+            @Override
+            public void run() {
+                web.getSettings().setJavaScriptEnabled(WebBrowserSetting.getInit().getSetting().javaScriptEnabled);
+                web.getSettings().setSupportZoom(WebBrowserSetting.getInit().getSetting().supportZoom);
+                web.getSettings().setBuiltInZoomControls(true);
+                web.getSettings().setDisplayZoomControls(WebBrowserSetting.getInit().getSetting().displayZoomControls);
+                web.getSettings().setUseWideViewPort(true);
+                web.resumeTimers();
+                String url = WebBrowserSetting.getInit().getSetting().homeLink;
+                if(args != null && args.length != 0 && args[0] instanceof String) {
+                    url = (String) args[0];
+                    Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
+                    Matcher matcher = pattern.matcher(url);
+                    if(matcher.find())
+                        url = matcher.group();
+                }
+                path.setText(url);
+                web.loadUrl(url);
+            }
+        });
+
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -525,8 +528,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
-                final PopupWindow popupWindow =new PopupWindow(context);
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
+                final PopupWindow popupWindow = new PopupWindow(context);
                 popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
                 popupWindow.setContentView(menu_list);
@@ -536,7 +539,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
-                            case 0:{
+                            case 0:
+                                loadUrl(WebBrowserSetting.getInit().getSetting().homeLink);
+                                break;
+                            case 1:{
                                 final String title = web.getTitle(), url = web.getUrl();
                                 new AsyncTask<DataBaseForBrowser.Bookmark, Void, DataBaseForBrowser.Bookmark>(){
 
@@ -566,7 +572,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                     @Override
                                                     public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
                                                         final EditText title_box = pageView.findViewById(R.id.title);
-                                                        final EditText url_box = pageView.findViewById(R.id.url);
+                                                        final EditText url_box = pageView.findViewById(R.id.home_link);
 
                                                         title_box.setText(result.title);
                                                         url_box.setText(result.url);
@@ -602,7 +608,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                     }
 
                                                     @Override
-                                                    public void Deconstruction(Context context, View pageView, int position) {
+                                                    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
 
                                                     }
 
@@ -621,15 +627,15 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                 }.execute(new DataBaseForBrowser.Bookmark(title,url));
                                 break;
                             }
-                            case 1:{
+                            case 2:{
                                 BookmarkList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.bookmarksDao());
                                 break;
                             }
-                            case 2:{
+                            case 3:{
                                 HistoryList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.historyDao());
                                 break;
                             }
-                            case 3: {
+                            case 4: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
@@ -639,7 +645,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 4: {
+                            case 5: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -647,6 +653,9 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
+                            case 6:
+                                WebBrowserSetting.getInit().showSettingWindow(context, dataBaseForBrowser, null);
+                                break;
                         }
                         popupWindow.dismiss();
                     }
@@ -833,8 +842,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                         }
 
                                                         @Override
-                                                        public void Deconstruction(Context context, View pageView, int position) {
-                                                            super.Deconstruction(context, pageView, 1);
+                                                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+                                                            super.Deconstruction(context, pageView, 1, windowStruct);
                                                         }
 
                                                         @Override
@@ -1016,11 +1025,23 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         });
     }
 
-    public void Deconstruction(Context context, View pageView, int position){
+    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct){
         if(position==0){
-            ((WebView)pageView.findViewById(R.id.web)).getSettings().setJavaScriptEnabled(false);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                ((WebView)pageView.findViewById(R.id.web)).onPause();
+            WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
+            web.clearHistory();
+            if(WebBrowserSetting.getInit().haveRuningBrowser())
+                web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+            else {
+                web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+                web.pauseTimers();//會導致其他的WebView的javascript停止執行
+            }
+            web.loadUrl("about:blank");
+            web.onPause();
+            web.removeAllViews();
+            web.destroyDrawingCache();
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                web.destroy();
+            web = null;
         }else if(position==1){
             showingNoteIdList.remove(noteId);
             otherNodeListAdapter.update(showingNoteIdList);

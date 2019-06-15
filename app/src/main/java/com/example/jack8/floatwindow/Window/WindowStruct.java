@@ -123,7 +123,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
 
             @Override
-            public void Deconstruction(Context context, View pageView, int position) {
+            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
             }
 
@@ -414,7 +414,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
     public interface constructionAndDeconstructionWindow{
         void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct);
-        void Deconstruction(Context context, View pageView, int position);
+        void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct);
 
         void onResume(Context context, View pageView, int position, WindowStruct windowStruct);
         void onPause(Context context, View pageView, int position, WindowStruct windowStruct);
@@ -627,7 +627,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 wm.updateViewLayout(winform, wmlp);
             } else if (state == State.CLOSE) {
                 for (int i = 0; i < winconPage.length; i++)
-                    CDAW.Deconstruction(context, winconPage[i], i);
+                    CDAW.Deconstruction(context, winconPage[i], i, WindowStruct.this);
                 windowAction.goClose(WindowStruct.this);
                 wm.removeView(winform);
                 windowList.remove(Number);
@@ -1115,5 +1115,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public static WindowStruct getWindowStruct(int number){
         return windowList.get(number);
+    }
+
+    /**
+     * 取得視窗內容實作
+     * @return 視窗內容實作
+     */
+    public constructionAndDeconstructionWindow getConstructionAndDeconstructionWindow(){
+        return CDAW;
     }
 }

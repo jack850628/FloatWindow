@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
+    <com.example.jack8.floatwindow.FwEditView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,8 +17,8 @@
         android:hint="@string/title"
         android:inputType="textPersonName" />
 
-    <EditText
-        android:id="@+id/url"
+    <com.example.jack8.floatwindow.FwEditView
+        android:id="@+id/home_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:shadowColor="#cefffefe"

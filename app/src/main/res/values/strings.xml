@@ -54,4 +54,10 @@
     <string name="no_data">No data</string>
     <string name="bookmark_added">Bookmark added</string>
     <string name="edit_bookmark">Edit bookmark</string>
+    <string name="home_page">Home page</string>
+    <string name="enable_javascript">Enable JavaScript</string>
+    <string name="enable_zoom">Enable zoom</string>
+    <string name="display_zoom_button">Display zoom button</string>
+    <string name="web_browser_setting">Web browser setting</string>
+    <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
 </resources>

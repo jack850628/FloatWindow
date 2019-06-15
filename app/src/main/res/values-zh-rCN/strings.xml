@@ -55,4 +55,10 @@
     <string name="no_data">没有资料</string>
     <string name="bookmark_added">已加入书签</string>
     <string name="edit_bookmark">编辑书签</string>
+    <string name="home_page">首页</string>
+    <string name="enable_javascript">启用JavaScript</string>
+    <string name="enable_zoom">启用缩放</string>
+    <string name="display_zoom_button">显示缩放按钮</string>
+    <string name="web_browser_setting">网页浏览器设定</string>
+    <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
 </resources>

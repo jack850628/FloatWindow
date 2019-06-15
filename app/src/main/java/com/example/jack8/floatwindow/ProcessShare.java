@@ -56,13 +56,13 @@ public class ProcessShare extends initWindow {
                 break;
         }
     }
-    public void Deconstruction(Context context, View pageView, int position){
+    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1){
         switch (pageView.getId()){
             case R.layout.webpage:
-                super.Deconstruction(context,pageView,0);
+                super.Deconstruction(context,pageView,0, windowStruct1);
                 break;
             case R.layout.note_page:
-                super.Deconstruction(context,pageView,1);
+                super.Deconstruction(context,pageView,1, windowStruct1);
                 break;
         }
     }

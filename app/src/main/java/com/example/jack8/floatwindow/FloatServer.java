@@ -213,7 +213,7 @@ public class FloatServer extends Service {
                                 }
 
                                 @Override
-                                public void Deconstruction(Context context, View pageView, int position) {
+                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                                 }
 
@@ -293,7 +293,7 @@ public class FloatServer extends Service {
                         }
 
                         @Override
-                        public void Deconstruction(Context context, View pageView, int position) {
+                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                         }
 
