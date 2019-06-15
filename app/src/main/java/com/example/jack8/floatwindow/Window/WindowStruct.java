@@ -448,12 +448,23 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
              * @return 狀態列的高度
              */
         protected int getNavigationBarHeight() {
+            if(!hasNavigationBar())
+                return 0;
             Resources resources = context.getResources();
             int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
             if (resourceId > 0) {
                 return resources.getDimensionPixelSize(resourceId);
             }
             return 0;
+        }
+
+        /**
+             * 判斷是否有導覽列(在虛擬機上會回傳false，來源：https://stackoverflow.com/questions/28983621/detect-soft-navigation-bar-availability-in-android-device-progmatically)
+             * @return 是否有導覽列
+             */
+        protected boolean hasNavigationBar(){
+            int id = context.getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+            return id > 0 && context.getResources().getBoolean(id);
         }
     }
     public class menuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
