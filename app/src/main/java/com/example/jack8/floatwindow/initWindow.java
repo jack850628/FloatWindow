@@ -120,10 +120,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return true;
             }
             @Override
-            public void onPageFinished(WebView wed, final String url) {
-                final String title = web.getTitle();
+            public void onPageFinished(WebView webView, final String url) {
+                final String title = webView.getTitle();
                 pageView.setTag(title);
-                windowStruct.setWindowTitle(position,web.getTitle());
+                windowStruct.setWindowTitle(position,title);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -134,7 +134,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         });
         web.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsAlert(WebView view, String url, final String message, final JsResult result) {
+            public boolean onJsAlert(WebView webView, String url, final String message, final JsResult result) {
 //                AlertDialog Alert=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
 //                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
 //                            @Override
@@ -208,7 +208,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return true;
             }
             @Override
-            public boolean onJsConfirm(WebView view, String url, String message,final JsResult result) {
+            public boolean onJsConfirm(WebView webView, String url, String message,final JsResult result) {
 //                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
 //                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
 //                            @Override
@@ -293,7 +293,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return true;
             }
             @Override
-            public boolean onJsPrompt(WebView view, String url, String message,String defaultValue, final JsPromptResult result) {
+            public boolean onJsPrompt(WebView webView, String url, String message,String defaultValue, final JsPromptResult result) {
 //                final EditText editText=new EditText(context);
 //                editText.setText(defaultValue);
 //                AlertDialog Prompt=new AlertDialog.Builder(context).setTitle(message).setView(editText).
@@ -381,11 +381,11 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return true;
             }
             @Override
-            public void onProgressChanged(WebView view, int newProgress){
+            public void onProgressChanged(WebView webView, int newProgress){
                 PB.setProgress(newProgress);
                 if(newProgress==100)
                     PB.setVisibility(View.GONE);
-                super.onProgressChanged(view,newProgress);
+                super.onProgressChanged(webView,newProgress);
             }
 
             /*------------全螢幕播放--------------
@@ -1039,8 +1039,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             web.onPause();
             web.removeAllViews();
             web.destroyDrawingCache();
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                web.destroy();
+            web.destroy();
             web = null;
         }else if(position==1){
             showingNoteIdList.remove(noteId);
