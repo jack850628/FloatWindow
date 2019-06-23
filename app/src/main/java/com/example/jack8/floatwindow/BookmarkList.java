@@ -237,8 +237,6 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
     }
 
     public static void show(final Context context, final initWindow iw, final WindowStruct parentWindow, final DataBaseForBrowser.BookmarksDao BookmarkDao){
-        ArrayList<DataBaseForBrowser.Bookmark> BookmarkList = new ArrayList<>();
-
         new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                 .parentWindow(parentWindow)
                 .windowPageTitles(new String[]{context.getString(R.string.bookmarks)})
@@ -249,7 +247,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                 .height(parentWindow.getHeight())
                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                 .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON)
-                .constructionAndDeconstructionWindow(new BookmarkList(context, iw, BookmarkList, BookmarkDao))
+                .constructionAndDeconstructionWindow(new BookmarkList(context, iw, new ArrayList<DataBaseForBrowser.Bookmark>(), BookmarkDao))
                 .show();
     }
 

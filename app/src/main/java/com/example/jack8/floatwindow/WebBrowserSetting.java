@@ -20,21 +20,25 @@ import java.util.List;
 public class WebBrowserSetting {
     private static WebBrowserSetting webBrowserSetting = null;
 
-    private LinkedHashSet<Integer> webBrowserWindowList = new LinkedHashSet<>();
+    private final LinkedHashSet<Integer> webBrowserWindowList = new LinkedHashSet<>();
     private DataBaseForBrowser.Setting setting;
     private WindowStruct settingPage = null;
 
-     static WebBrowserSetting init(DataBaseForBrowser dataBaseForBrowser, int windoiwId, final Runnable operated){
+    public interface Operated{
+        void operated(WebBrowserSetting webBrowserSetting);
+    }
+
+     static WebBrowserSetting init(DataBaseForBrowser dataBaseForBrowser, int windoiwId, Operated operated){
          if(webBrowserSetting == null){
              synchronized (WebBrowserSetting.class){
                  if(webBrowserSetting == null){
                      webBrowserSetting = new WebBrowserSetting(dataBaseForBrowser, operated);
                  }
                  else
-                     operated.run();
+                     operated.operated(webBrowserSetting);
              }
          }else
-             operated.run();
+             operated.operated(webBrowserSetting);
          webBrowserSetting.webBrowserWindowList.add(windoiwId);
          return webBrowserSetting;
     }
@@ -43,7 +47,7 @@ public class WebBrowserSetting {
          return webBrowserSetting;
     }
 
-    private WebBrowserSetting(final DataBaseForBrowser dataBaseForBrowser, final Runnable operated){
+    private WebBrowserSetting(final DataBaseForBrowser dataBaseForBrowser, final Operated operated){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -54,7 +58,12 @@ public class WebBrowserSetting {
                 } else
                     setting = dataBaseForBrowser.settingDao().getSetting().get(0);
                 setting.displayZoomControls = false;
-                new Handler(Looper.getMainLooper()).post(operated);
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        operated.operated(WebBrowserSetting.this);
+                    }
+                });
             }
         }).start();
     }

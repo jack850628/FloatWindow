@@ -32,22 +32,22 @@ import java.util.HashSet;
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private static int Index = 0;//計算視窗開啟數量
 
-    int Number;//視窗編號
+    final int Number;//視窗編號
     static int NOW_FOCUS_NUMBER = -1;//現在點視窗
 
     private final int parentWindowNumber;//父視窗編號
-    private HashSet<Integer> subWindowNumbers = new HashSet<>();//所有子視窗編號
+    private final HashSet<Integer> subWindowNumbers = new HashSet<>();//所有子視窗編號
     private int MINI_SIZE;//視窗最小化的寬度
-    private final int TITLE_LIFT_TO_EDGE_DISTANCE = 10;
+    private static final int TITLE_LIFT_TO_EDGE_DISTANCE = 10;
     //static final int START_POINT = 60;//視窗預設座標
-    private static int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
+    private static final int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
             |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
             |WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH//如果你已經設置了FLAG_NOT_TOUCH_MODAL,那麼你可以設置FLAG_WATCH_OUTSIDE_TOUCH這個flag, 這樣一個點擊事件如果發生在你的window之外的範圍,你就會接收到一個特殊的MotionEvent,MotionEvent.ACTION_OUTSIDE 注意,你只會接收到點擊事件的第一下,而之後的DOWN/MOVE/UP等手勢全都不會接收到
             ;
-    private static int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
+    private static final int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
             |WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
             ;
-    private static int NO_FOCUS_FLAGE_FOR_MINI_STATE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+    private static final int NO_FOCUS_FLAGE_FOR_MINI_STATE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
     private int top,left,height,width;//視窗的座標及大小
 
@@ -68,7 +68,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private TextView title;
     private String[] windowTitle;
 
-    private Handler runUi= new Handler(Looper.getMainLooper());
+    private final Handler runUi= new Handler(Looper.getMainLooper());
 
     private constructionAndDeconstructionWindow CDAW;
 
@@ -87,7 +87,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public State nowState = State.GENERAL;//當前狀態
     public State previousState = null;//前一次的狀態
 
-    static HashMap<Integer,WindowStruct> windowList = new HashMap<>();
+    static final HashMap<Integer,WindowStruct> windowList = new HashMap<>();
 
     /**
      * 建構WindowStruct的工廠模式

@@ -162,8 +162,6 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
     }
 
     public static void show(final Context context, final initWindow iw, final WindowStruct parentWindow, final DataBaseForBrowser.HistoryDao historyDao){
-        ArrayList<DataBaseForBrowser.History> historyList = new ArrayList<>();
-
         new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                 .parentWindow(parentWindow)
                 .windowPageTitles(new String[]{context.getString(R.string.history)})
@@ -174,7 +172,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                 .height(parentWindow.getHeight())
                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                 .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON)
-                .constructionAndDeconstructionWindow(new HistoryList(context, iw, historyList, historyDao))
+                .constructionAndDeconstructionWindow(new HistoryList(context, iw, new ArrayList<DataBaseForBrowser.History>(), historyDao))
                 .show();
     }
 

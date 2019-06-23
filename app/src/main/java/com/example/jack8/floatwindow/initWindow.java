@@ -485,16 +485,16 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
         });
 
-        WebBrowserSetting.init(dataBaseForBrowser, windowStruct.getNumber(), new Runnable() {
+        WebBrowserSetting.init(dataBaseForBrowser, windowStruct.getNumber(), new WebBrowserSetting.Operated() {
             @Override
-            public void run() {
-                web.getSettings().setJavaScriptEnabled(WebBrowserSetting.getInit().getSetting().javaScriptEnabled);
-                web.getSettings().setSupportZoom(WebBrowserSetting.getInit().getSetting().supportZoom);
+            public void operated(WebBrowserSetting webBrowserSetting) {
+                web.getSettings().setJavaScriptEnabled(webBrowserSetting.getSetting().javaScriptEnabled);
+                web.getSettings().setSupportZoom(webBrowserSetting.getSetting().supportZoom);
                 web.getSettings().setBuiltInZoomControls(true);
-                web.getSettings().setDisplayZoomControls(WebBrowserSetting.getInit().getSetting().displayZoomControls);
+                web.getSettings().setDisplayZoomControls(webBrowserSetting.getSetting().displayZoomControls);
                 web.getSettings().setUseWideViewPort(true);
                 web.resumeTimers();
-                String url = WebBrowserSetting.getInit().getSetting().homeLink;
+                String url = webBrowserSetting.getSetting().homeLink;
                 if(args != null && args.length != 0 && args[0] instanceof String) {
                     url = (String) args[0];
                     Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
