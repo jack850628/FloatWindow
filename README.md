@@ -84,3 +84,6 @@ int windowBackgroundColor = windowColor.getWindowBackground();//取得視窗背�
 windowColor.setTitleBar(0x79afe47a);//ARGB
 windowColor.save();//儲存顏色設定
 ```
+
+## License
+使用[MIT license](https://github.com/jack850628/FloatWindow/blob/have_AD/LICENSE)

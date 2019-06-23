@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="app_name">浮动视窗</string>
-        <string name="version">版本:1.1.6</string>
+        <string name="version">版本:1.1.7.6</string>
 
         <string name="web_browser">网页浏览器</string>
         <string name="note">便条纸</string>
@@ -18,8 +18,8 @@
         <string name="open_link_in_new_window">在新的视窗开启连结</string>
         <string name="copy_link">复制连结网址</string>
         <string name="copyed">以复制到剪贴簿</string>
-        <string name="share_the_website">分享此网页</string>
-        <string name="open_to_other_browser">用其他浏览器开启此网页</string>
+        <string name="share_the_website">分享</string>
+        <string name="open_to_other_browser">用其他浏览器开启</string>
         <string name="select_APP">选择APP</string>
         <string name="select_browser">选择浏览器</string>
         <string name="temperature">温度</string>
@@ -45,4 +45,20 @@
     <string name="create_new_note">新增便条纸</string>
     <string name="share">分享</string>
     <string name="hide_frame">隐藏外框</string>
+    <string name="bookmarks">书签</string>
+    <string name="history">历史纪录</string>
+    <string name="delete">删除</string>
+    <string name="add_to_bookmarks">加入至书签</string>
+    <string name="title">标题</string>
+    <string name="add">加入</string>
+    <string name="edit">编辑</string>
+    <string name="no_data">没有资料</string>
+    <string name="bookmark_added">已加入书签</string>
+    <string name="edit_bookmark">编辑书签</string>
+    <string name="home_page">首页</string>
+    <string name="enable_javascript">启用JavaScript</string>
+    <string name="enable_zoom">启用缩放</string>
+    <string name="display_zoom_button">显示缩放按钮</string>
+    <string name="web_browser_setting">网页浏览器设定</string>
+    <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
 </resources>

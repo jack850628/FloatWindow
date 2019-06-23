@@ -122,6 +122,7 @@ public class FloatServer extends Service {
             e.printStackTrace();
         }
     }
+
     /*
     關於onStartCommand的說明
     http://www.cnblogs.com/not-code/archive/2011/05/21/2052713.html
@@ -212,7 +213,7 @@ public class FloatServer extends Service {
                                 }
 
                                 @Override
-                                public void Deconstruction(Context context, View pageView, int position) {
+                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                                 }
 
@@ -292,7 +293,7 @@ public class FloatServer extends Service {
                         }
 
                         @Override
-                        public void Deconstruction(Context context, View pageView, int position) {
+                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
                         }
 

@@ -1,18 +1,21 @@
 package com.example.jack8.floatwindow;
 
 import android.app.AlertDialog;
+import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -20,8 +23,8 @@ import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
+import android.webkit.WebHistoryItem;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -45,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +56,8 @@ import java.util.regex.Pattern;
  * 初始化視窗內容
  */
 public class initWindow implements WindowStruct.constructionAndDeconstructionWindow {
+    public Handler handler = new Handler(Looper.getMainLooper());
+
     /**
      * 初始化視窗子頁面內容
      * @param context 視窗所在的Activity或Service的Context
@@ -76,128 +82,310 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 break;
         }
     }
+
+    EditText path;
+    Button go;
+    Button goBack;
+    Button menu;
+    WebView web;
+    ProgressBar PB;
+
+    public void loadUrl(String url){
+        PB.setVisibility(View.VISIBLE);
+        PB.setProgress(0);
+        path.setText(url);
+        web.loadUrl(url);
+    }
+
     public void initWindow1(final Context context, final View pageView, final int position,final Object[] args, final WindowStruct windowStruct){
-        final EditText path=(EditText)pageView.findViewById(R.id.webpath);
-        Button go=(Button)pageView.findViewById(R.id.go);
-        Button goBack=(Button)pageView.findViewById(R.id.goback);
-        final Button menu=(Button) pageView.findViewById(R.id.menu);
-        final WebView web=(WebView)pageView.findViewById(R.id.web);
+        path = (EditText)pageView.findViewById(R.id.webpath);
+        go = (Button)pageView.findViewById(R.id.go);
+        goBack = (Button)pageView.findViewById(R.id.goback);
+        menu = (Button) pageView.findViewById(R.id.menu);
+        web = (WebView)pageView.findViewById(R.id.web);
+        PB = (ProgressBar) pageView.findViewById(R.id.progressBar);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
-        final ProgressBar PB=(ProgressBar) pageView.findViewById(R.id.progressBar);
-        final Clipboard clipboard=new Clipboard(context);
-
-        WebSettings webSettings = web.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setDisplayZoomControls(false);
-        webSettings.setUseWideViewPort(true);
-
+        final Clipboard clipboard = new Clipboard(context);
+        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME).addMigrations(DataBaseForBrowser.MIGRATION_1_2).build();
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
-                PB.setVisibility(View.VISIBLE);
-                PB.setProgress(0);
-                path.setText(url);
-                web.loadUrl(url);
+                loadUrl(url);
                 return true;
             }
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){//當點擊WebView內的連結時處理
-                PB.setVisibility(View.VISIBLE);
-                PB.setProgress(0);
-                path.setText(request.getUrl().toString());
-                web.loadUrl(request.getUrl().toString());
+                loadUrl(request.getUrl().toString());
                 return true;
             }
             @Override
-            public void onPageFinished(WebView wed, String url) {
-                pageView.setTag(web.getTitle());
-                windowStruct.setWindowTitle(position,web.getTitle());
+            public void onPageFinished(WebView webView, final String url) {
+                final String title = webView.getTitle();
+                pageView.setTag(title);
+                windowStruct.setWindowTitle(position,title);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataBaseForBrowser.historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
+                    }
+                }).start();
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsAlert(WebView view, String url, String message,final JsResult result) {
-                AlertDialog Alert=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
-                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
-                            }
-                        }).create();
-                Alert.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                Alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        result.cancel();
-                    }
-                });
-                Alert.show();
+            public boolean onJsAlert(WebView webView, String url, final String message, final JsResult result) {
+//                AlertDialog Alert=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
+//                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                result.confirm();
+//                            }
+//                        }).create();
+//                Alert.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+//                Alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        result.cancel();
+//                    }
+//                });
+//                Alert.show();
+                if(windowStruct.nowState == WindowStruct.State.CLOSE)
+                    return false;
+                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(message);
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+               new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                       .parentWindow(windowStruct)
+                       .windowPageTitles(new String[]{context.getString(R.string.web_say)})
+                       .windowPages(new View[]{messageView})
+                       .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                       .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
+                       .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
+                       .width(messageView.getMeasuredWidth())
+                       .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)))
+                       .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                       .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                           @Override
+                           public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                               pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View v) {
+                                       ws.close();
+                                   }
+                               });
+                           }
+
+                           @Override
+                           public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                           }
+
+                           @Override
+                           public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                           }
+
+                           @Override
+                           public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                           }
+                       })
+                       .windowAction(new WindowStruct.WindowAction() {
+                           @Override
+                           public void goHide(WindowStruct windowStruct) {
+
+                           }
+                           @Override
+                           public void goClose(WindowStruct windowStruct) {
+                               result.cancel();
+                           }
+                       })
+                       .show();
                 //return true後絕對不能少了result.confirm()或result.cancel()，不然網頁會卡住
                 //Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
                 //return super.onJsAlert(view, url, message, result);
                 return true;
             }
             @Override
-            public boolean onJsConfirm(WebView view, String url, String message,final JsResult result) {
-                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
-                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+            public boolean onJsConfirm(WebView webView, String url, String message,final JsResult result) {
+//                AlertDialog Confirm=new AlertDialog.Builder(context).setTitle(context.getString(R.string.web_say)).setMessage(message).
+//                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                result.confirm();
+//                            }
+//                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        result.cancel();
+//                    }
+//                }).create();
+//                Confirm.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        result.cancel();
+//                    }
+//                });
+//                Confirm.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+//                Confirm.show();
+                if(windowStruct.nowState == WindowStruct.State.CLOSE)
+                    return false;
+                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(message);
+                messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                        .parentWindow(windowStruct)
+                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
+                        .windowPages(new View[]{messageView})
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
+                        .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
+                        .width(messageView.getMeasuredWidth())
+                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm();
+                            public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                                pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        result.confirm();
+                                        ws.close();
+                                    }
+                                });
+                                pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ws.close();
+                                    }
+                                });
                             }
-                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                }).create();
-                Confirm.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        result.cancel();
-                    }
-                });
-                Confirm.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                Confirm.show();
+
+                            @Override
+                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                            }
+
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+                        })
+                        .windowAction(new WindowStruct.WindowAction() {
+                            @Override
+                            public void goHide(WindowStruct windowStruct) {
+
+                            }
+                            @Override
+                            public void goClose(WindowStruct windowStruct) {
+                                result.cancel();
+                            }
+                        })
+                        .show();
                 //return super.onJsConfirm(view,url,message,result);
                 return true;
             }
             @Override
-            public boolean onJsPrompt(WebView view, String url, String message,String defaultValue, final JsPromptResult result) {
-                final EditText editText=new EditText(context);
-                editText.setText(defaultValue);
-                AlertDialog Prompt=new AlertDialog.Builder(context).setTitle(message).setView(editText).
-                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+            public boolean onJsPrompt(WebView webView, String url, String message,String defaultValue, final JsPromptResult result) {
+//                final EditText editText=new EditText(context);
+//                editText.setText(defaultValue);
+//                AlertDialog Prompt=new AlertDialog.Builder(context).setTitle(message).setView(editText).
+//                        setPositiveButton(context.getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                result.confirm(editText.getText().toString());
+//                            }
+//                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        result.cancel();
+//                    }
+//                }).create();
+//                Prompt.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        result.cancel();
+//                    }
+//                });
+//                Prompt.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+//                Prompt.show();
+                if(windowStruct.nowState == WindowStruct.State.CLOSE)
+                    return false;
+                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(message);
+                messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
+                messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                        .parentWindow(windowStruct)
+                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
+                        .windowPages(new View[]{messageView})
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
+                        .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
+                        .width(messageView.getMeasuredWidth())
+                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)))
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                result.confirm(editText.getText().toString());
+                            public void Construction(Context context, final View pageView, int position, Object[] args, final WindowStruct ws) {
+                                pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        result.confirm(((EditText)pageView.findViewById(R.id.input_text)).getText().toString());
+                                        ws.close();
+                                    }
+                                });
+                                pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ws.close();
+                                    }
+                                });
                             }
-                        }).setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                }).create();
-                Prompt.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        result.cancel();
-                    }
-                });
-                Prompt.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                Prompt.show();
+
+                            @Override
+                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                            }
+
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                            }
+                        })
+                        .windowAction(new WindowStruct.WindowAction() {
+                            @Override
+                            public void goHide(WindowStruct windowStruct) {
+
+                            }
+                            @Override
+                            public void goClose(WindowStruct windowStruct) {
+                                result.cancel();
+                            }
+                        })
+                        .show();
                 //return super.onJsPrompt(view,url,message,defaultValue,result);
                 return true;
             }
             @Override
-            public void onProgressChanged(WebView view, int newProgress){
+            public void onProgressChanged(WebView webView, int newProgress){
                 PB.setProgress(newProgress);
                 if(newProgress==100)
                     PB.setVisibility(View.GONE);
-                super.onProgressChanged(view,newProgress);
+                super.onProgressChanged(webView,newProgress);
             }
 
             /*------------全螢幕播放--------------
@@ -261,26 +449,25 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                             .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                            .constructionAndDeconstructionWindow(new initWindow(){
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                    initWindow.this.initWindow1(context,pageView,position,args,windowStruct);
+                                                    super.Construction(context,pageView,0,args,windowStruct);
                                                 }
 
                                                 @Override
-                                                public void Deconstruction(Context context, View pageView, int position) {
-                                                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                                                        ((WebView)pageView.findViewById(R.id.web)).onPause();
+                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+                                                    super.Deconstruction(context, pageView, 0, windowStruct);
                                                 }
 
                                                 @Override
                                                 public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+                                                    super.onResume(context, pageView, 0, windowStruct);
                                                 }
 
                                                 @Override
                                                 public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+                                                    super.onPause(context, pageView, 0, windowStruct);
                                                 }
                                             }).show();
                                     break;
@@ -297,17 +484,29 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 return false;
             }
         });
-        String url;
-        if(args != null && args.length != 0 && args[0] instanceof String) {
-            url = (String) args[0];
-            Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
-            Matcher matcher = pattern.matcher(url);
-            if(matcher.find())
-                url = matcher.group();
-        }else
-            url = "https://www.google.com.tw/?gws_rd=ssl";
-        path.setText(url);
-        web.loadUrl(url);
+
+        WebBrowserSetting.init(dataBaseForBrowser, windowStruct.getNumber(), new WebBrowserSetting.Operated() {
+            @Override
+            public void operated(WebBrowserSetting webBrowserSetting) {
+                web.getSettings().setJavaScriptEnabled(webBrowserSetting.getSetting().javaScriptEnabled);
+                web.getSettings().setSupportZoom(webBrowserSetting.getSetting().supportZoom);
+                web.getSettings().setBuiltInZoomControls(true);
+                web.getSettings().setDisplayZoomControls(webBrowserSetting.getSetting().displayZoomControls);
+                web.getSettings().setUseWideViewPort(true);
+                web.resumeTimers();
+                String url = webBrowserSetting.getSetting().homeLink;
+                if(args != null && args.length != 0 && args[0] instanceof String) {
+                    url = (String) args[0];
+                    Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
+                    Matcher matcher = pattern.matcher(url);
+                    if(matcher.find())
+                        url = matcher.group();
+                }
+                path.setText(url);
+                web.loadUrl(url);
+            }
+        });
+
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -317,27 +516,126 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WebBackForwardList WBFL = web.copyBackForwardList();
-                if(WBFL.getCurrentIndex()==0)//當目前顯示的是WebView第一個顯示的網址
-                    return;
-                path.setText(WBFL.getItemAtIndex(WBFL.getCurrentIndex()-1).getUrl());//取得上一頁的網址連結
-                web.goBack();
-
+                WebBackForwardList webBackForwardList = web.copyBackForwardList();
+                WebHistoryItem webHistoryItem = webBackForwardList.getItemAtIndex(webBackForwardList.getCurrentIndex() - 1);
+                if(webHistoryItem != null){
+                    path.setText(webHistoryItem.getUrl());//取得上一頁的網址連結
+                    web.goBack();
+                }
             }
         });
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser)}));
-                final AlertDialog menu = new AlertDialog.Builder(context).setView(menu_list).create();
-                menu.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
-                menu.show();
+                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
+                final PopupWindow popupWindow = new PopupWindow(context);
+                popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
+                popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                popupWindow.setContentView(menu_list);
+                popupWindow.setFocusable(true);
+                popupWindow.showAsDropDown(v,-popupWindow.getWidth() + v.getWidth(),0);//需要-popupWindow.getWidth() + v.getWidth()是因為在Android 6上PopupWindow的anchor view下方以anchor view最左邊往右算的寬度如果不足popupWindow的寬度，popupWindow就會跑到anchor view的上方
                 menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
-                            case 0: {
+                            case 0:
+                                loadUrl(WebBrowserSetting.getInit().getSetting().homeLink);
+                                break;
+                            case 1:{
+                                final String title = web.getTitle(), url = web.getUrl();
+                                new AsyncTask<DataBaseForBrowser.Bookmark, Void, DataBaseForBrowser.Bookmark>(){
+
+                                    @Override
+                                    protected DataBaseForBrowser.Bookmark doInBackground(DataBaseForBrowser.Bookmark... bookmark) {
+                                        List<DataBaseForBrowser.Bookmark> oldBookmark = dataBaseForBrowser.bookmarksDao().getBookmark(bookmark[0].url);
+                                        if(oldBookmark.size() == 0){
+                                            bookmark[0].id = dataBaseForBrowser.bookmarksDao().addBookmark(bookmark[0]);
+                                            return bookmark[0];
+                                        }else
+                                            return oldBookmark.get(0);
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(final DataBaseForBrowser.Bookmark result){
+                                        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                                .parentWindow(windowStruct)
+                                                .windowPageTitles(new String[]{context.getString(R.string.bookmark_added)})
+                                                .windowPages(new int[]{R.layout.add_to_bookmark})
+                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                                                .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
+                                                .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (int)(context.getResources().getDisplayMetrics().density*170) / 2)
+                                                .width((int)(context.getResources().getDisplayMetrics().density*280))
+                                                .height((int)(context.getResources().getDisplayMetrics().density*170))
+                                                .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                                    @Override
+                                                    public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                                                        final EditText title_box = pageView.findViewById(R.id.title);
+                                                        final EditText url_box = pageView.findViewById(R.id.home_link);
+
+                                                        title_box.setText(result.title);
+                                                        url_box.setText(result.url);
+                                                        pageView.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                new Thread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        try {
+                                                                            dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                        }catch (SQLiteConstraintException e){
+                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());
+                                                                            dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                        }
+                                                                    }
+                                                                }).start();
+                                                                windowStruct.close();
+                                                            }
+                                                        });
+                                                        pageView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                new Thread(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        dataBaseForBrowser.bookmarksDao().deleteBookmark(result);
+                                                                    }
+                                                                }).start();
+                                                                windowStruct.close();
+                                                            }
+                                                        });
+                                                    }
+
+                                                    @Override
+                                                    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                                    }
+                                                })
+                                                .show();
+                                    }
+                                }.execute(new DataBaseForBrowser.Bookmark(title,url));
+                                break;
+                            }
+                            case 2:{
+                                BookmarkList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.bookmarksDao());
+                                break;
+                            }
+                            case 3:{
+                                HistoryList.show(context, initWindow.this, windowStruct, dataBaseForBrowser.historyDao());
+                                break;
+                            }
+                            case 4: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
@@ -347,7 +645,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 1: {
+                            case 5: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -355,8 +653,11 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
+                            case 6:
+                                WebBrowserSetting.getInit().showSettingWindow(context, dataBaseForBrowser, null);
+                                break;
                         }
-                        menu.dismiss();
+                        popupWindow.dismiss();
                     }
                 });
             }
@@ -541,8 +842,8 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                         }
 
                                                         @Override
-                                                        public void Deconstruction(Context context, View pageView, int position) {
-                                                            super.Deconstruction(context, pageView, 1);
+                                                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+                                                            super.Deconstruction(context, pageView, 1, windowStruct);
                                                         }
 
                                                         @Override
@@ -724,10 +1025,22 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         });
     }
 
-    public void Deconstruction(Context context, View pageView, int position){
+    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct){
         if(position==0){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            ((WebView)pageView.findViewById(R.id.web)).onPause();
+            WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
+            web.clearHistory();
+            if(WebBrowserSetting.getInit().haveRuningBrowser())
+                web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+            else {
+                web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+                web.pauseTimers();//會導致其他的WebView的javascript停止執行
+            }
+            web.loadUrl("about:blank");
+            web.onPause();
+            web.removeAllViews();
+            web.destroyDrawingCache();
+            web.destroy();
+            web = null;
         }else if(position==1){
             showingNoteIdList.remove(noteId);
             otherNodeListAdapter.update(showingNoteIdList);

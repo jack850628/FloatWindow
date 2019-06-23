@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">FloatWindow</string>
-    <string name="version">ver:1.1.6</string>
+    <string name="version">ver:1.1.7.6</string>
 
     <string name="web_browser">Web Browser</string>
     <string name="note">Note</string>
@@ -17,8 +17,8 @@
     <string name="open_link_in_new_window">Open link in new window</string>
     <string name="copy_link">Copy link</string>
     <string name="copyed">copyed</string>
-    <string name="share_the_website">share the website</string>
-    <string name="open_to_other_browser">open to other browser</string>
+    <string name="share_the_website">Share</string>
+    <string name="open_to_other_browser">Open to other browser</string>
     <string name="select_APP">select APP</string>
     <string name="select_browser">select browser</string>
     <string name="temperature">temperature</string>
@@ -44,4 +44,20 @@
     <string name="create_new_note">Create new note</string>
     <string name="share">Share</string>
     <string name="hide_frame">Hide frame</string>
+    <string name="bookmarks">Bokmarks</string>
+    <string name="history">History</string>
+    <string name="delete">Delete</string>
+    <string name="add_to_bookmarks">add to bookmark</string>
+    <string name="title">title</string>
+    <string name="add">add</string>
+    <string name="edit">Edit</string>
+    <string name="no_data">No data</string>
+    <string name="bookmark_added">Bookmark added</string>
+    <string name="edit_bookmark">Edit bookmark</string>
+    <string name="home_page">Home page</string>
+    <string name="enable_javascript">Enable JavaScript</string>
+    <string name="enable_zoom">Enable zoom</string>
+    <string name="display_zoom_button">Display zoom button</string>
+    <string name="web_browser_setting">Web browser setting</string>
+    <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
 </resources>
