@@ -697,8 +697,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(left, top, -left, -top, transitionsDuration);
                 heightMini.startScroll(width, height, screenSize.getWidth() - width,
                         screenSize.getHeight() - height, transitionsDuration);
-                if ((display_object & SIZE_BAR) == SIZE_BAR)
-                    sizeBar.setVisibility(View.GONE);
             } else if(previousState == State.MINI){
                 topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
@@ -825,7 +823,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             menu.setVisibility(View.GONE);
         else
             title.setPadding(0,0,0,0);
-        close_button.setVisibility(View.GONE);
         microMaxButtonBackground.setVisibility(View.GONE);
         if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
             titleBarAndButtons.setVisibility(View.VISIBLE);
@@ -849,7 +846,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             menu.setVisibility(View.VISIBLE);
         else
             title.setPadding((int)(context.getResources().getDisplayMetrics().density*TITLE_LIFT_TO_EDGE_DISTANCE),0,0,0);
-        close_button.setVisibility(View.VISIBLE);
         microMaxButtonBackground.setVisibility(View.VISIBLE);
         if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
             titleBarAndButtons.setVisibility(View.VISIBLE);
