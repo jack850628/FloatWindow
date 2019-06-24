@@ -2,7 +2,7 @@ package com.example.jack8.floatwindow;
 
 import android.content.Context;
 
-import com.example.jack8.floatwindow.Window.WindowConfig;
+import com.jack8.floatwindow.Window.WindowConfig;
 
 public class WindowTransitionsDuration {
     private final static String SECOND = "Second";

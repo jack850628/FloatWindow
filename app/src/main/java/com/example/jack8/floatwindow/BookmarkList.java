@@ -17,7 +17,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.util.ArrayList;
 
@@ -121,7 +121,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                                             .windowPageTitles(new String[]{context.getString(R.string.edit_bookmark)})
                                             .windowPages(new int[]{R.layout.add_to_bookmark})
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                                             .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
                                             .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (int)(context.getResources().getDisplayMetrics().density*170) / 2)
                                             .width((int)(context.getResources().getDisplayMetrics().density*280))
@@ -246,7 +246,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                 .width(parentWindow.getWidth())
                 .height(parentWindow.getHeight())
                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON)
+                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON)
                 .constructionAndDeconstructionWindow(new BookmarkList(context, iw, new ArrayList<DataBaseForBrowser.Bookmark>(), BookmarkDao))
                 .show();
     }

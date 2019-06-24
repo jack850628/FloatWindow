@@ -9,7 +9,7 @@ import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.Switch;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.jack8.floatwindow.Window.WindowStruct;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -76,7 +76,7 @@ public class WebBrowserSetting {
                     .windowPageTitles(new String[]{context.getString(R.string.web_browser_setting)})
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                     .windowAction(((FloatServer) context).windowAction)
-                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.SIZE_BAR)
+                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         private AdView mAdView;
 

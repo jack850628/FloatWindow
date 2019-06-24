@@ -1,9 +1,9 @@
-package com.example.jack8.floatwindow.Window;
+package com.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.jack8.floatwindow.R;
+import com.jack8.floatwindow.R;
 
 /**
  * 視窗顏色

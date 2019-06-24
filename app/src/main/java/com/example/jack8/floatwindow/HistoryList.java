@@ -16,7 +16,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -171,7 +171,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                 .width(parentWindow.getWidth())
                 .height(parentWindow.getHeight())
                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON)
+                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON)
                 .constructionAndDeconstructionWindow(new HistoryList(context, iw, new ArrayList<DataBaseForBrowser.History>(), historyDao))
                 .show();
     }

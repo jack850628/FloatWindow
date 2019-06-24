@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow.Window;
+package com.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -22,7 +22,7 @@ import android.widget.ListView;
 import android.widget.Scroller;
 import android.widget.TextView;
 
-import com.example.jack8.floatwindow.R;
+import com.jack8.floatwindow.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,9 +78,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public static final int MENU_BUTTON = 0x01;
     public static final int HIDE_BUTTON = 0x02;
     public static final int MINI_BUTTON = 0x04;
-    public static final int MAX_BUTTON  = 0x08;
-    public static final int SIZE_BAR = 0x10;
-    public static final int TITLE_BAR_AND_BUTTONS = 0x20;
+    public static final int MAX_BUTTON = 0x08;
+    public static final int CLOSE_BUTTON = 0x10;
+    public static final int SIZE_BAR = 0x20;
+    public static final int TITLE_BAR_AND_BUTTONS = 0x40;
 //-------------------------------------------------------
 
     public enum State{MAX,MINI,HIDE,GENERAL,CLOSE}
@@ -102,7 +103,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private int left = 60;
         private int height;
         private int width;
-        private int displayObject = TITLE_BAR_AND_BUTTONS|MENU_BUTTON|HIDE_BUTTON|MINI_BUTTON|MAX_BUTTON|SIZE_BAR;
+        private int displayObject = TITLE_BAR_AND_BUTTONS | MENU_BUTTON | HIDE_BUTTON | MINI_BUTTON | MAX_BUTTON | CLOSE_BUTTON | SIZE_BAR;
         private int transitionsDuration = 500;
         private int parentWindowNumber = -1;
         private WindowAction windowAction = new WindowAction() {
@@ -573,33 +574,28 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.mini://最小化
-                mini();
-                break;
-            case R.id.max: //最大化或一般大小
-                switch (nowState){
-                    case MAX:
-                        general();
-                        break;
-                    default:
-                        max();
-                }
-                break;
-            case R.id.title://還原視窗大小
-                if(nowState == State.MINI) {
-                    if (previousState != null && previousState == State.MAX)
-                        max();
-                    else
-                        general();
-                }
-                break;
-            case R.id.close_button://關閉視窗
-                close();
-                break;
-            case R.id.hide://隱藏視窗
-                hide();
-                break;
+        int i = v.getId();
+        if (i == R.id.mini) {//最小化
+            mini();
+        } else if (i == R.id.max) {//最大化或一般大小
+            switch (nowState) {
+                case MAX:
+                    general();
+                    break;
+                default:
+                    max();
+            }
+        } else if (i == R.id.title) {//還原視窗大小
+            if (nowState == State.MINI) {
+                if (previousState != null && previousState == State.MAX)
+                    max();
+                else
+                    general();
+            }
+        } else if (i == R.id.close_button) {//關閉視窗
+            close();
+        } else if (i == R.id.hide) {//隱藏視窗
+            hide();
         }
     }
 
@@ -839,6 +835,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             max.setVisibility(View.GONE);
         if((display_object & HIDE_BUTTON) == HIDE_BUTTON)
             hide.setVisibility(View.GONE);
+        if((display_object & CLOSE_BUTTON) == CLOSE_BUTTON)
+            close_button.setVisibility(View.GONE);
         if((display_object & SIZE_BAR) == SIZE_BAR)
             sizeBar.setVisibility(View.GONE);
     }
@@ -863,6 +861,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             max.setVisibility(View.VISIBLE);
         if((display_object & HIDE_BUTTON) == HIDE_BUTTON)
             hide.setVisibility(View.VISIBLE);
+        if((display_object & CLOSE_BUTTON) == CLOSE_BUTTON)
+            close_button.setVisibility(View.VISIBLE);
         if((display_object & SIZE_BAR) == SIZE_BAR)
             sizeBar.setVisibility(View.VISIBLE);
     }
@@ -896,6 +896,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             max.setVisibility(View.GONE);
         else
             max.setVisibility(View.VISIBLE);
+        if((display_object & CLOSE_BUTTON) != CLOSE_BUTTON)
+            close_button.setVisibility(View.GONE);
+        else
+            close_button.setVisibility(View.VISIBLE);
         if((display_object & SIZE_BAR) != SIZE_BAR || nowState == State.MAX)
             sizeBar.setVisibility(View.GONE);
         else

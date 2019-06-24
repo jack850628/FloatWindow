@@ -12,14 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.jack8.floatwindow.Window.WindowColor;
-import com.example.jack8.floatwindow.Window.WindowFrom;
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.jack8.floatwindow.Window.WindowColor;
+import com.jack8.floatwindow.Window.WindowFrom;
+import com.jack8.floatwindow.Window.WindowStruct;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -269,7 +267,7 @@ public class Setting extends AppCompatActivity {
                         .left(60)
                         .height((int)(110*this.getResources().getDisplayMetrics().density))
                         .width((int)(195*this.getResources().getDisplayMetrics().density))
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS|WindowStruct.MINI_BUTTON)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON)
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(new WindowStruct.WindowAction() {
                             @Override
