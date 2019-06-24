@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow.Window;
+package com.jack8.floatwindow.Window;
 
 public class WindowConfig {
     public final static String WINDOW_CONF = "windowConf";//設定檔的名稱

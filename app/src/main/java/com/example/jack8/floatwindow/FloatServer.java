@@ -24,7 +24,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;
+
+import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -47,7 +48,7 @@ public class FloatServer extends Service {
     Notification NF;
     final int NOTIFY_ID=851262;
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
-    HashMap<Integer,WindowStruct> windowList;
+    HashMap<Integer, WindowStruct> windowList;
     WindowStruct windowManager = null;//視窗管理員
     WindowStruct menu;
     Handler handler = new Handler();
@@ -156,7 +157,7 @@ public class FloatServer extends Service {
                         .left(60)
                         .height((int)(getResources().getDisplayMetrics().density*70*layouts.length))
                         .width((int)(getResources().getDisplayMetrics().density*200))
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new ProcessShare(wm,windowAction))
@@ -192,7 +193,7 @@ public class FloatServer extends Service {
                             .left(60)
                             .height((int) (140 * this.getResources().getDisplayMetrics().density))
                             .width((int) (200 * this.getResources().getDisplayMetrics().density))
-                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
@@ -272,7 +273,7 @@ public class FloatServer extends Service {
                     .left(60)
                     .height((int) (200 * this.getResources().getDisplayMetrics().density))
                     .width((int) (195 * this.getResources().getDisplayMetrics().density))
-                    .displayObject(WindowStruct.SIZE_BAR|WindowStruct.TITLE_BAR_AND_BUTTONS)
+                    .displayObject(WindowStruct.SIZE_BAR | WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override

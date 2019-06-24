@@ -39,7 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -159,7 +159,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                        .parentWindow(windowStruct)
                        .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                        .windowPages(new View[]{messageView})
-                       .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                       .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                        .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
                        .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
                        .width(messageView.getMeasuredWidth())
@@ -239,7 +239,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                         .parentWindow(windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                         .windowPages(new View[]{messageView})
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                         .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
                         .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
                         .width(messageView.getMeasuredWidth())
@@ -327,7 +327,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                         .parentWindow(windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
                         .windowPages(new View[]{messageView})
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                         .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - messageView.getMeasuredWidth() / 2)
                         .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density*30)) / 2)
                         .width(messageView.getMeasuredWidth())
@@ -563,7 +563,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                                 .windowPageTitles(new String[]{context.getString(R.string.bookmark_added)})
                                                 .windowPages(new int[]{R.layout.add_to_bookmark})
                                                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
+                                                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                                                 .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
                                                 .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (int)(context.getResources().getDisplayMetrics().density*170) / 2)
                                                 .width((int)(context.getResources().getDisplayMetrics().density*280))
@@ -863,7 +863,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     otherNoteList = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                             .windowPages(new View[]{nodeList})
                                             .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
-                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR)
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                             .windowAction(new WindowStruct.WindowAction() {
                                                 @Override

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="windowFoucsColor">#0066FF</color>
+    <color name="windowNotFoucsColor">#DDDDDD</color>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="closeButton">#FF0000</color>
+</resources>

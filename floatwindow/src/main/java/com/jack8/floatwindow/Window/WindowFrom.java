@@ -1,4 +1,4 @@
-package com.example.jack8.floatwindow.Window;
+package com.jack8.floatwindow.Window;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.example.jack8.floatwindow.R;
+import com.jack8.floatwindow.R;
 
 public class WindowFrom extends LinearLayout {
     final WindowManager wm;

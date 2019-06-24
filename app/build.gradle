@@ -38,4 +38,5 @@ dependencies {
     testImplementation "android.arch.persistence.room:testing:1.1.1"
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+    compile project(path: ':floatwindow')
 }

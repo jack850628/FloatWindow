@@ -8,7 +8,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.jack8.floatwindow.Window.WindowStruct;
+import com.jack8.floatwindow.Window.WindowStruct;
 
 /**
  * 處理帶有外部字串啟動時的頁面選擇
