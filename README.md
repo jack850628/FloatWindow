@@ -13,56 +13,27 @@ Float Window app for Android\
   ![Alt text](Demonstration2.png)
 
 
-移植FloatWindoew
+## 使用FloatWindoew在自己的APP裡
 
-複製
-```
-com.example.jack8.floatwindow
-    |-Window
-        |-WindowColor.java
-        |-WindowConfig.java
-        |-WindowFrom.java
-        |-WindowStruct.java
-```
-並將裡面所有的 import com.example.jack8.floatwindow.R; 改成 import <您專案的package name>.R;
+1.下載[FloatWindow模組](https://github.com/jack850628/FloatWindow/blob/have_AD/release_module/floatwindow-release.aar)
 
-在複製
-```
-   res
-    |-layout
-    |    |-window.xml
-    |    |-hide_menu_item.xml
-    |-drawable
-        |-close_window.xml
-        |-hide_window.xml
-        |-max_window.xml
-        |-menu_icom.png
-        |-micro_window.xml
-        |-mini_window.xml
-```
-並將window.xml裡面的 com.jack8.floatwindow.Window.WindowFrom 改成 <您專案的package name>.Window.WindowFrom
+2.引入aar檔到專案中 \
+<img src="說明1.png" width="500"></img>
+<img src="說明2.png" width="500"></img>
+<img src="說明3.png" width="500"></img>
 
-再來將您專案中的
+3.在專案的build.gradle中加入對FloatWindow的引用
 ```
-   res
-    |-values
-        |-colors.xml
-```
-在colors.xml裡面貼上
-```
-    <color name="windowFoucsColor">#0066FF</color>
-    <color name="windowNotFoucsColor">#DDDDDD</color>
-    <color name="windowBackground">#FFFFFF</color>
-    <color name="closeButton">#FF0000</color>
+dependencies {
+    ...
+    implementation project(path: ':floatwindow-release')
+    ...
+}
 ```
 
-然後再您專案中的AndroidManifest.xml裡面貼上
-```
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-```
+最後，FloatWindow有使用到ACTION_MANAGE_OVERLAY_PERMISSION權限，所以必須在自己的APP中加入跟使用著請求權限的對應處理。
 
-最後讓您的應用程式取得ACTION_MANAGE_OVERLAY_PERMISSION權限就完成了
-
+## FloatWindow的使用方法
 
 使用WindowStruct.Builder可以創建一個視窗 \
 創建一個Window最簡當的方式為
