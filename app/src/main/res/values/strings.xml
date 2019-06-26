@@ -60,4 +60,11 @@
     <string name="display_zoom_button">Display zoom button</string>
     <string name="web_browser_setting">Web browser setting</string>
     <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
+    <string name="arkanoid">arkanoid</string>
+    <string name="play">paly</string>
+    <string name="score">score:</string>
+    <string name="life">life:</string>
+    <string name="total_score">total score:</string>
+    <string name="game_over">game over</string>
+    <string name="brick">brick</string>
 </resources>

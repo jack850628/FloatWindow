@@ -35,7 +35,7 @@
                 <data android:scheme="https"/>
             </intent-filter>
         </activity>
-        <activity android:name=".Setting"/>
+        <activity android:name=".Setting" android:configChanges="orientation|screenSize" />
         <service android:name=".FloatServer" android:hardwareAccelerated ="true"/>
     </application>
 

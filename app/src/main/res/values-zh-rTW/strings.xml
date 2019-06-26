@@ -61,4 +61,11 @@
     <string name="display_zoom_button">顯示縮放按鈕</string>
     <string name="web_browser_setting">網頁瀏覽器設定</string>
     <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
+    <string name="arkanoid">打磚塊</string>
+    <string name="play">玩</string>
+    <string name="score">得分:</string>
+    <string name="life">生命:</string>
+    <string name="total_score">總得分:</string>
+    <string name="game_over">遊戲結束</string>
+    <string name="brick">磚塊</string>
 </resources>

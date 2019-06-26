@@ -12,11 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.jack8.floatwindow.Window.WindowColor;
-import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -33,7 +33,9 @@ public class Setting extends AppCompatActivity {
     ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
     SeekBar secondSet;
-    ArrayList<WindowStruct> windowList = new ArrayList<>();
+    int adoutWindow = -1;
+
+    Arkanoid arkanoid = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +45,7 @@ public class Setting extends AppCompatActivity {
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -239,14 +242,24 @@ public class Setting extends AppCompatActivity {
             finish();
         }
     };
+
+    @Override
+    protected void onPause(){
+        if(arkanoid != null)
+            arkanoid.onPause();
+        if(adoutWindow != -1) {
+            WindowStruct.getWindowStruct(adoutWindow).setTransitionsDuration(0);
+            WindowStruct.getWindowStruct(adoutWindow).close();
+        }
+        super.onPause();
+    }
     @Override
     protected void onDestroy(){
-        super.onDestroy();
+        if(arkanoid != null)
+            arkanoid.onDestroy();
+        arkanoid = null;
         mAdView.destroy();
-        for(WindowStruct windowStruct:windowList) {
-            windowStruct.setTransitionsDuration(0);
-            windowStruct.close();
-        }
+        super.onDestroy();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -260,47 +273,79 @@ public class Setting extends AppCompatActivity {
                 finish();
                 return true;
             case 0:
-                windowList.add(new WindowStruct.Builder(this,(WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                        .windowPages(new int[]{R.layout.about})
-                        .windowPageTitles(new String[]{getString(R.string.about)})
-                        .top(60)
-                        .left(60)
-                        .height((int)(110*this.getResources().getDisplayMetrics().density))
-                        .width((int)(195*this.getResources().getDisplayMetrics().density))
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON)
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
-                        .windowAction(new WindowStruct.WindowAction() {
-                            @Override
-                            public void goHide(WindowStruct windowStruct) {
+                if(arkanoid == null)
+                    arkanoid = new Arkanoid(Setting.this);
+                if(adoutWindow == -1) {
+                    adoutWindow = new WindowStruct.Builder(this, (WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                            .windowPages(new int[]{R.layout.about})
+                            .windowPageTitles(new String[]{getString(R.string.about)})
+                            .top(60)
+                            .left(60)
+                            .height((int) (110 * this.getResources().getDisplayMetrics().density))
+                            .width((int) (195 * this.getResources().getDisplayMetrics().density))
+                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON)
+                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                            .windowAction(new WindowStruct.WindowAction() {
+                                @Override
+                                public void goHide(WindowStruct windowStruct) {
 
-                            }
+                                }
 
-                            @Override
-                            public void goClose(WindowStruct windowStruct) {
-                                windowList.remove(windowStruct);
-                            }
-                        })
-                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                            @Override
-                            public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+                                @Override
+                                public void goClose(WindowStruct windowStruct) {
+                                    adoutWindow = -1;
+                                }
+                            })
+                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                int count = -1;
+                                TextView app_name, version;
+                                ImageView icon;
 
-                            }
+                                @Override
+                                public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+                                    app_name = pageView.findViewById(R.id.app_name);
+                                    version = pageView.findViewById(R.id.version);
+                                    icon = pageView.findViewById(R.id.icon);
+                                    icon.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            if (count == -1) {
+                                                app_name.setText(getResources().getString(R.string.arkanoid));
+                                                version.setText(getResources().getString(R.string.play));
+                                            }
+                                            if (++count % 2 == 0)
+                                                icon.setImageResource(R.drawable.arkanoid_icon);
+                                            else
+                                                icon.setImageResource(R.drawable.arkanoid_icon2);
+                                        }
+                                    });
+                                    version.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            if (count == -1)
+                                                return;
+                                            arkanoid.onPlay(count % 2 == 1);
+                                        }
+                                    });
+                                }
 
-                            @Override
-                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                @Override
+                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                @Override
+                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                @Override
+                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                            }
-                        }).show());
+                                }
+                            }).show().getNumber();
+                }else
+                    WindowStruct.getWindowStruct(adoutWindow).focusAndShowWindow();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
