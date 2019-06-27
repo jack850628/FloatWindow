@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.LinkedHashSet;
 
 public class Brickout {
     Activity activity;
+    ScreenSize screenSize;
 
     enum GameStatus{
         STOP,
@@ -45,6 +47,7 @@ public class Brickout {
 
     public Brickout(final Activity activity){
         this.activity = activity;
+        this.screenSize = new ScreenSize(activity);
         soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
         sounds.put(R.raw.bassdrum, soundPool.load(activity, R.raw.bassdrum, 1));
         sounds.put(R.raw.boing, soundPool.load(activity, R.raw.boing, 1));
@@ -87,8 +90,8 @@ public class Brickout {
                                     .windowPages(new int[]{R.layout.brickout_end_window})
                                     .windowPageTitles(new String[]{activity.getString(R.string.game_over)})
                                     .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                                    .left(activity.getResources().getDisplayMetrics().widthPixels / 2 - ((int) activity.getResources().getDisplayMetrics().density * 60))
-                                    .top(activity.getResources().getDisplayMetrics().heightPixels / 2 - ((int) activity.getResources().getDisplayMetrics().density * 30))
+                                    .left(screenSize.getWidth() / 2 - ((int) activity.getResources().getDisplayMetrics().density * 60))
+                                    .top(screenSize.getHeight() / 2 - ((int) activity.getResources().getDisplayMetrics().density * 30))
                                     .width((int) activity.getResources().getDisplayMetrics().density * 120)
                                     .height((int) activity.getResources().getDisplayMetrics().density * 60)
                                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
@@ -123,7 +126,7 @@ public class Brickout {
         windowsList.add(gameWindow.getNumber());
         windowsList.add((new WindowStruct.Builder(activity, (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
                 .top(0)
-                .left(activity.getResources().getDisplayMetrics().widthPixels-(int)(activity.getResources().getDisplayMetrics().density*30))
+                .left(screenSize.getWidth()-(int)(activity.getResources().getDisplayMetrics().density*30))
                 .width((int)(activity.getResources().getDisplayMetrics().density*30))
                 .height((int)(activity.getResources().getDisplayMetrics().density*30))
                 .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
@@ -142,11 +145,11 @@ public class Brickout {
                 })
                 .show()).getNumber());
         paddle = new Paddle(
-                activity.getResources().getDisplayMetrics().widthPixels / 2 - ((int)activity.getResources().getDisplayMetrics().density*60),
-                activity.getResources().getDisplayMetrics().heightPixels - ((int)activity.getResources().getDisplayMetrics().density*60)
+                screenSize.getWidth() / 2 - ((int)activity.getResources().getDisplayMetrics().density*60),
+                screenSize.getHeight() - ((int)activity.getResources().getDisplayMetrics().density*60)
         );
         ball = new Ball(paddle.x + ((int)activity.getResources().getDisplayMetrics().density*70),paddle.y - ((int)activity.getResources().getDisplayMetrics().density*20),new Point(10,-10));
-        int x = activity.getResources().getDisplayMetrics().widthPixels /  + ((int)activity.getResources().getDisplayMetrics().density * 80);
+        int x = screenSize.getWidth() /  + ((int)activity.getResources().getDisplayMetrics().density * 80);
         int y = 3;
         for(int i = 0;i <= x;i++)
             for(int j = 0;j <= y;j++)
@@ -170,6 +173,28 @@ public class Brickout {
         soundPool.unload(sounds.remove(R.raw.padexplo));
         soundPool.unload(sounds.remove(R.raw.boing));
         soundPool.unload(sounds.remove(R.raw.bassdrum));
+    }
+
+    class ScreenSize extends WindowStruct.ScreenSize{
+        public ScreenSize(Context context) {
+            super(context);
+        }
+
+        @Override
+        public int getWidth() {
+            return super.context.getResources().getDisplayMetrics().widthPixels;
+        }
+
+        @Override
+        public int getHeight() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                ((WindowManager)activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRealMetrics(displayMetrics);
+                if(super.context.getResources().getDisplayMetrics().heightPixels > super.context.getResources().getDisplayMetrics().widthPixels)
+                    return displayMetrics.heightPixels - getStatusBarHeight() - getNavigationBarHeight();
+            }
+            return super.context.getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
+        }
     }
 
     static class Point{
@@ -273,14 +298,14 @@ public class Brickout {
                 if (x < 0) {
                     soundPool.play(sounds.get(R.raw.bassdrum), 1f, 1f, 1, 0, 1f);
                     a.x = Math.abs(a.x);
-                } else if (x > activity.getResources().getDisplayMetrics().widthPixels - _ball.getWidth()) {
+                } else if (x > screenSize.getWidth() - _ball.getWidth()) {
                     soundPool.play(sounds.get(R.raw.bassdrum), 1f, 1f, 1, 0, 1f);
                     a.x = -Math.abs(a.x);
                 }
                 if (y < 0) {
                     soundPool.play(sounds.get(R.raw.bassdrum), 1f, 1f, 1, 0, 1f);
                     a.y = Math.abs(a.y);
-                } else if (y > activity.getResources().getDisplayMetrics().heightPixels - _ball.getHeight()){
+                } else if (y > screenSize.getHeight() - _ball.getHeight()){
                     soundPool.play(sounds.get(R.raw.padexplo), 1f, 1f, 1, 0, 1f);
                     gameStatus = GameStatus.READY;
                     a.x = -10;
@@ -360,11 +385,11 @@ public class Brickout {
                 }
                 x = _paddle.getPositionX()-(int) (H-event.getRawX());
                 x = Math.max(0, x);
-                x = Math.min(activity.getResources().getDisplayMetrics().widthPixels - _paddle.getWidth(), x);
+                x = Math.min(screenSize.getWidth() - _paddle.getWidth(), x);
                 _paddle.setPosition(x,_paddle.getPositionY());
                 if(gameStatus == GameStatus.READY)
                     ball.add(new Point(
-                            (x > 0 && x < activity.getResources().getDisplayMetrics().widthPixels - _paddle.getWidth())?-(int) (H-event.getRawX()):0,
+                            (x > 0 && x < screenSize.getWidth() - _paddle.getWidth())?-(int) (H-event.getRawX()):0,
                             0
                     ));
                 H = event.getRawX();
