@@ -24,8 +24,6 @@ import com.google.android.gms.ads.MobileAds;
 
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
 
-import java.util.ArrayList;
-
 public class Setting extends AppCompatActivity {
     private AdView mAdView;
 
@@ -35,7 +33,7 @@ public class Setting extends AppCompatActivity {
     SeekBar secondSet;
     int adoutWindow = -1;
 
-    Arkanoid arkanoid = null;
+    Brickout brickout = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,8 +243,8 @@ public class Setting extends AppCompatActivity {
 
     @Override
     protected void onPause(){
-        if(arkanoid != null)
-            arkanoid.onPause();
+        if(brickout != null)
+            brickout.onPause();
         if(adoutWindow != -1) {
             WindowStruct.getWindowStruct(adoutWindow).setTransitionsDuration(0);
             WindowStruct.getWindowStruct(adoutWindow).close();
@@ -255,9 +253,9 @@ public class Setting extends AppCompatActivity {
     }
     @Override
     protected void onDestroy(){
-        if(arkanoid != null)
-            arkanoid.onDestroy();
-        arkanoid = null;
+        if(brickout != null)
+            brickout.onDestroy();
+        brickout = null;
         mAdView.destroy();
         super.onDestroy();
     }
@@ -273,16 +271,18 @@ public class Setting extends AppCompatActivity {
                 finish();
                 return true;
             case 0:
-                if(arkanoid == null)
-                    arkanoid = new Arkanoid(Setting.this);
+                if(brickout == null)
+                    brickout = new Brickout(Setting.this);
                 if(adoutWindow == -1) {
                     adoutWindow = new WindowStruct.Builder(this, (WindowManager) getSystemService(Context.WINDOW_SERVICE))
                             .windowPages(new int[]{R.layout.about})
                             .windowPageTitles(new String[]{getString(R.string.about)})
                             .top(60)
                             .left(60)
-                            .height((int) (110 * this.getResources().getDisplayMetrics().density))
-                            .width((int) (195 * this.getResources().getDisplayMetrics().density))
+                            .left(getResources().getDisplayMetrics().widthPixels / 2 - ((int) getResources().getDisplayMetrics().density * 97))
+                            .top(getResources().getDisplayMetrics().heightPixels / 2 - ((int) getResources().getDisplayMetrics().density * 55))
+                            .height((int) (110 * getResources().getDisplayMetrics().density))
+                            .width((int) (195 * getResources().getDisplayMetrics().density))
                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON)
                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                             .windowAction(new WindowStruct.WindowAction() {
@@ -310,7 +310,7 @@ public class Setting extends AppCompatActivity {
                                         @Override
                                         public void onClick(View v) {
                                             if (count == -1) {
-                                                app_name.setText(getResources().getString(R.string.arkanoid));
+                                                app_name.setText(getResources().getString(R.string.brickout));
                                                 version.setText(getResources().getString(R.string.play));
                                             }
                                             if (++count % 2 == 0)
@@ -324,7 +324,7 @@ public class Setting extends AppCompatActivity {
                                         public void onClick(View v) {
                                             if (count == -1)
                                                 return;
-                                            arkanoid.onPlay(count % 2 == 1);
+                                            brickout.onPlay(count % 2 == 1);
                                         }
                                     });
                                 }

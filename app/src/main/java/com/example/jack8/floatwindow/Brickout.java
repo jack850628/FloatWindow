@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
-public class Arkanoid {
+public class Brickout {
     Activity activity;
 
     enum GameStatus{
@@ -43,7 +43,7 @@ public class Arkanoid {
     SoundPool soundPool;
     HashMap<Integer, Integer> sounds = new HashMap<>();
 
-    public Arkanoid(final Activity activity){
+    public Brickout(final Activity activity){
         this.activity = activity;
         soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
         sounds.put(R.raw.bassdrum, soundPool.load(activity, R.raw.bassdrum, 1));
@@ -61,7 +61,7 @@ public class Arkanoid {
         gameStatus = GameStatus.READY;
         life = 3;
         score = 0;
-        View gameView = LayoutInflater.from(activity).inflate(R.layout.arkanoid,null);
+        View gameView = LayoutInflater.from(activity).inflate(R.layout.brickout,null);
         scoreText = gameView.findViewById(R.id.score);
         lifeText = gameView.findViewById(R.id.life);
         lifeText.setText(String.valueOf(life));
@@ -69,7 +69,7 @@ public class Arkanoid {
         gameWindow = new WindowStruct.Builder(activity, (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
                 .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS)
                 .windowPages(new View[]{gameView})
-                .windowPageTitles(new String[]{activity.getString(R.string.arkanoid)})
+                .windowPageTitles(new String[]{activity.getString(R.string.brickout)})
                 .windowAction(new WindowStruct.WindowAction() {
                     @Override
                     public void goHide(WindowStruct windowStruct) {
@@ -84,7 +84,7 @@ public class Arkanoid {
                         if(gameStatus != GameStatus.STOP) {
                             gameStatus = GameStatus.STOP;
                             windowsList.add((new WindowStruct.Builder(activity, (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
-                                    .windowPages(new int[]{R.layout.arkanoid_end_window})
+                                    .windowPages(new int[]{R.layout.brickout_end_window})
                                     .windowPageTitles(new String[]{activity.getString(R.string.game_over)})
                                     .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                                     .left(activity.getResources().getDisplayMetrics().widthPixels / 2 - ((int) activity.getResources().getDisplayMetrics().density * 60))
