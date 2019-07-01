@@ -38,6 +38,8 @@
 
                 <Button
                     android:id="@+id/goback"
+                    style="@style/AppTheme.Button"
+                    android:theme="@style/AppTheme.Button"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/webpath"
@@ -48,6 +50,8 @@
 
                 <Button
                     android:id="@+id/go"
+                    style="@style/AppTheme.Button"
+                    android:theme="@style/AppTheme.Button"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -58,10 +62,12 @@
 
                 <Button
                     android:id="@+id/menu"
+                    style="@style/AppTheme.Button"
+                    android:theme="@style/AppTheme.Button"
                     android:layout_width="40dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="⋮" />
+                    android:drawableBottom="@drawable/button_menu_icon" />
 
             </LinearLayout>
 

@@ -70,7 +70,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
 //                    popupMenu.show();
 
                     ListView menu_list = new ListView(context);
-                    menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.open_link_in_new_window), context.getString(R.string.edit), context.getString(R.string.delete)}));
+                    menu_list.setAdapter(new ArrayAdapter<String>(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.open_link_in_new_window), context.getString(R.string.edit), context.getString(R.string.delete)}));
                     menu_list.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     final PopupWindow popupWindow =new PopupWindow(context);
                     popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);

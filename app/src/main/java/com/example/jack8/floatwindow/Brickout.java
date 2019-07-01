@@ -24,30 +24,32 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 
 public class Brickout {
-    Activity activity;
-    ScreenSize screenSize;
+    private Activity activity;
+    private ScreenSize screenSize;
 
-    enum GameStatus{
+    private enum GameStatus{
         STOP,
         READY,
         START
     }
-    LinkedHashSet<Integer> windowsList = new LinkedHashSet<>();
-    WindowStruct gameWindow;
-    Handler handler = new Handler();
-    GameStatus gameStatus = GameStatus.STOP;
-    Ball ball;
-    Paddle paddle;
-    ArrayList<Brick> bricks = new ArrayList<>();
+    private LinkedHashSet<Integer> windowsList = new LinkedHashSet<>();
+    private WindowStruct gameWindow;
+    private Handler handler = new Handler();
+    private  GameStatus gameStatus = GameStatus.STOP;
+    private Ball ball;
+    private int ballSpeed;
+    private  Paddle paddle;
+    private ArrayList<Brick> bricks = new ArrayList<>();
     int score = 0, life = 0;
-    TextView scoreText, lifeText;
-    boolean showTitle;
-    SoundPool soundPool;
-    HashMap<Integer, Integer> sounds = new HashMap<>();
+    private TextView scoreText, lifeText;
+    private boolean showTitle;
+    private SoundPool soundPool;
+    private HashMap<Integer, Integer> sounds = new HashMap<>();
 
     public Brickout(final Activity activity){
         this.activity = activity;
         this.screenSize = new ScreenSize(activity);
+        ballSpeed = ((int)activity.getResources().getDisplayMetrics().density*5);
         soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
         sounds.put(R.raw.bassdrum, soundPool.load(activity, R.raw.bassdrum, 1));
         sounds.put(R.raw.boing, soundPool.load(activity, R.raw.boing, 1));
@@ -148,7 +150,7 @@ public class Brickout {
                 screenSize.getWidth() / 2 - ((int)activity.getResources().getDisplayMetrics().density*60),
                 screenSize.getHeight() - ((int)activity.getResources().getDisplayMetrics().density*60)
         );
-        ball = new Ball(paddle.x + ((int)activity.getResources().getDisplayMetrics().density*70),paddle.y - ((int)activity.getResources().getDisplayMetrics().density*20),new Point(10,-10));
+        ball = new Ball(paddle.x + ((int)activity.getResources().getDisplayMetrics().density*70),paddle.y - ((int)activity.getResources().getDisplayMetrics().density*20),new Point(ballSpeed,-ballSpeed));
         int x = screenSize.getWidth() /  + ((int)activity.getResources().getDisplayMetrics().density * 80);
         int y = 3;
         for(int i = 0;i <= x;i++)
@@ -308,8 +310,8 @@ public class Brickout {
                 } else if (y > screenSize.getHeight() - _ball.getHeight()){
                     soundPool.play(sounds.get(R.raw.padexplo), 1f, 1f, 1, 0, 1f);
                     gameStatus = GameStatus.READY;
-                    a.x = -10;
-                    a.y = -10;
+                    a.x = ballSpeed;
+                    a.y = -ballSpeed;
                     _ball.setPosition(x = paddle.x + ((int)activity.getResources().getDisplayMetrics().density*70),y = paddle.y - ((int)activity.getResources().getDisplayMetrics().density*20));
                     if(--life == 0)
                         gameWindow.close();
@@ -488,7 +490,7 @@ public class Brickout {
                     }
                 }
             }
-            if(gameStatus != GameStatus.STOP && life > 0)
+            if(gameStatus == GameStatus.START && life > 0)
                 handler.post(this);
         }
     }

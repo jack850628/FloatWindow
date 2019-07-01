@@ -528,7 +528,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
+                menu_list.setAdapter(new ArrayAdapter<String>(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
                 final PopupWindow popupWindow = new PopupWindow(context);
                 popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -812,7 +812,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             public void onClick(View v) {
                 final PopupWindow popupWindow =new PopupWindow(context);
                 ListView listView = new ListView(context);
-                listView.setAdapter(new ArrayAdapter(context,android.R.layout.simple_list_item_1,new String[]{context.getString(R.string.other_notes),context.getString(R.string.share),context.getString(R.string.hide_frame)}));
+                listView.setAdapter(new ArrayAdapter(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.other_notes),context.getString(R.string.share),context.getString(R.string.hide_frame)}));
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -863,7 +863,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                                     otherNoteList = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                             .windowPages(new View[]{nodeList})
                                             .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
-                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                             .windowAction(new WindowStruct.WindowAction() {
                                                 @Override
