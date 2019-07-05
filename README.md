@@ -31,7 +31,7 @@ dependencies {
 }
 ```
 
-最後，FloatWindow有使用到ACTION_MANAGE_OVERLAY_PERMISSION權限，所以必須在自己的APP中加入跟使用著請求權限的對應處理。
+最後，FloatWindow有使用到ACTION_MANAGE_OVERLAY_PERMISSION權限，所以必須在自己的APP中加入跟使用者請求權限的對應處理。
 
 ## FloatWindow的使用方法
 
