@@ -68,4 +68,5 @@
     <string name="total_score">總得分:</string>
     <string name="game_over">遊戲結束</string>
     <string name="brick">磚塊</string>
+    <string name="enable_ads_block">啟用廣告阻擋</string>
 </resources>

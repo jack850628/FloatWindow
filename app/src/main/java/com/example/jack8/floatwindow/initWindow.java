@@ -25,6 +25,7 @@ import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -39,6 +40,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,7 +110,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         PB = (ProgressBar) pageView.findViewById(R.id.progressBar);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
         final Clipboard clipboard = new Clipboard(context);
-        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME).addMigrations(DataBaseForBrowser.MIGRATION_1_2).build();
+        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
+                .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
+                .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
+                .build();
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
@@ -118,6 +125,16 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){//當點擊WebView內的連結時處理
                 loadUrl(request.getUrl().toString());
                 return true;
+            }
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {//廣告過濾
+                if(WebBrowserSetting.getInit().getSetting().adsBlock) {
+                    for (String adServiceAdmin : WebBrowserSetting.getInit().adUrls) {
+                        if (url.contains(adServiceAdmin))
+                            return new WebResourceResponse(null, null, null);
+                    }
+                }
+                return super.shouldInterceptRequest(webView, url);
             }
             @Override
             public void onPageFinished(WebView webView, final String url) {
@@ -990,7 +1007,7 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         }
     }
 
-
+    private AdView adView1;
     public void initWindow2(Context context, View pageView, final WindowStruct windowStruct){
         final EditText et=(EditText)pageView.findViewById(R.id.Temperature);
         View.OnClickListener oc=new View.OnClickListener() {
@@ -1010,7 +1027,18 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         };
         ((Button)pageView.findViewById(R.id.toC)).setOnClickListener(oc);
         ((Button)pageView.findViewById(R.id.toF)).setOnClickListener(oc);
+        MobileAds.initialize(context, context.getString(R.string.AD_ID));
+        adView1 = pageView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
+                .addTestDevice("F4734F4691C588DB93799277888EA573")
+                .build();
+        adView1.loadAd(adRequest);
+        adView1.pause();
     }
+
+    private AdView adView2;
     public void initWindow3(Context context, View pageView, final WindowStruct windowStruct){
         final EditText H=(EditText)pageView.findViewById(R.id.H),W=(EditText)pageView.findViewById(R.id.W);
         final TextView BMI=(TextView)pageView.findViewById(R.id.BMI);
@@ -1023,13 +1051,21 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
                 BMI.setText(String.valueOf(Float.parseFloat(W.getText().toString())/(h*h)));
             }
         });
+        adView2 = pageView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
+                .addTestDevice("F4734F4691C588DB93799277888EA573")
+                .build();
+        adView2.loadAd(adRequest);
+        adView2.pause();
     }
 
     public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct){
         if(position==0){
             WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
             web.clearHistory();
-            if(WebBrowserSetting.getInit().haveRuningBrowser())
+            if(WebBrowserSetting.haveRuningBrowser())
                 web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
             else {
                 web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
@@ -1044,7 +1080,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         }else if(position==1){
             showingNoteIdList.remove(noteId);
             otherNodeListAdapter.update(showingNoteIdList);
-        }
+        }else if(position == 2)
+            adView1.destroy();
+        else if(position == 3)
+            adView2.destroy();
     }
 
     @Override
@@ -1052,7 +1091,10 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         if(position == 1) {
             ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
             micro_max_button.addView(nodePageMenuButton,0);
-        }
+        }else if(position == 2)
+            adView1.resume();
+        else if(position == 3)
+            adView2.resume();
     }
 
     @Override
@@ -1060,6 +1102,9 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
         if(position == 1){
             ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
             micro_max_button.removeView(nodePageMenuButton);
-        }
+        }else if(position == 2)
+            adView1.pause();
+        else if(position == 3)
+            adView2.pause();
     }
 }

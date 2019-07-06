@@ -44,6 +44,7 @@ public class Setting extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
                 .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
+                .addTestDevice("F4734F4691C588DB93799277888EA573")
                 .build();
         mAdView.loadAd(adRequest);
 

@@ -21,7 +21,7 @@ import android.arch.persistence.room.migration.Migration;
 import java.util.Date;
 import java.util.List;
 
-@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class}, version = 2)
+@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class}, version = 3)
 @TypeConverters({DataBaseForBrowser.Converters.class})
 public abstract class DataBaseForBrowser extends RoomDatabase {
     public static String DATABASE_NAME = "browser_data";
@@ -35,6 +35,14 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
             database.execSQL("CREATE TABLE "+Setting.TABLE_NAME+" (id INTEGER NOT NULL, home_link TEXT, javascript_enabled INTEGER NOT NULL, support_zoom INTEGER NOT NULL, display_zoom_controls INTEGER NOT NULL, PRIMARY KEY(id))");
         }
     };
+
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE "+Setting.TABLE_NAME+" ADD COLUMN ads_block INTEGER DEFAULT 0  NOT NULL");
+        }
+    };
+
 
     static class Converters {
         @TypeConverter
@@ -141,12 +149,15 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         public boolean supportZoom;
         @ColumnInfo(name = "display_zoom_controls")
         public boolean displayZoomControls;
+        @ColumnInfo(name = "ads_block")
+        public boolean adsBlock;
 
-        public Setting(String homeLink, boolean javaScriptEnabled, boolean supportZoom, boolean displayZoomControls){
+        public Setting(String homeLink, boolean javaScriptEnabled, boolean supportZoom, boolean displayZoomControls, boolean adsBlock){
             this.homeLink = homeLink;
             this.javaScriptEnabled = javaScriptEnabled;
             this.supportZoom = supportZoom;
             this.displayZoomControls = displayZoomControls;
+            this.adsBlock = adsBlock;
         }
     }
     @Dao

@@ -59,6 +59,17 @@
                 android:text="@string/enable_zoom"
                 android:textColor="#313131" />
 
+            <Switch
+                android:id="@+id/enable_ads_block"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:text="@string/enable_ads_block"
+                android:textColor="#313131" />
+
             <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"
                 android:layout_width="match_parent"
