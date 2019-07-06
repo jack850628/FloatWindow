@@ -1,5 +1,6 @@
 package com.example.jack8.floatwindow;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.arch.persistence.room.Room;
 import android.content.Context;
@@ -128,13 +129,25 @@ public class initWindow implements WindowStruct.constructionAndDeconstructionWin
             }
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {//廣告過濾
+                Uri uri = Uri.parse(url);
                 if(WebBrowserSetting.getInit().getSetting().adsBlock) {
                     for (String adServiceAdmin : WebBrowserSetting.getInit().adUrls) {
-                        if (url.contains(adServiceAdmin))
+                        if (uri.getHost().contains(adServiceAdmin))
                             return new WebResourceResponse(null, null, null);
                     }
                 }
                 return super.shouldInterceptRequest(webView, url);
+            }
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {//廣告過濾
+                if(WebBrowserSetting.getInit().getSetting().adsBlock) {
+                    for (String adServiceAdmin : WebBrowserSetting.getInit().adUrls) {
+                        if (request.getUrl().getHost().contains(adServiceAdmin))
+                            return new WebResourceResponse(null, null, null);
+                    }
+                }
+                return super.shouldInterceptRequest(webView, request);
             }
             @Override
             public void onPageFinished(WebView webView, final String url) {

@@ -89,7 +89,7 @@ public class WebBrowserSetting {
                 setting.displayZoomControls = false;
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                databaseReference = database.getReference("AdUrls");
+                databaseReference = database.getReference("AdServerDoadmin");
                 databaseReference.addValueEventListener(valueEventListener);
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
