@@ -26,7 +26,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
     DataBaseForBrowser.BookmarksDao bookmarksDao;
     ArrayList<DataBaseForBrowser.Bookmark> bookmarkList;
     Context context;
-    initWindow iw;
+    WebBrowser iw;
 
     class BookmarkListAdapter extends RecyclerView.Adapter<BookmarkList.BookmarkListAdapter.ViewHolder>{
 
@@ -92,7 +92,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                                             .windowInitArgs(new Object[][]{new String[]{bookmarkList.get(viewHolder.getAdapterPosition()).url}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new initWindow(){
+                                            .constructionAndDeconstructionWindow(new Calculato(){
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
                                                     super.Construction(context,pageView,0,args,windowStruct);
@@ -236,7 +236,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
 //        }
     }
 
-    public static void show(final Context context, final initWindow iw, final WindowStruct parentWindow, final DataBaseForBrowser.BookmarksDao BookmarkDao){
+    public static void show(final Context context, final WebBrowser iw, final WindowStruct parentWindow, final DataBaseForBrowser.BookmarksDao BookmarkDao){
         new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                 .parentWindow(parentWindow)
                 .windowPageTitles(new String[]{context.getString(R.string.bookmarks)})
@@ -251,7 +251,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                 .show();
     }
 
-    private BookmarkList(Context context, initWindow iw, ArrayList<DataBaseForBrowser.Bookmark> bookmarkList, DataBaseForBrowser.BookmarksDao bookmarksDao){
+    private BookmarkList(Context context, WebBrowser iw, ArrayList<DataBaseForBrowser.Bookmark> bookmarkList, DataBaseForBrowser.BookmarksDao bookmarksDao){
         this.context = context;
         this.iw = iw;
         this.bookmarkList = bookmarkList;

@@ -26,7 +26,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
     DataBaseForBrowser.HistoryDao historyDao;
     ArrayList<DataBaseForBrowser.History> historyList;
     Context context;
-    initWindow iw;
+    WebBrowser iw;
 
     class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder>{
 
@@ -93,7 +93,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                                             .windowInitArgs(new Object[][]{new String[]{historyList.get(viewHolder.getAdapterPosition()).url}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new initWindow(){
+                                            .constructionAndDeconstructionWindow(new Calculato(){
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
                                                     super.Construction(context,pageView,0,args,windowStruct);
@@ -161,7 +161,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
 //        }
     }
 
-    public static void show(final Context context, final initWindow iw, final WindowStruct parentWindow, final DataBaseForBrowser.HistoryDao historyDao){
+    public static void show(final Context context, final WebBrowser iw, final WindowStruct parentWindow, final DataBaseForBrowser.HistoryDao historyDao){
         new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                 .parentWindow(parentWindow)
                 .windowPageTitles(new String[]{context.getString(R.string.history)})
@@ -176,7 +176,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                 .show();
     }
 
-    private HistoryList(Context context, initWindow iw, ArrayList<DataBaseForBrowser.History> historyList, DataBaseForBrowser.HistoryDao historyDao){
+    private HistoryList(Context context, WebBrowser iw, ArrayList<DataBaseForBrowser.History> historyList, DataBaseForBrowser.HistoryDao historyDao){
         this.context = context;
         this.iw = iw;
         this.historyList = historyList;

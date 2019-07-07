@@ -69,4 +69,5 @@
     <string name="game_over">游戏结束</string>
     <string name="brick">砖块</string>
     <string name="enable_ads_block">启用广告阻挡</string>
+    <string name="calculato">计算机</string>
 </resources>

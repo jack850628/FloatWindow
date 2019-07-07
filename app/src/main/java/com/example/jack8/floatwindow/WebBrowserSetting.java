@@ -184,7 +184,7 @@ public class WebBrowserSetting {
             }
         }).start();
         for(int id : webBrowserWindowList){
-            WebSettings webSettings = ((initWindow)WindowStruct.getWindowStruct(id).getConstructionAndDeconstructionWindow()).web.getSettings();
+            WebSettings webSettings = ((WebBrowser)WindowStruct.getWindowStruct(id).getConstructionAndDeconstructionWindow()).web.getSettings();
             webSettings.setJavaScriptEnabled(setting.javaScriptEnabled);
             webSettings.setSupportZoom(setting.supportZoom);
 //            webSettings.setDisplayZoomControls(setting.displayZoomControls);//無法提供顯示縮放按鈕，因為切換視窗時WebView會出現嚴重錯誤signal 4 (SIGILL), code 2 (ILL_ILLOPC), fault addr 0xd878e0d0

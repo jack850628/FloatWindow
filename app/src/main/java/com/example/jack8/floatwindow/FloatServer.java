@@ -35,10 +35,14 @@ import java.util.HashMap;
  * 浮動視窗服務
  */
 public class FloatServer extends Service {
-    public static final int OPEN_FLOAT_WINDOW = 0;
-    public static final int OPEN_EXTRA_URL = 1;
-    public static final int SHOW_WINDOW_MANAGER = 2;
-    public static final int SHOW_FLOAT_WINDOW_MENU = 3;
+    public static final int OPEN_FLOAT_WINDOW = 0x01;
+    public static final int OPEN_EXTRA_URL = 0x02;
+    public static final int SHOW_WINDOW_MANAGER = 0x04;
+    public static final int SHOW_FLOAT_WINDOW_MENU = 0x08;
+    public static final int OPEN_WEB_BROWSER = 0x10;
+    public static final int OPEN_NOTE_PAGE = 0x20;
+    public static final int OPEN_CALCULATO = 0x40;
+    public static final int OPEN_MAIN_MENU = 0x80;
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -130,39 +134,71 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        if(intent.getIntExtra("intent",-1) == OPEN_FLOAT_WINDOW || intent.getIntExtra("intent",-1) == OPEN_EXTRA_URL) {
-            int[] layouts = intent.getExtras().getIntArray("Layouts");
+        int initCode = intent.getIntExtra("intent",-1);
+        if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
-            String[] titles = intent.getExtras().getStringArray("Titles");
-            if(intent.getIntExtra("intent",-1) == OPEN_FLOAT_WINDOW)
+            new WindowStruct.Builder(this,wm)
+                    //.windowPages(new int[]{R.layout.webpage})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
+                    .windowInitArgs(new Object[1][0])
+                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .windowAction(windowAction)
+                    //.constructionAndDeconstructionWindow(new WebBrowser())
+                    .show();
+        }else if((initCode & OPEN_WEB_BROWSER) == OPEN_WEB_BROWSER) {
+            wm_count++;
+            if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
                 new WindowStruct.Builder(this,wm)
-                        .windowPages(layouts)
-                        .windowPageTitles(titles)
-                        .windowInitArgs(new Object[layouts.length][0])
+                        .windowPages(new int[]{R.layout.webpage})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser)})
+                        .windowInitArgs(new Object[1][0])
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new initWindow())
+                        .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
-                //new WindowStruct(this, wm, layouts, titles, new Object[layouts.length][0], windowAction,new initWindow());
             else{
                 String extra_url = intent.getStringExtra("extra_url");
-                ListView menu_list = new ListView(this);
-                menu_list.setId(0);
-                menu_list.setAdapter(new ArrayAdapter<String>(this,R.layout.hide_menu_item,R.id.item_text,titles));
                 new WindowStruct.Builder(this,wm)
-                        .windowPages(new View[]{menu_list})
-                        .windowPageTitles(new String[]{getString(R.string.open_page_of)})
-                        .windowInitArgs(new Object[][]{new Object[]{layouts,titles,extra_url}})
-                        .top(60)
-                        .left(60)
-                        .height((int)(getResources().getDisplayMetrics().density*70*layouts.length))
-                        .width((int)(getResources().getDisplayMetrics().density*200))
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                        .windowPages(new int[]{R.layout.webpage})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser)})
+                        .windowInitArgs(new Object[][]{new Object[]{extra_url}})
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new ProcessShare(wm,windowAction))
+                        .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
             }
+        }else if((initCode & OPEN_NOTE_PAGE) == OPEN_NOTE_PAGE) {
+            wm_count++;
+            if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
+                new WindowStruct.Builder(this,wm)
+                        .windowPages(new int[]{R.layout.note_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.note)})
+                        .windowInitArgs(new Object[1][0])
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .windowAction(windowAction)
+                        .constructionAndDeconstructionWindow(new NotePage())
+                        .show();
+            else{
+                String extra_url = intent.getStringExtra("extra_url");
+                new WindowStruct.Builder(this,wm)
+                        .windowPages(new int[]{R.layout.note_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.note)})
+                        .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .windowAction(windowAction)
+                        .constructionAndDeconstructionWindow(new NotePage())
+                        .show();
+            }
+        }else if((initCode & OPEN_CALCULATO) == OPEN_CALCULATO) {
+            wm_count++;
+            new WindowStruct.Builder(this,wm)
+                    .windowPages(new int[]{R.layout.window_context, R.layout.window_conetxt2})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
+                    .windowInitArgs(new Object[2][0])
+                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .windowAction(windowAction)
+                    .constructionAndDeconstructionWindow(new Calculato())
+                    .show();
         }else{
             //---------------------收起下拉選單-----------------------------
             try {
@@ -179,7 +215,7 @@ public class FloatServer extends Service {
                 localException.printStackTrace();
             }
             //-----------------------------------------------------------------------
-            if(intent.getIntExtra("intent",-1) == SHOW_FLOAT_WINDOW_MENU){
+            if((initCode & SHOW_FLOAT_WINDOW_MENU) == SHOW_FLOAT_WINDOW_MENU){
                 ListView menuView = new ListView(this);
                 menuView.setAdapter(new ArrayAdapter<String>(FloatServer.this,R.layout.hide_menu_item,R.id.item_text,new String[]{getString(R.string.setting),getString(R.string.windows_list)}));
                 if(menu!=null)
@@ -244,7 +280,7 @@ public class FloatServer extends Service {
                         }
                     });
                 }
-            }else if(intent.getIntExtra("intent",-1) == SHOW_WINDOW_MANAGER)
+            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER)
                 showUnWindowMenu();
         }
 
