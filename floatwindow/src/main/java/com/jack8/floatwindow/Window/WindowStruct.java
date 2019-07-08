@@ -68,6 +68,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private TextView title;
     private String[] windowTitle;
 
+    private MenuList menuList;
+
     private final Handler runUi= new Handler(Looper.getMainLooper());
 
     private constructionAndDeconstructionWindow CDAW;
@@ -383,7 +385,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 pm.show();
             }
         });*/
-        menu.setOnClickListener(new menuList(windowPageTitles));
+        menuList = new MenuList(windowPageTitles);
+        menu.setOnClickListener(menuList);
         //------------------------------------------------------------------
         //---------------------------縮到最小與最大按鈕---------------------------
         hide.setOnClickListener(this);
@@ -468,12 +471,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             return id > 0 && context.getResources().getBoolean(id);
         }
     }
-    public class menuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
+    private class MenuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
         private ListView menu;
         private LinearLayout menuListAndContext;
         private Scroller scroller = new Scroller(context);
         private boolean isOpen = false;
-        public menuList(final String[] menuItems){
+        public MenuList(final String[] menuItems){
             menuListAndContext = (LinearLayout) winform.findViewById(R.id.menu_list_and_context);
             menu = (ListView) winform.findViewById(R.id.menu_list);
             menu.setAdapter(new BaseAdapter() {
@@ -512,6 +515,16 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             scroller.startScroll(-menu.getLayoutParams().width,0,menu.getLayoutParams().width,0);
             runUi.post(this);
         }
+        public void showPage(int position){
+            isOpen = false;
+            CDAW.onPause(context,winconPage[currentWindowPagePosition],currentWindowPagePosition,WindowStruct.this);
+            wincon.removeView(winconPage[currentWindowPagePosition]);
+            wincon.addView(winconPage[position]);
+            CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
+            title.setText(windowTitle[position]);
+            currentWindowPagePosition = position;
+            closeMenu();
+        }
         @Override
         public void onClick(View v) {
             Log.i("startMenu",isOpen+","+menu.getLayoutParams().width);
@@ -526,14 +539,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            isOpen = false;
-            CDAW.onPause(context,winconPage[currentWindowPagePosition],currentWindowPagePosition,WindowStruct.this);
-            wincon.removeView(winconPage[currentWindowPagePosition]);
-            wincon.addView(winconPage[position]);
-            CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
-            title.setText(windowTitle[position]);
-            currentWindowPagePosition = position;
-            closeMenu();
+            showPage(position);
         }
 
         @Override
@@ -1134,5 +1140,27 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public constructionAndDeconstructionWindow getConstructionAndDeconstructionWindow(){
         return CDAW;
+    }
+
+    /**
+     * 顯示側邊選單
+     */
+    public void showMenu(){
+        menuList.showMenu();
+    }
+
+    /**
+     * 關閉側邊選單
+     */
+    public void closeMenu(){
+        menuList.closeMenu();
+    }
+
+    /**
+     * 顯示指定頁面
+     * @param position 頁面編號
+     */
+    public void showPage(int position){
+        menuList.showPage(position);
     }
 }
