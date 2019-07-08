@@ -92,32 +92,13 @@ public class HistoryList {
                                 case 0:{
                                     FloatServer.wm_count++;
                                     new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                            .windowPages(new int[]{R.layout.webpage})
-                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser)})
+                                            .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
                                             .windowInitArgs(new Object[][]{new String[]{historyList.get(viewHolder.getAdapterPosition()).url}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new Calculato(){
-                                                @Override
-                                                public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                    super.Construction(context,pageView,0,args,windowStruct);
-                                                }
-
-                                                @Override
-                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                    super.Deconstruction(context, pageView, 0, windowStruct);
-                                                }
-
-                                                @Override
-                                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                    super.onResume(context, pageView, 0, windowStruct);
-                                                }
-
-                                                @Override
-                                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                    super.onPause(context, pageView, 0, windowStruct);
-                                                }
-                                            }).show();
+                                            .constructionAndDeconstructionWindow(new WebBrowser())
+                                            .show();
                                     break;
                                 }
                                 case 1:
