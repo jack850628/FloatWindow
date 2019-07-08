@@ -26,23 +26,89 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 public class WebBrowserSetting {
-    public ArrayList<String> adUrls = new ArrayList<>();
-
     private static WebBrowserSetting webBrowserSetting = null;
 
+    public enum AdServerListStatus{
+        INIT,
+        UPDATE,
+        COMPLETE,
+        NOT_USE
+    }
+    public AdServerListStatus adServerListStatus = AdServerListStatus.NOT_USE;
+    public ArrayList<DataBaseForBrowser.AdServerData> adServerDatas = new ArrayList<>();
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
+
     private final LinkedHashSet<Integer> webBrowserWindowList = new LinkedHashSet<>();
+    private DataBaseForBrowser dataBaseForBrowser;
     private DataBaseForBrowser.Setting setting;
     private WindowStruct settingPage = null;
-    private  DatabaseReference databaseReference;
 
     private ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            Log.i("AdserverAdmin", "get");
-            adUrls.clear();
-            for (DataSnapshot childData : dataSnapshot.getChildren()) {
-                Log.i("AdserverAdmin",childData.getValue().toString());
-                adUrls.add(childData.getValue().toString());
+        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {//取得adsBlock所需要的廣告網站資料
+            if(adServerListStatus == AdServerListStatus.INIT){
+                int adServerDataVersion;
+                try{
+                    adServerDataVersion = dataSnapshot.getValue(Integer.class);
+                }catch (NullPointerException e){
+                    adServerDataVersion = -1;
+                }
+                Log.i("adsBlock version", String.valueOf(adServerDataVersion));
+                //判斷資料庫中的資料版本與Firebase上的是否一致
+                if(adServerDataVersion != setting.adServerDataVersion && adServerDataVersion != -1) {//不一致
+                    Log.i("adsBlock", "有新資料");
+                    setting.adServerDataVersion = adServerDataVersion;
+                    adServerListStatus = AdServerListStatus.UPDATE;
+                    databaseReference.removeEventListener(valueEventListener);
+                    databaseReference.onDisconnect();
+                    databaseReference = firebaseDatabase.getReference(DataBaseForBrowser.AdServerData.TABLE_NAME+"/list");
+                    databaseReference.addValueEventListener(valueEventListener);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dataBaseForBrowser.settingDao().updateSetting(setting);
+                        }
+                    }).start();
+                }else{
+                    Log.i("adsBlock", "沒新資料");
+                    databaseReference.removeEventListener(valueEventListener);
+                    databaseReference.onDisconnect();
+                    firebaseDatabase.goOffline();
+                    databaseReference = null;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(!adServerDatas.isEmpty())
+                                adServerDatas.clear();
+                            adServerDatas.addAll(dataBaseForBrowser.adServerDataDao().getAdServerDataList());
+                            for(DataBaseForBrowser.AdServerData adServerData : adServerDatas)
+                                Log.i("adsBlock", adServerData.adServer);
+                            adServerListStatus = AdServerListStatus.COMPLETE;
+                        }
+                    }).start();
+                }
+            }else if(adServerListStatus == AdServerListStatus.UPDATE) {//更新資料
+                Log.i("adsBlock", "更新資料中");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!adServerDatas.isEmpty())
+                            adServerDatas.clear();
+                        for (DataSnapshot childData : dataSnapshot.getChildren()) {
+                            Log.i("adsBlock", childData.getValue().toString());
+                            adServerDatas.add(new DataBaseForBrowser.AdServerData(childData.getValue().toString()));
+                        }
+                        dataBaseForBrowser.adServerDataDao().deleteAll();
+                        dataBaseForBrowser.adServerDataDao().addAdServerDataList(adServerDatas);
+                        databaseReference.removeEventListener(valueEventListener);
+                        databaseReference.onDisconnect();
+                        firebaseDatabase.goOffline();
+                        databaseReference = null;
+                        adServerListStatus = AdServerListStatus.COMPLETE;
+                    }
+                }).start();
             }
         }
 
@@ -77,20 +143,22 @@ public class WebBrowserSetting {
     }
 
     private WebBrowserSetting(final DataBaseForBrowser dataBaseForBrowser, final Operated operated){
+        this.dataBaseForBrowser = dataBaseForBrowser;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 List<DataBaseForBrowser.Setting> list = dataBaseForBrowser.settingDao().getSetting();
                 if (list.size() == 0) {
-                    setting = new DataBaseForBrowser.Setting("https://www.google.com", true, true, false, false);
+                    setting = new DataBaseForBrowser.Setting("https://www.google.com", true, true, false, false, 0);
                     setting.id = dataBaseForBrowser.settingDao().setSetting(setting);
                 } else
                     setting = dataBaseForBrowser.settingDao().getSetting().get(0);
                 setting.displayZoomControls = false;
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                databaseReference = database.getReference("AdServerDoadmin");
-                databaseReference.addValueEventListener(valueEventListener);
+                if(setting.adsBlock)
+                    loadAdServerList();
+                else
+                    adServerListStatus = AdServerListStatus.NOT_USE;
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -102,7 +170,17 @@ public class WebBrowserSetting {
         }).start();
     }
 
-    void showSettingWindow(Context context, final DataBaseForBrowser dataBaseForBrowser, final Runnable operated){
+    private void loadAdServerList(){//啟動adsBlock
+        Log.i("adsBlock", "初始化中");
+        adServerListStatus = AdServerListStatus.INIT;
+        if(firebaseDatabase == null)
+            firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase.goOnline();
+        databaseReference = firebaseDatabase.getReference(DataBaseForBrowser.AdServerData.TABLE_NAME+"/version");
+        databaseReference.addValueEventListener(valueEventListener);
+    }
+
+    void showSettingWindow(Context context, final Runnable operated){
         if(settingPage == null) {
             FloatServer.wm_count++;
             settingPage = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
@@ -143,7 +221,7 @@ public class WebBrowserSetting {
                                     setting.supportZoom = ((Switch)pageView.findViewById(R.id.enable_zoom)).isChecked();
 //                                    setting.displayZoomControls = ((Switch)pageView.findViewById(R.id.display_zoom_buttom)).isChecked();//無法提供顯示縮放按鈕，因為切換視窗時WebView會出現嚴重錯誤signal 4 (SIGILL), code 2 (ILL_ILLOPC), fault addr 0xd878e0d0
                                     setting.adsBlock = ((Switch)pageView.findViewById(R.id.enable_ads_block)).isChecked();
-                                    saveSetting(dataBaseForBrowser, operated);
+                                    saveSetting(operated);
                                     windowStruct.close();
                                 }
                             });
@@ -174,7 +252,9 @@ public class WebBrowserSetting {
          return setting;
     }
 
-    void saveSetting(final DataBaseForBrowser dataBaseForBrowser, final Runnable operated){
+    void saveSetting(final Runnable operated){
+        if(setting.adsBlock)
+            loadAdServerList();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -193,9 +273,10 @@ public class WebBrowserSetting {
 
     private void onDestroy(){
         webBrowserSetting = null;
-        databaseReference.removeEventListener(valueEventListener);
-        databaseReference.onDisconnect();
-        adUrls.clear();
+        firebaseDatabase = null;
+        dataBaseForBrowser = null;
+        adServerDatas.clear();
+        Log.i("WebBrowserSetting", "onDestroy");
     }
 
     static boolean haveRuningBrowser(){
