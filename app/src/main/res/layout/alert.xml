@@ -11,11 +11,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:textSize="18sp"/>
 
     <com.example.jack8.floatwindow.FwEditView
@@ -23,11 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:ems="10"
         android:visibility="gone"
         android:inputType="textPersonName" />

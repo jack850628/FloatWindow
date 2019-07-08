@@ -15,11 +15,7 @@ android:orientation="vertical">
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:shadowColor="#cefffefe"
-    android:shadowDx="0"
-    android:shadowDy="0"
-    android:shadowRadius="15"
-    android:textColor="#313131"
+    style="@style/AppTheme.WindiowText"
     android:textSize="18sp"
     android:text="@string/no_data" />
 </LinearLayout>

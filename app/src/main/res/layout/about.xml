@@ -10,7 +10,7 @@
         android:layout_height="50dp"
         android:layout_margin="15dp"
         android:layout_weight="1"
-        app:srcCompat="@drawable/icom" />
+        app:srcCompat="@drawable/icon" />
 
     <LinearLayout
         android:layout_width="match_parent"

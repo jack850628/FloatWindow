@@ -68,10 +68,6 @@
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:background="@null"/>
 </LinearLayout>

@@ -7,11 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:textSize="18sp"
         android:text="@string/life" />
 
@@ -20,22 +16,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:textSize="18sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:textSize="18sp"
         android:text="@string/score" />
 
@@ -44,10 +32,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:textSize="18sp" />
 </LinearLayout>

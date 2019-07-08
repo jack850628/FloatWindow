@@ -7,9 +7,5 @@
     android:paddingLeft="5dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dip"
-    android:shadowColor="#cefffefe"
-    android:shadowDx="0"
-    android:shadowDy="0"
-    android:shadowRadius="15"
-    android:textColor="#313131"
+    style="@style/AppTheme.WindiowText"
     android:textSize="18sp" />
