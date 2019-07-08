@@ -51,6 +51,9 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     Button menu;
     WebView web;
     ProgressBar PB;
+    BookmarkList bookmarkList;
+    HistoryList historyList;
+    DataBaseForBrowser dataBaseForBrowser = null;
 
     public void loadUrl(String url){
         PB.setVisibility(View.VISIBLE);
@@ -60,7 +63,21 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     }
 
     @Override
-    public void Construction(final Context context, final View pageView, final int position, final Object[] args, final WindowStruct windowStruct) {
+    public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+        switch (position) {
+            case 0:
+                page0(context, pageView, position, args, windowStruct);
+                break;
+            case 1:
+                bookmarkList = new BookmarkList(context, pageView, this, dataBaseForBrowser.bookmarksDao(), windowStruct);
+                break;
+            case 2:
+                historyList = new HistoryList(context, pageView, this, dataBaseForBrowser.historyDao(), windowStruct);
+                break;
+        }
+    }
+
+    private void page0(final Context context, final View pageView, final int position, final Object[] args, final WindowStruct windowStruct){
         path = (EditText)pageView.findViewById(R.id.webpath);
         go = (Button)pageView.findViewById(R.id.go);
         goBack = (Button)pageView.findViewById(R.id.goback);
@@ -69,7 +86,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
         PB = (ProgressBar) pageView.findViewById(R.id.progressBar);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
         final Clipboard clipboard = new Clipboard(context);
-        final DataBaseForBrowser dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
+        dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
                 .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
                 .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
                 .build();
@@ -88,9 +105,9 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {//廣告過濾
                 Uri uri = Uri.parse(url);
-                if(WebBrowserSetting.getInit().getSetting().adsBlock) {
-                    for (String adServiceAdmin : WebBrowserSetting.getInit().adUrls) {
-                        if (uri.getHost().contains(adServiceAdmin))
+                if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
+                    for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
+                        if (uri.getHost().contains(adServerData.adServer))
                             return new WebResourceResponse(null, null, null);
                     }
                 }
@@ -99,9 +116,9 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {//廣告過濾
-                if(WebBrowserSetting.getInit().getSetting().adsBlock) {
-                    for (String adServiceAdmin : WebBrowserSetting.getInit().adUrls) {
-                        if (request.getUrl().getHost().contains(adServiceAdmin))
+                if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
+                    for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
+                        if (request.getUrl().getHost().contains(adServerData.adServer))
                             return new WebResourceResponse(null, null, null);
                     }
                 }
@@ -516,7 +533,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.bookmarks), context.getString(R.string.history), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
+                menu_list.setAdapter(new ArrayAdapter<String>(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
                 final PopupWindow popupWindow = new PopupWindow(context);
                 popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -615,15 +632,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                 }.execute(new DataBaseForBrowser.Bookmark(title,url));
                                 break;
                             }
-                            case 2:{
-                                BookmarkList.show(context, WebBrowser.this, windowStruct, dataBaseForBrowser.bookmarksDao());
-                                break;
-                            }
-                            case 3:{
-                                HistoryList.show(context, WebBrowser.this, windowStruct, dataBaseForBrowser.historyDao());
-                                break;
-                            }
-                            case 4: {
+                            case 2: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
@@ -633,7 +642,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 5: {
+                            case 3: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -641,8 +650,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 6:
-                                WebBrowserSetting.getInit().showSettingWindow(context, dataBaseForBrowser, null);
+                            case 4:
+                                WebBrowserSetting.getInit().showSettingWindow(context, null);
                                 break;
                         }
                         popupWindow.dismiss();
@@ -654,29 +663,43 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
 
     @Override
     public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-        WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
-        web.clearHistory();
-        if(WebBrowserSetting.haveRuningBrowser())
-            web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
-        else {
-            web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
-            web.pauseTimers();//會導致其他的WebView的javascript停止執行
+        if(position == 0) {
+            WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
+            web.clearHistory();
+            if (WebBrowserSetting.haveRuningBrowser())
+                web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+            else {
+                web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+                web.pauseTimers();//會導致其他的WebView的javascript停止執行
+            }
+            web.loadUrl("about:blank");
+            web.onPause();
+            web.removeAllViews();
+            web.destroyDrawingCache();
+            web.destroy();
+            web = null;
+        }else if (position == 1) {
+            bookmarkList.Deconstruction();
+            bookmarkList = null;
+        }else if(position == 2){
+            historyList.Deconstruction();
+            historyList = null;
         }
-        web.loadUrl("about:blank");
-        web.onPause();
-        web.removeAllViews();
-        web.destroyDrawingCache();
-        web.destroy();
-        web = null;
     }
 
     @Override
     public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+        if(position == 1)
+            bookmarkList.onResume();
+        else if (position == 2)
+            historyList.onResume();
     }
 
     @Override
     public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+        if(position == 1)
+            bookmarkList.bookmarkList.clear();
+        else if (position == 2)
+            historyList.historyList.clear();
     }
 }

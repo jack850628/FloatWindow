@@ -21,12 +21,14 @@ import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.util.ArrayList;
 
-public class BookmarkList implements WindowStruct.constructionAndDeconstructionWindow {
+public class BookmarkList {
 
     DataBaseForBrowser.BookmarksDao bookmarksDao;
-    ArrayList<DataBaseForBrowser.Bookmark> bookmarkList;
+    ArrayList<DataBaseForBrowser.Bookmark> bookmarkList = new ArrayList<DataBaseForBrowser.Bookmark>();
     Context context;
     WebBrowser iw;
+    RecyclerView recyclerView;
+    BookmarkList.BookmarkListAdapter bookmarkListAdapter;
 
     class BookmarkListAdapter extends RecyclerView.Adapter<BookmarkList.BookmarkListAdapter.ViewHolder>{
 
@@ -48,6 +50,7 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                 @Override
                 public void onClick(View v) {
                     iw.loadUrl(bookmarkList.get(viewHolder.getAdapterPosition()).url);
+                    windowStruct.showPage(0);
                 }
             });
             viewHolder.v.setOnLongClickListener(new View.OnLongClickListener() {
@@ -234,42 +237,29 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
 //            ((TextView) convertView.findViewById(R.id.date)).setText(formatter.format(BookmarkList.get(position).browserDate));
 //            return convertView;
 //        }
+
+        void Deconstruction(){
+            bookmarkList.clear();
+            bookmarkList = null;
+            context = null;
+            windowStruct = null;
+        }
     }
 
-    public static void show(final Context context, final WebBrowser iw, final WindowStruct parentWindow, final DataBaseForBrowser.BookmarksDao BookmarkDao){
-        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .parentWindow(parentWindow)
-                .windowPageTitles(new String[]{context.getString(R.string.bookmarks)})
-                .windowPages(new int[]{R.layout.bookmark_page})
-                .top(parentWindow.getPositionY())
-                .left(parentWindow.getPositionX())
-                .width(parentWindow.getWidth())
-                .height(parentWindow.getHeight())
-                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON)
-                .constructionAndDeconstructionWindow(new BookmarkList(context, iw, new ArrayList<DataBaseForBrowser.Bookmark>(), BookmarkDao))
-                .show();
-    }
-
-    private BookmarkList(Context context, WebBrowser iw, ArrayList<DataBaseForBrowser.Bookmark> bookmarkList, DataBaseForBrowser.BookmarksDao bookmarksDao){
+    public BookmarkList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.BookmarksDao bookmarksDao, WindowStruct windowStruct){
         this.context = context;
         this.iw = iw;
-        this.bookmarkList = bookmarkList;
         this.bookmarksDao = bookmarksDao;
-    }
 
-    RecyclerView recyclerView;
-    BookmarkList.BookmarkListAdapter bookmarkListAdapter;
-
-    @Override
-    public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
         recyclerView = (RecyclerView) pageView.findViewById(R.id.bookmark_list);
         bookmarkListAdapter = new BookmarkList.BookmarkListAdapter(context, windowStruct, bookmarkList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setAdapter(bookmarkListAdapter);
         recyclerView.setLayoutManager(layoutManager);
+    }
 
+    public void onResume() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -280,6 +270,8 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
                         bookmarkListAdapter.notifyDataSetChanged();
                         if(bookmarkList.size() == 0)
                             BookmarkList.this.recyclerView.setVisibility(View.GONE);
+                        else
+                            BookmarkList.this.recyclerView.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -304,18 +296,13 @@ public class BookmarkList implements WindowStruct.constructionAndDeconstructionW
         }).start();
     }
 
-    @Override
-    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-    }
-
-    @Override
-    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-    }
-
-    @Override
-    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+    public void Deconstruction(){
+        bookmarksDao = null;
+        bookmarkList = null;
+        context = null;
+        iw = null;
+        recyclerView = null;
+        bookmarkListAdapter.Deconstruction();
+        bookmarkListAdapter = null;
     }
 }

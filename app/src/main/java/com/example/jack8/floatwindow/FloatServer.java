@@ -25,6 +25,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Field;
@@ -138,20 +140,75 @@ public class FloatServer extends Service {
         if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
-                    //.windowPages(new int[]{R.layout.webpage})
+                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                    .windowPages(new int[]{R.layout.main_menu})
                     .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
                     .windowInitArgs(new Object[1][0])
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                     .windowAction(windowAction)
-                    //.constructionAndDeconstructionWindow(new WebBrowser())
+                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                        AdView adView;
+                        @Override
+                        public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                            View.OnClickListener onClickListener = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Class clazz = null;
+                                    switch (v.getId()){
+                                        case R.id.web_browser:{
+                                            clazz = WebBrowserLauncher.class;
+                                            break;
+                                        }
+                                        case R.id.note:{
+                                            clazz = NotePageLauncher.class;
+                                            break;
+                                        }
+                                        case R.id.calculato:{
+                                            clazz = CalculatoLauncher.class;
+                                            break;
+                                        }
+                                    }
+                                    Intent intent = new Intent(FloatServer.this, clazz);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    FloatServer.this.startActivity(intent);
+                                    windowStruct.close();
+                                }
+                            };
+                            pageView.findViewById(R.id.web_browser).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.note).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.calculato).setOnClickListener(onClickListener);
+                            adView = pageView.findViewById(R.id.adView);
+                            AdRequest adRequest = new AdRequest.Builder()
+                                    .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                                    .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
+                                    .addTestDevice("F4734F4691C588DB93799277888EA573")
+                                    .build();
+                            adView.loadAd(adRequest);
+                        }
+
+                        @Override
+                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
+                            adView.destroy();
+                        }
+
+                        @Override
+                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+                    })
                     .show();
         }else if((initCode & OPEN_WEB_BROWSER) == OPEN_WEB_BROWSER) {
             wm_count++;
             if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
                 new WindowStruct.Builder(this,wm)
-                        .windowPages(new int[]{R.layout.webpage})
-                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser)})
-                        .windowInitArgs(new Object[1][0])
+                        .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
+                        .windowInitArgs(new Object[3][0])
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new WebBrowser())
@@ -159,8 +216,8 @@ public class FloatServer extends Service {
             else{
                 String extra_url = intent.getStringExtra("extra_url");
                 new WindowStruct.Builder(this,wm)
-                        .windowPages(new int[]{R.layout.webpage})
-                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser)})
+                        .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
                         .windowInitArgs(new Object[][]{new Object[]{extra_url}})
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
@@ -171,6 +228,7 @@ public class FloatServer extends Service {
             wm_count++;
             if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
                 new WindowStruct.Builder(this,wm)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .windowInitArgs(new Object[1][0])
@@ -181,6 +239,7 @@ public class FloatServer extends Service {
             else{
                 String extra_url = intent.getStringExtra("extra_url");
                 new WindowStruct.Builder(this,wm)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})
