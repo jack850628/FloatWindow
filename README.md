@@ -1,4 +1,4 @@
-<img src="app/src/main/res/drawable/icom.png" width="100"></img>
+<img src="app/src/main/res/drawable/icon.png" width="100"></img>
 # FloatWindow 浮動視窗
 Float Window app for Android\
 ![Alt text](Demonstration.png)
