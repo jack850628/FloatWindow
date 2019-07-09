@@ -273,8 +273,6 @@ public class WebBrowserSetting {
 
     private void onDestroy(){
         webBrowserSetting = null;
-        firebaseDatabase = null;
-        dataBaseForBrowser = null;
         adServerDatas.clear();
         Log.i("WebBrowserSetting", "onDestroy");
     }
