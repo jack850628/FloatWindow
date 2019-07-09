@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">浮動視窗</string>
-    <string name="version">版本:1.1.8</string>
+    <string name="version">版本:1.2</string>
 
     <string name="web_browser">網頁瀏覽器</string>
     <string name="note">便條紙</string>
@@ -68,6 +68,10 @@
     <string name="total_score">總得分:</string>
     <string name="game_over">遊戲結束</string>
     <string name="brick">磚塊</string>
-    <string name="enable_ads_block">啟用廣告阻擋</string>
+    <string name="enable_ads_block">啟用廣告阻擋 (Beta)</string>
     <string name="calculato">計算機</string>
+    <string name="shortcut_desabled">Shortcut不可用</string>
+    <string name="add_to_home_screen">加入至主畫面</string>
+    <string name="tip_Long_press_add_home_screen">提示：長按可以加入至主畫面</string>
+    <string name="added_to_the_home_screen">已加入至主畫面</string>
 </resources>

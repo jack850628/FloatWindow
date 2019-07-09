@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="app_name">浮动视窗</string>
-        <string name="version">版本:1.1.8</string>
+        <string name="version">版本:1.2</string>
 
         <string name="web_browser">网页浏览器</string>
         <string name="note">便条纸</string>
@@ -48,9 +48,9 @@
     <string name="bookmarks">书签</string>
     <string name="history">历史纪录</string>
     <string name="delete">删除</string>
-    <string name="add_to_bookmarks">加入至书签</string>
+    <string name="add_to_bookmarks">添加至书签</string>
     <string name="title">标题</string>
-    <string name="add">加入</string>
+    <string name="add">添加</string>
     <string name="edit">编辑</string>
     <string name="no_data">没有资料</string>
     <string name="bookmark_added">已加入书签</string>
@@ -68,6 +68,10 @@
     <string name="total_score">总得分:</string>
     <string name="game_over">游戏结束</string>
     <string name="brick">砖块</string>
-    <string name="enable_ads_block">启用广告阻挡</string>
+    <string name="enable_ads_block">启用广告阻挡 (Beta)</string>
     <string name="calculato">计算机</string>
+    <string name="shortcut_desabled">Shortcut不可用</string>
+    <string name="add_to_home_screen">添加至主屏幕</string>
+    <string name="tip_Long_press_add_home_screen">提示：长按可以加入至主画面</string>
+    <string name="added_to_the_home_screen">已添加至主屏幕</string>
 </resources>

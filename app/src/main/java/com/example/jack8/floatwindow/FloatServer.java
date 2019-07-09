@@ -11,9 +11,11 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.ads.AdRequest;
@@ -37,14 +41,16 @@ import java.util.HashMap;
  * 浮動視窗服務
  */
 public class FloatServer extends Service {
-    public static final int OPEN_FLOAT_WINDOW = 0x01;
-    public static final int OPEN_EXTRA_URL = 0x02;
-    public static final int SHOW_WINDOW_MANAGER = 0x04;
-    public static final int SHOW_FLOAT_WINDOW_MENU = 0x08;
-    public static final int OPEN_WEB_BROWSER = 0x10;
-    public static final int OPEN_NOTE_PAGE = 0x20;
-    public static final int OPEN_CALCULATO = 0x40;
-    public static final int OPEN_MAIN_MENU = 0x80;
+    public static final int OPEN_FLOAT_WINDOW = 0x0001;
+    public static final int OPEN_EXTRA_URL = 0x0002;
+    public static final int SHOW_WINDOW_MANAGER = 0x0004;
+    public static final int SHOW_FLOAT_WINDOW_MENU = 0x0008;
+    public static final int OPEN_WEB_BROWSER = 0x0010;
+    public static final int OPEN_NOTE_PAGE = 0x0020;
+    public static final int OPEN_CALCULATO = 0x0040;
+    public static final int OPEN_MAIN_MENU = 0x0080;
+    public static final int OPEN_SETTING = 0x0100;
+    public static final String LAUNCHER = "launcher";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -167,6 +173,10 @@ public class FloatServer extends Service {
                                             clazz = CalculatoLauncher.class;
                                             break;
                                         }
+                                        case R.id.setting:{
+                                            clazz = Setting.class;
+                                            break;
+                                        }
                                     }
                                     Intent intent = new Intent(FloatServer.this, clazz);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -177,6 +187,73 @@ public class FloatServer extends Service {
                             pageView.findViewById(R.id.web_browser).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.note).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.calculato).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.setting).setOnClickListener(onClickListener);
+                            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+                                pageView.findViewById(R.id.tip).setVisibility(View.VISIBLE);
+                                View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(final View v) {
+                                        ListView menu_list = new ListView(FloatServer.this);
+                                        menu_list.setAdapter(new ArrayAdapter<String>(FloatServer.this, R.layout.list_item, R.id.item_text, new String[]{getResources().getString(R.string.add_to_home_screen)}));
+                                        menu_list.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                                        final PopupWindow popupWindow =new PopupWindow(FloatServer.this);
+                                        popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+                                        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                                        popupWindow.setContentView(menu_list);
+                                        popupWindow.setFocusable(true);
+                                        int anchorLoc[] = new int[2];
+                                        v.getLocationInWindow(anchorLoc);
+                                        popupWindow.showAtLocation(v, Gravity.LEFT | Gravity.TOP,0, anchorLoc[1]);
+                                        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                int name = 0, R_icon = 0;
+                                                Intent shortcutIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT"),
+                                                        launcher = new Intent(getApplicationContext() , MainActivity.class);
+                                                switch (v.getId()){
+                                                    case R.id.web_browser:{
+                                                        name = R.string.web_browser;
+                                                        R_icon = R.drawable.browser;
+                                                        launcher.putExtra(LAUNCHER, OPEN_WEB_BROWSER);
+                                                        break;
+                                                    }
+                                                    case R.id.note:{
+                                                        name = R.string.note;
+                                                        R_icon = R.drawable.note;
+                                                        launcher.putExtra(LAUNCHER, OPEN_NOTE_PAGE);
+                                                        break;
+                                                    }
+                                                    case R.id.calculato:{
+                                                        name = R.string.calculato;
+                                                        R_icon = R.drawable.calculato;
+                                                        launcher.putExtra(LAUNCHER, OPEN_CALCULATO);
+                                                        break;
+                                                    }
+                                                    case R.id.setting:{
+                                                        name = R.string.setting;
+                                                        R_icon = R.drawable.setting_icon;
+                                                        launcher.putExtra(LAUNCHER, OPEN_SETTING);
+                                                        break;
+                                                    }
+                                                }
+                                                //shortcutIntent.putExtra("duplicate", false);//是否可以重複建立
+                                                shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(name));
+                                                Parcelable icon = Intent.ShortcutIconResource.fromContext(getApplicationContext(), R_icon);
+                                                shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
+                                                shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
+                                                sendBroadcast(shortcutIntent);
+                                                popupWindow.dismiss();
+                                                Toast.makeText(FloatServer.this,getString(R.string.added_to_the_home_screen),Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                        return true;
+                                    }
+                                };
+                                pageView.findViewById(R.id.web_browser).setOnLongClickListener(onLongClickListener);
+                                pageView.findViewById(R.id.note).setOnLongClickListener(onLongClickListener);
+                                pageView.findViewById(R.id.calculato).setOnLongClickListener(onLongClickListener);
+                                pageView.findViewById(R.id.setting).setOnLongClickListener(onLongClickListener);
+                            }
                             adView = pageView.findViewById(R.id.adView);
                             AdRequest adRequest = new AdRequest.Builder()
                                     .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")

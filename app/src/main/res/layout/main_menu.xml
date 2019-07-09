@@ -13,6 +13,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/AppTheme.WindiowText"
+                android:visibility="gone"
+                android:text="@string/tip_Long_press_add_home_screen" />
+
             <LinearLayout
                 android:id="@+id/web_browser"
                 android:layout_width="match_parent"
@@ -87,6 +96,32 @@
                     android:textSize="18sp"
                     android:text="@string/calculato" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0"
+                    android:src="@drawable/setting_icon" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    style="@style/AppTheme.WindiowText"
+                    android:textSize="18sp"
+                    android:text="@string/setting" />
+            </LinearLayout>
+
             <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"
                 android:layout_width="match_parent"

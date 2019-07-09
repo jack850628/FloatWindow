@@ -23,14 +23,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void startFloatWindow(){
-        Intent intent=new Intent(this, FloatServer.class);
-
-        intent.putExtra("intent",FloatServer.OPEN_MAIN_MENU);
-
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            startService(intent);
-        else
-            startForegroundService(intent);
+        Intent intent = new Intent(this, FloatServer.class);
+        int launcher = getIntent().getIntExtra(FloatServer.LAUNCHER, -1);
+        if(launcher == FloatServer.OPEN_SETTING){
+            intent.setClass(this, Setting.class);
+            startActivity(intent);
+        }else{
+            if(launcher == -1)
+                launcher = FloatServer.OPEN_MAIN_MENU;
+            intent.putExtra("intent",launcher);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                startService(intent);
+            else
+                startForegroundService(intent);
+        }
         finish();
     }
     @RequiresApi(api = Build.VERSION_CODES.M)
