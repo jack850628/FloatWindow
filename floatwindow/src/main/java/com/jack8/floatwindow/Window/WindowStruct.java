@@ -508,38 +508,36 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             menu.setOnItemClickListener(this);
         }
         public void showMenu(){
+            isOpen = true;
             scroller.startScroll(0,0,-menu.getLayoutParams().width,0);
             runUi.post(this);
         }
         public void closeMenu(){
+            isOpen = false;
             scroller.startScroll(-menu.getLayoutParams().width,0,menu.getLayoutParams().width,0);
             runUi.post(this);
         }
         public void showPage(int position){
-            isOpen = false;
             CDAW.onPause(context,winconPage[currentWindowPagePosition],currentWindowPagePosition,WindowStruct.this);
             wincon.removeView(winconPage[currentWindowPagePosition]);
             wincon.addView(winconPage[position]);
             CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
             title.setText(windowTitle[position]);
             currentWindowPagePosition = position;
-            closeMenu();
         }
         @Override
         public void onClick(View v) {
             Log.i("startMenu",isOpen+","+menu.getLayoutParams().width);
-            if(!isOpen) {
+            if(!isOpen)
                 showMenu();
-                isOpen = true;
-            }else {
+            else
                 closeMenu();
-                isOpen = false;
-            }
         }
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             showPage(position);
+            closeMenu();
         }
 
         @Override
