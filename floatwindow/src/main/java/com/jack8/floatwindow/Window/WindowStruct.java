@@ -997,19 +997,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     }
 
     /**
-     * 視窗X座標
+     * 取得general狀態的視窗X座標
      * @return X座標
      */
     public int getPositionX(){
-        return wmlp.x;
+        return left;
     }
 
     /**
-     * 視窗Y座標
+     * 取得general狀態的視窗Y座標
      * @return Y座標
      */
     public int getPositionY(){
-        return wmlp.y;
+        return top;
     }
 
     /**
