@@ -997,19 +997,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     }
 
     /**
-     * 取得general狀態的視窗X座標
+     * 視窗X座標
      * @return X座標
      */
     public int getPositionX(){
-        return left;
+        return (nowState == State.MINI) ? wmlp.x : left;
     }
 
     /**
-     * 取得general狀態的視窗Y座標
+     * 視窗Y座標
      * @return Y座標
      */
     public int getPositionY(){
-        return top;
+        return (nowState == State.MINI) ? wmlp.y: top;
     }
 
     /**
@@ -1017,19 +1017,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param width 寬度
      */
     public void setWidth(int width){
+        this.width = Math.max(width, 30);
         if(nowState == State.GENERAL) {
-            this.width = Math.max(width,30);
-            winform.getLayoutParams().width = this.width;
+            winform.getLayoutParams().width = width;
             wm.updateViewLayout(winform, wmlp);
         }
     }
 
     /**
-     * 取得視窗寬度
+     * 取得general狀態視窗寬度
      * @return  寬度
      */
     public int getWidth(){
-        return wmlp.width;
+        return this.width;
     }
 
     /**
@@ -1037,19 +1037,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param height 高度
      */
     public void setHeight(int height){
+        this.height = Math.max(height, winform.getHeight() - wincon.getHeight());
         if(nowState == State.GENERAL) {
-            this.height = Math.max(height,winform.getHeight()-wincon.getHeight());
-            winform.getLayoutParams().height = this.height;
+            winform.getLayoutParams().height = height;
             wm.updateViewLayout(winform, wmlp);
         }
     }
 
     /**
-     * 取得視窗高度
+     * 取得general狀態視窗高度
      * @return  高度
      */
     public int getHeight(){
-        return wmlp.height;
+        return this.height;
     }
 
     /**
