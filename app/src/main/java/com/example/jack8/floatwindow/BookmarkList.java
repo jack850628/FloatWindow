@@ -106,10 +106,10 @@ public class BookmarkList {
                                             .windowPages(new int[]{R.layout.add_to_bookmark})
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
                                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                                            .left(windowStruct.getWidth() / 2 + windowStruct.getPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
-                                            .top(windowStruct.getHeight() / 2 + windowStruct.getPositionY() - (int)(context.getResources().getDisplayMetrics().density*170) / 2)
+                                            .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
+                                            .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*155) / 2)
                                             .width((int)(context.getResources().getDisplayMetrics().density*280))
-                                            .height((int)(context.getResources().getDisplayMetrics().density*170))
+                                            .height((int)(context.getResources().getDisplayMetrics().density*155))
                                             .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {

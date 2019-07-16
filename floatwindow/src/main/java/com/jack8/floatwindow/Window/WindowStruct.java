@@ -1011,6 +1011,21 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public int getPositionY(){
         return (nowState == State.MINI) ? wmlp.y: top;
     }
+    /**
+     * 視窗當下真正的X座標
+     * @return X座標
+     */
+    public int getRealPositionX(){
+        return wmlp.x;
+    }
+
+    /**
+     * 視窗當下真正的Y座標
+     * @return Y座標
+     */
+    public int getRealPositionY(){
+        return wmlp.y;
+    }
 
     /**
      * 設定視窗寬度
@@ -1031,6 +1046,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public int getWidth(){
         return this.width;
     }
+    /**
+     * 取得視窗當下真正的寬度
+     * @return  寬度
+     */
+    public int getRealWidth(){
+        return wmlp.width;
+    }
 
     /**
      * 設定視窗高度
@@ -1050,6 +1072,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public int getHeight(){
         return this.height;
+    }
+    /**
+     * 取得視窗當下真正的高度
+     * @return  高度
+     */
+    public int getRealHeight(){
+        return wmlp.height;
     }
 
     /**
