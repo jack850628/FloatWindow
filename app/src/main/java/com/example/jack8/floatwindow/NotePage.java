@@ -204,27 +204,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                                     )
                                                     .windowAction(((FloatServer)context).windowAction)
                                                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                                    .constructionAndDeconstructionWindow(new Calculato(){
-                                                        @Override
-                                                        public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                            super.Construction(context,pageView,1,args,windowStruct);
-                                                        }
-
-                                                        @Override
-                                                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-                                                            super.Deconstruction(context, pageView, 1, windowStruct);
-                                                        }
-
-                                                        @Override
-                                                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                            super.onResume(context, pageView, 1, windowStruct);
-                                                        }
-
-                                                        @Override
-                                                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                            super.onPause(context, pageView, 1, windowStruct);
-                                                        }
-                                                    })
+                                                    .constructionAndDeconstructionWindow(new NotePage())
                                                     .show();
                                         }
                                     });
