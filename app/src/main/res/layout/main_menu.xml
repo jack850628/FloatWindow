@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +9,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_weight="0">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -87,7 +88,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_weight="0"
-                    android:src="@drawable/calculato" />
+                    android:src="@drawable/calculator" />
 
                 <TextView
                     style="@style/AppTheme.WindiowText"
@@ -95,7 +96,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/calculato"
+                    android:text="@string/calculator"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -124,14 +125,15 @@
                     android:textSize="18sp" />
 
             </LinearLayout>
+
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="ca-app-pub-4604853118314154/9412755394"></com.google.android.gms.ads.AdView>
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        ads:adSize="SMART_BANNER"
-        ads:adUnitId="ca-app-pub-4604853118314154/9412755394"></com.google.android.gms.ads.AdView>
 </LinearLayout>
