@@ -43,6 +43,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.8'
 
     implementation project(path: ':floatwindow')
+    implementation 'com.android.support:support-v4:28.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

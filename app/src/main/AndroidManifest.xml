@@ -66,9 +66,9 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".CalculatoLauncher"
-            android:icon="@drawable/calculato"
-            android:label="@string/calculato">
+        <activity android:name=".CalculatorLauncher"
+            android:icon="@drawable/calculator"
+            android:label="@string/calculator">
         </activity>
         <activity
             android:name=".Setting"

@@ -170,7 +170,7 @@ public class FloatServer extends Service {
                                             break;
                                         }
                                         case R.id.calculato:{
-                                            clazz = CalculatoLauncher.class;
+                                            clazz = CalculatorLauncher.class;
                                             break;
                                         }
                                         case R.id.setting:{
@@ -224,8 +224,8 @@ public class FloatServer extends Service {
                                                         break;
                                                     }
                                                     case R.id.calculato:{
-                                                        name = R.string.calculato;
-                                                        R_icon = R.drawable.calculato;
+                                                        name = R.string.calculator;
+                                                        R_icon = R.drawable.calculator;
                                                         launcher.putExtra(LAUNCHER, OPEN_CALCULATO);
                                                         break;
                                                     }
@@ -285,7 +285,6 @@ public class FloatServer extends Service {
                 new WindowStruct.Builder(this,wm)
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
-                        .windowInitArgs(new Object[3][0])
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new WebBrowser())
@@ -308,7 +307,6 @@ public class FloatServer extends Service {
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
-                        .windowInitArgs(new Object[1][0])
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
@@ -328,12 +326,12 @@ public class FloatServer extends Service {
         }else if((initCode & OPEN_CALCULATO) == OPEN_CALCULATO) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
-                    .windowPages(new int[]{R.layout.window_context, R.layout.window_conetxt2})
-                    .windowPageTitles(new String[]{getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
-                    .windowInitArgs(new Object[2][0])
+                    .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .height(((int) getResources().getDisplayMetrics().density * 300))
                     .windowAction(windowAction)
-                    .constructionAndDeconstructionWindow(new Calculato())
+                    .constructionAndDeconstructionWindow(new Calculator())
                     .show();
         }else{
             //---------------------收起下拉選單-----------------------------

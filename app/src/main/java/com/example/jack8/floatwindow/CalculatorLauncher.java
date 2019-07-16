@@ -8,16 +8,16 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class CalculatoLauncher extends AppCompatActivity {
+public class CalculatorLauncher extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.window);
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M&&!Settings.canDrawOverlays(CalculatoLauncher.this))
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M&&!Settings.canDrawOverlays(CalculatorLauncher.this))
             startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + CalculatoLauncher.this.getPackageName())), 1);
+                    Uri.parse("package:" + CalculatorLauncher.this.getPackageName())), 1);
         else {
             startFloatWindow();
         }

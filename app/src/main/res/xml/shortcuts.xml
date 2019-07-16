@@ -29,17 +29,17 @@
     </shortcut>
 
     <shortcut
-        android:shortcutId="launcher_calculato"
+        android:shortcutId="launcher_calculator"
         android:enabled="true"
-        android:icon="@drawable/calculato"
-        android:shortcutShortLabel="@string/calculato"
-        android:shortcutLongLabel="@string/calculato"
+        android:icon="@drawable/calculator"
+        android:shortcutShortLabel="@string/calculator"
+        android:shortcutLongLabel="@string/calculator"
         android:shortcutDisabledMessage="@string/shortcut_desabled"
         tools:targetApi="n_mr1">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.jack850628.floatwindow"
-            android:targetClass="com.example.jack8.floatwindow.CalculatoLauncher" />
+            android:targetClass="com.example.jack8.floatwindow.CalculatorLauncher" />
     </shortcut>
 
     <shortcut

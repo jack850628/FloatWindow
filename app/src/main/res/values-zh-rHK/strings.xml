@@ -69,7 +69,7 @@
     <string name="game_over">遊戲結束</string>
     <string name="brick">磚塊</string>
     <string name="enable_ads_block">啟用廣告阻擋 (Beta)</string>
-    <string name="calculato">計算機</string>
+    <string name="calculator">計算機</string>
     <string name="shortcut_desabled">Shortcut不可用</string>
     <string name="add_to_home_screen">加入至主畫面</string>
     <string name="tip_Long_press_add_home_screen">提示：長按可以加入至主畫面</string>
