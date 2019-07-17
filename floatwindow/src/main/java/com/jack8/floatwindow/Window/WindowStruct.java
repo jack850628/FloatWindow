@@ -1034,7 +1034,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public void setWidth(int width){
         this.width = Math.max(width, 30);
         if(nowState == State.GENERAL) {
-            winform.getLayoutParams().width = width;
+            winform.getLayoutParams().width = this.width;
             wm.updateViewLayout(winform, wmlp);
         }
     }
@@ -1061,7 +1061,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public void setHeight(int height){
         this.height = Math.max(height, winform.getHeight() - wincon.getHeight());
         if(nowState == State.GENERAL) {
-            winform.getLayoutParams().height = height;
+            winform.getLayoutParams().height = this.height;
             wm.updateViewLayout(winform, wmlp);
         }
     }
