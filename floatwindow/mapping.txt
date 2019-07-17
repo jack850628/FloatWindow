@@ -1,0 +1,22 @@
+# compiler: R8
+# compiler_version: 1.4.77
+# min_api: 1
+com.jack8.floatwindow.Window.WindowColor -> a.a.a.a.a:
+    android.content.SharedPreferences spf -> g
+    int windowNotFoucs -> f
+    int microMaxButtonBackground -> d
+    int closeButtonBackground -> e
+    int titleBar -> b
+    int sizeBar -> c
+    int windowBackground -> a
+com.jack8.floatwindow.Window.WindowFrom -> com.jack8.floatwindow.Window.WindowFrom:
+    com.jack8.floatwindow.Window.WindowColor wColor -> f
+    android.view.View sizeBar -> c
+    android.view.View titleBar -> b
+    boolean inited -> a
+    android.view.View closeButtonBackground -> e
+    android.view.View microMaxButtonBackground -> d
+    1:1:int com.jack8.floatwindow.Window.WindowColor.getWindowBackground():0:0 -> onLayout
+    1:1:void onLayout(boolean,int,int,int,int):0 -> onLayout
+    2:2:void onLayout(boolean,int,int,int,int):0:0 -> onLayout
+com.jack8.floatwindow.Window.WindowStruct -> a.a.a.a.b:
