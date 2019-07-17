@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -62,7 +63,8 @@ public class FloatServer extends Service {
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
     HashMap<Integer, WindowStruct> windowList;
     WindowStruct windowManager = null;//視窗管理員
-    WindowStruct menu;
+    WindowStruct menu = null;
+    WindowStruct help = null;
     Handler handler = new Handler();
     WindowStruct.WindowAction windowAction = new WindowStruct.WindowAction() {
         @Override
@@ -261,6 +263,29 @@ public class FloatServer extends Service {
                                     .addTestDevice("F4734F4691C588DB93799277888EA573")
                                     .build();
                             adView.loadAd(adRequest);
+
+                            Button helpButton = new Button(context);
+                            helpButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+                            helpButton.setPadding(0,0,0,0);
+                            helpButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.help));
+                            helpButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(help == null) {
+                                        wm_count++;
+                                        help = new WindowStruct.Builder(FloatServer.this, wm)
+                                                .windowPages(new int[]{R.layout.new_functions, R.layout.help})
+                                                .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
+                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(FloatServer.this))
+                                                .windowAction(windowAction)
+                                                .constructionAndDeconstructionWindow(new Help())
+                                                .show();
+                                    }else
+                                        help.focusAndShowWindow();
+                                }
+                            });
+                            ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
+                            micro_max_button.addView(helpButton,0);
                         }
 
                         @Override
@@ -352,7 +377,7 @@ public class FloatServer extends Service {
             if((initCode & SHOW_FLOAT_WINDOW_MENU) == SHOW_FLOAT_WINDOW_MENU){
                 ListView menuView = new ListView(this);
                 menuView.setAdapter(new ArrayAdapter<String>(FloatServer.this,R.layout.hide_menu_item,R.id.item_text,new String[]{getString(R.string.setting),getString(R.string.windows_list)}));
-                if(menu!=null)
+                if(menu != null)
                     menu.focusAndShowWindow();
                 else {
                     wm_count++;

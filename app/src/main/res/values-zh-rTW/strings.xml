@@ -74,4 +74,6 @@
     <string name="add_to_home_screen">加入至主畫面</string>
     <string name="tip_Long_press_add_home_screen">提示：長按可以加入至主畫面</string>
     <string name="added_to_the_home_screen">已加入至主畫面</string>
+    <string name="new_functions">新功能</string>
+    <string name="help">說明</string>
 </resources>
