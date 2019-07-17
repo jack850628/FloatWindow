@@ -73,19 +73,25 @@ public class Calculator implements WindowStruct.constructionAndDeconstructionWin
                     }
                     case "del":{
                         CharSequence value = editText.getText();
-                        if(value.length() != 0)
-                            value = value.subSequence(0,value.length()-1);
-                        if(value.length() == 0)
+                        if(value.length() != 0) {
+                            if(editText.getSelectionStart() < editText.getSelectionEnd())
+                                ((Editable) value).delete(editText.getSelectionStart(), editText.getSelectionEnd());
+                            else if(editText.getSelectionStart() != 0)
+                                ((Editable) value).delete(editText.getSelectionStart() - 1, editText.getSelectionStart());
+                        }
+                        if(value.length() == 0) {
                             ((Editable) value).append('0');
-                        editText.setText(value);
+                            editText.setSelection(editText.getText().length());
+                        }
                         break;
                     }
                     default: {
-                        Editable value = editText.getText();
-                        if(!value.toString().equals("0") || v.getTag().toString().equals("."))
-                            editText.setText(value.append(v.getTag().toString()));
-                        else
+                        if(!editText.getText().toString().equals("0") || v.getTag().toString().equals("."))
+                            editText.getText().insert(editText.getSelectionStart(), v.getTag().toString());
+                        else {
                             editText.setText(v.getTag().toString());
+                            editText.setSelection(editText.getText().length());
+                        }
                         break;
                     }
                 }
