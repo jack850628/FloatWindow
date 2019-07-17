@@ -277,7 +277,18 @@ public class FloatServer extends Service {
                                                 .windowPages(new int[]{R.layout.new_functions, R.layout.help})
                                                 .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
                                                 .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(FloatServer.this))
-                                                .windowAction(windowAction)
+                                                .windowAction(new WindowStruct.WindowAction() {
+                                                    @Override
+                                                    public void goHide(WindowStruct windowStruct) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void goClose(WindowStruct windowStruct) {
+                                                        help = null;
+                                                        windowAction.goClose(windowStruct);
+                                                    }
+                                                })
                                                 .constructionAndDeconstructionWindow(new Help())
                                                 .show();
                                     }else
@@ -354,7 +365,7 @@ public class FloatServer extends Service {
                     .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
                     .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
-                    .height(((int) getResources().getDisplayMetrics().density * 300))
+                    .height(((int) getResources().getDisplayMetrics().density * 309))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
                     .show();

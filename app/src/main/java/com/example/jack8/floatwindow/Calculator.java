@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jack8.floatwindow.AShCalculator.AShCalculator;
 import com.google.android.gms.ads.AdRequest;
@@ -69,6 +70,7 @@ public class Calculator implements WindowStruct.constructionAndDeconstructionWin
                             value = e.getMessage();
                         }
                         editText.setText(value);
+                        editText.setSelection(0, value.length());
                         break;
                     }
                     case "del":{

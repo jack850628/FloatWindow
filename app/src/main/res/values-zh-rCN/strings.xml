@@ -76,4 +76,8 @@
     <string name="added_to_the_home_screen">已添加至主屏幕</string>
     <string name="new_functions">新功能</string>
     <string name="help">说明</string>
+    <string name="help_string1">基本操作</string>
+    <string name="help_string2">当使用浮动视窗时会再通知栏建立通知，可以透过通知前往设定或查看所有运行中的视窗。</string>
+    <string name="help_string3">所有工具已经个别独立出来，不再集中于一个视窗里。</string>
+    <string name="help_string4">可以为工具建立捷径于主画面上。</string>
 </resources>

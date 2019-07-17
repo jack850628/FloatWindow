@@ -7,7 +7,7 @@
     <string name="temperature_conversion">Temperature Cnversion</string>
     <string name="BMI_conversion">BMI Cnversion</string>
     <string name="setting">Setting</string>
-    <string name="windows_list">Windows List</string>
+    <string name="windows_list">A shortcut to the tool can be created on the main screen.</string>
     <string name="runing">Runing</string>
     <string name="open_page_of">Open page of?</string>
     <string name="web_say">Web say</string>
@@ -75,4 +75,8 @@
     <string name="added_to_the_home_screen">added to the home screen</string>
     <string name="new_functions">New functions</string>
     <string name="help">Help</string>
+    <string name="help_string1">Basic operation</string>
+    <string name="help_string2">vWhen using the floating window, the notification bar will be set up to notify you of the settings or view all running windows.</string>
+    <string name="help_string3">vAll the tools have been separated independently and are no longer concentrated in one window.</string>
+    <string name="help_string4">A shortcut to the tool can be created on the main screen.</string>
 </resources>
