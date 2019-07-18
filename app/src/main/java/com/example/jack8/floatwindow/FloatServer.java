@@ -365,7 +365,7 @@ public class FloatServer extends Service {
                     .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
                     .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
                     .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
-                    .height(((int) getResources().getDisplayMetrics().density * 309))
+                    .height((int)(getResources().getDisplayMetrics().density * 309))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
                     .show();
