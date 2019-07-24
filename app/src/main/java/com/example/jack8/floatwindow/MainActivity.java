@@ -24,12 +24,12 @@ public class MainActivity extends AppCompatActivity {
     }
     private void startFloatWindow(){
         Intent intent = new Intent(this, FloatServer.class);
-        int launcher = getIntent().getIntExtra(FloatServer.LAUNCHER, -1);
+        int launcher = getIntent().getIntExtra(FloatServer.LAUNCHER, FloatServer.OPEN_NONE);
         if(launcher == FloatServer.OPEN_SETTING){
             intent.setClass(this, Setting.class);
             startActivity(intent);
         }else{
-            if(launcher == -1)
+            if(launcher == FloatServer.OPEN_NONE)
                 launcher = FloatServer.OPEN_MAIN_MENU;
             intent.putExtra("intent",launcher);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

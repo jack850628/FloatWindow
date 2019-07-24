@@ -42,6 +42,7 @@ import java.util.HashMap;
  * 浮動視窗服務
  */
 public class FloatServer extends Service {
+    public static final int OPEN_NONE = 0x0000;
     public static final int OPEN_FLOAT_WINDOW = 0x0001;
     public static final int OPEN_EXTRA_URL = 0x0002;
     public static final int SHOW_WINDOW_MANAGER = 0x0004;
@@ -144,7 +145,7 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        int initCode = intent.getIntExtra("intent",-1);
+        int initCode = intent.getIntExtra("intent",OPEN_NONE);
         if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
