@@ -92,10 +92,10 @@ public class Brickout {
                                     .windowPages(new int[]{R.layout.brickout_end_window})
                                     .windowPageTitles(new String[]{activity.getString(R.string.game_over)})
                                     .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                                    .left(screenSize.getWidth() / 2 - ((int) activity.getResources().getDisplayMetrics().density * 60))
-                                    .top(screenSize.getHeight() / 2 - ((int) activity.getResources().getDisplayMetrics().density * 30))
-                                    .width((int) activity.getResources().getDisplayMetrics().density * 120)
-                                    .height((int) activity.getResources().getDisplayMetrics().density * 60)
+                                    .left(screenSize.getWidth() / 2 - (int) (activity.getResources().getDisplayMetrics().density * 60))
+                                    .top(screenSize.getHeight() / 2 - (int) (activity.getResources().getDisplayMetrics().density * 30))
+                                    .width((int) (activity.getResources().getDisplayMetrics().density * 120))
+                                    .height((int) (activity.getResources().getDisplayMetrics().density * 60))
                                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                         @Override
                                         public void Construction(Context context, View view, int i, Object[] objects, WindowStruct windowStruct) {
@@ -147,18 +147,18 @@ public class Brickout {
                 })
                 .show()).getNumber());
         paddle = new Paddle(
-                screenSize.getWidth() / 2 - ((int)activity.getResources().getDisplayMetrics().density*60),
-                screenSize.getHeight() - ((int)activity.getResources().getDisplayMetrics().density*60)
+                screenSize.getWidth() / 2 - (int)(activity.getResources().getDisplayMetrics().density*60),
+                screenSize.getHeight() - (int)(activity.getResources().getDisplayMetrics().density*60)
         );
-        ball = new Ball(paddle.x + ((int)activity.getResources().getDisplayMetrics().density*70),paddle.y - ((int)activity.getResources().getDisplayMetrics().density*20),new Point(ballSpeed,-ballSpeed));
-        int x = screenSize.getWidth() /  + ((int)activity.getResources().getDisplayMetrics().density * 80);
+        ball = new Ball(paddle.x + (int)(activity.getResources().getDisplayMetrics().density*70),paddle.y - (int)(activity.getResources().getDisplayMetrics().density*20),new Point(ballSpeed,-ballSpeed));
+        int x = screenSize.getWidth() /  + (int)(activity.getResources().getDisplayMetrics().density * 80);
         int y = 3;
         for(int i = 0;i <= x;i++)
             for(int j = 0;j <= y;j++)
                 bricks.add(
                         new Brick(
-                                ((int)activity.getResources().getDisplayMetrics().density * (70 * i)) + ((int)activity.getResources().getDisplayMetrics().density * 10),
-                                ((int)activity.getResources().getDisplayMetrics().density * (40 * j)) + ((int)activity.getResources().getDisplayMetrics().density * 80)
+                                (int)(activity.getResources().getDisplayMetrics().density * (70 * i)) + (int)(activity.getResources().getDisplayMetrics().density * 10),
+                                (int)(activity.getResources().getDisplayMetrics().density * (40 * j)) + (int)(activity.getResources().getDisplayMetrics().density * 80)
                         )
                 );
     }
@@ -312,7 +312,7 @@ public class Brickout {
                     gameStatus = GameStatus.READY;
                     a.x = ballSpeed;
                     a.y = -ballSpeed;
-                    _ball.setPosition(x = paddle.x + ((int)activity.getResources().getDisplayMetrics().density*70),y = paddle.y - ((int)activity.getResources().getDisplayMetrics().density*20));
+                    _ball.setPosition(x = paddle.x + (int)(activity.getResources().getDisplayMetrics().density*70),y = paddle.y - (int)(activity.getResources().getDisplayMetrics().density*20));
                     if(--life == 0)
                         gameWindow.close();
                     lifeText.setText(String.valueOf(life));
