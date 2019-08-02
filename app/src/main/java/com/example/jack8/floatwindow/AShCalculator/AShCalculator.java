@@ -70,8 +70,13 @@ public class AShCalculator {
                         CountRecord.get(CountRecord.size() - 1).add(new Count(new StringBuilder(""), null));
                         break;
                     case "(":
-                        CountRecord.get(CountRecord.size() - 1).get(CountRecord.get(CountRecord.size() - 1).size() - 1).Value.append(Variable);
+                        StringBuilder value = CountRecord.get(CountRecord.size() - 1).get(CountRecord.get(CountRecord.size() - 1).size() - 1).Value;
+                        value.append(Variable);
                         Variable.delete(0, Variable.length());
+                        if (!value.toString().equals("")){//判斷數字是否與括號相鄰，例如：2(3)
+                            Count_Set.CountSet(CountRecord, "*");
+                            CountRecord.get(CountRecord.size() - 1).add(new Count(new StringBuilder(""), null));
+                        }
                         CountRecord.add(new Count_Array());
                         CountRecord.get(CountRecord.size() - 1).add(new Count(new StringBuilder(""), null));
                         Variable.delete(0, Variable.length());
