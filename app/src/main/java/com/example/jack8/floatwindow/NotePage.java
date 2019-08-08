@@ -195,6 +195,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                             FloatServer.wm_count++;
                                             new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                                                     .windowPageTitles(new String[]{context.getString(R.string.note)})
                                                     .windowPages(new int[]{R.layout.note_page})
                                                     .windowInitArgs(
