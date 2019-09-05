@@ -23,28 +23,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void startFloatWindow(){
-        Intent intent=new Intent(this, FloatServer.class);
-        Intent extra_intent = getIntent();
-        String url = null;
-        if(extra_intent.getStringExtra(Intent.EXTRA_TEXT) != null)//帶有外部字串的啟動方法
-            url = extra_intent.getStringExtra(Intent.EXTRA_TEXT);
-        else if(extra_intent.getDataString() != null)//呼叫瀏覽器的的啟動方式
-            url = extra_intent.getDataString();
-        if(url == null) {
-            intent.putExtra("intent",FloatServer.OPEN_FLOAT_WINDOW);
-            intent.putExtra("Layouts", new int[]{R.layout.webpage, R.layout.note_page, R.layout.window_context, R.layout.window_conetxt2});
-            intent.putExtra("Titles", new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.note), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)});
+        Intent intent = new Intent(this, FloatServer.class);
+        int launcher = getIntent().getIntExtra(FloatServer.LAUNCHER, FloatServer.OPEN_NONE);
+        if(launcher == FloatServer.OPEN_SETTING){
+            intent.setClass(this, Setting.class);
+            startActivity(intent);
         }else{
-            intent.putExtra("intent",FloatServer.OPEN_EXTRA_URL);
-            intent.putExtra("Layouts", new int[]{R.layout.webpage, R.layout.note_page});
-            intent.putExtra("Titles", new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.note)});
-            intent.putExtra("extra_url",url);
+            if(launcher == FloatServer.OPEN_NONE)
+                launcher = FloatServer.OPEN_MAIN_MENU;
+            intent.putExtra("intent",launcher);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                startService(intent);
+            else
+                startForegroundService(intent);
         }
-
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            startService(intent);
-        else
-            startForegroundService(intent);
         finish();
     }
     @RequiresApi(api = Build.VERSION_CODES.M)

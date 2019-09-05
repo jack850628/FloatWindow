@@ -3,9 +3,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="15dip"
-    android:shadowColor="#cefffefe"
-    android:shadowDx="0"
-    android:shadowDy="0"
-    android:shadowRadius="15"
-    android:textColor="#313131"
+    style="@style/WindiowText"
     android:textSize="18sp" />

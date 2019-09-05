@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">浮動視窗</string>
-    <string name="version">版本:1.1.7.6</string>
+    <string name="version">版本:1.2.2</string>
 
     <string name="web_browser">網頁瀏覽器</string>
     <string name="note">便條紙</string>
@@ -61,4 +61,23 @@
     <string name="display_zoom_button">顯示縮放按鈕</string>
     <string name="web_browser_setting">網頁瀏覽器設定</string>
     <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
+    <string name="brickout">打磚塊</string>
+    <string name="play">玩</string>
+    <string name="score">得分:</string>
+    <string name="life">生命:</string>
+    <string name="total_score">總得分:</string>
+    <string name="game_over">遊戲結束</string>
+    <string name="brick">磚塊</string>
+    <string name="enable_ads_block">啟用廣告阻擋 (Beta)</string>
+    <string name="calculator">計算機</string>
+    <string name="shortcut_desabled">Shortcut不可用</string>
+    <string name="add_to_home_screen">加入至主畫面</string>
+    <string name="tip_Long_press_add_home_screen">提示：長按可以加入至主畫面</string>
+    <string name="added_to_the_home_screen">已加入至主畫面</string>
+    <string name="new_functions">新功能</string>
+    <string name="help">說明</string>
+    <string name="help_string1">基本操作</string>
+    <string name="help_string2">當使用浮動視窗時會再通知欄建立通知，可以透過通知前往設定或查看所有運行中的視窗。</string>
+    <string name="help_string3">所有工具已經個別獨立出來，不再集中於一個視窗裡。</string>
+    <string name="help_string4">可以為工具建立捷徑於主畫面上。</string>
 </resources>

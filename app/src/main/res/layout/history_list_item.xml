@@ -15,11 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:layout_weight="0"
-            android:shadowColor="#cefffefe"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="15"
-            android:textColor="#313131"
+            style="@style/AppTheme.WindiowText"
             android:textSize="18sp" />
 
         <TextView
@@ -27,11 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:shadowColor="#cefffefe"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="15"
-            android:textColor="#313131"
+            style="@style/AppTheme.WindiowText"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -40,10 +32,7 @@
         android:id="@+id/home_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
+        style="@style/AppTheme.WindiowText"
         android:textColor="#5A5A5A"
         android:textSize="12sp" />
 

@@ -21,18 +21,21 @@ import com.jack8.floatwindow.Window.WindowStruct;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-public class HistoryList implements WindowStruct.constructionAndDeconstructionWindow {
+public class HistoryList {
 
     DataBaseForBrowser.HistoryDao historyDao;
-    ArrayList<DataBaseForBrowser.History> historyList;
+    ArrayList<DataBaseForBrowser.History> historyList = new ArrayList<>();
     Context context;
-    initWindow iw;
+    WebBrowser iw;
+    RecyclerView recyclerView;
+    HistoryListAdapter historyListAdapter;
 
     class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder>{
 
         ArrayList<DataBaseForBrowser.History> historyList;
         Context context;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        WindowStruct windowStruct;
 
         @NonNull
         @Override
@@ -49,6 +52,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                 @Override
                 public void onClick(View v) {
                     iw.loadUrl(historyList.get(viewHolder.getAdapterPosition()).url);
+                    windowStruct.showPage(0);
                 }
             });
             viewHolder.v.setOnLongClickListener(new View.OnLongClickListener() {
@@ -71,7 +75,7 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
 //                    popupMenu.show();
 
                     ListView menu_list = new ListView(context);
-                    menu_list.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.open_link_in_new_window), context.getString(R.string.delete)}));
+                    menu_list.setAdapter(new ArrayAdapter<String>(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.open_link_in_new_window), context.getString(R.string.delete)}));
                     menu_list.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                     final PopupWindow popupWindow =new PopupWindow(context);
                     popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
@@ -88,32 +92,13 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                                 case 0:{
                                     FloatServer.wm_count++;
                                     new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                            .windowPages(new int[]{R.layout.webpage})
-                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser)})
+                                            .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
                                             .windowInitArgs(new Object[][]{new String[]{historyList.get(viewHolder.getAdapterPosition()).url}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new initWindow(){
-                                                @Override
-                                                public void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct) {
-                                                    super.Construction(context,pageView,0,args,windowStruct);
-                                                }
-
-                                                @Override
-                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                    super.Deconstruction(context, pageView, 0, windowStruct);
-                                                }
-
-                                                @Override
-                                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                    super.onResume(context, pageView, 0, windowStruct);
-                                                }
-
-                                                @Override
-                                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-                                                    super.onPause(context, pageView, 0, windowStruct);
-                                                }
-                                            }).show();
+                                            .constructionAndDeconstructionWindow(new WebBrowser())
+                                            .show();
                                     break;
                                 }
                                 case 1:
@@ -145,9 +130,10 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
             }
         }
 
-        public HistoryListAdapter(Context context, ArrayList<DataBaseForBrowser.History> historyList){
+        public HistoryListAdapter(Context context, ArrayList<DataBaseForBrowser.History> historyList, WindowStruct windowStruct){
             this.context = context;
             this.historyList = historyList;
+            this.windowStruct = windowStruct;
         }
 
 //        @Override
@@ -159,37 +145,25 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
 //            ((TextView) convertView.findViewById(R.id.date)).setText(formatter.format(historyList.get(position).browserDate));
 //            return convertView;
 //        }
+
+        void Deconstruction(){
+            historyList.clear();
+            historyList = null;
+            context = null;
+            formatter = null;
+            windowStruct = null;
+        }
     }
 
-    public static void show(final Context context, final initWindow iw, final WindowStruct parentWindow, final DataBaseForBrowser.HistoryDao historyDao){
-        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .parentWindow(parentWindow)
-                .windowPageTitles(new String[]{context.getString(R.string.history)})
-                .windowPages(new int[]{R.layout.history_page})
-                .top(parentWindow.getPositionY())
-                .left(parentWindow.getPositionX())
-                .width(parentWindow.getWidth())
-                .height(parentWindow.getHeight())
-                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
-                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON)
-                .constructionAndDeconstructionWindow(new HistoryList(context, iw, new ArrayList<DataBaseForBrowser.History>(), historyDao))
-                .show();
-    }
-
-    private HistoryList(Context context, initWindow iw, ArrayList<DataBaseForBrowser.History> historyList, DataBaseForBrowser.HistoryDao historyDao){
+    public HistoryList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.HistoryDao historyDao, WindowStruct windowStruct){
         this.context = context;
         this.iw = iw;
         this.historyList = historyList;
         this.historyDao = historyDao;
-    }
 
-    RecyclerView recyclerView;
-    HistoryListAdapter historyListAdapter;
 
-    @Override
-    public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
         recyclerView = (RecyclerView) pageView.findViewById(R.id.history_list);
-        historyListAdapter = new HistoryListAdapter(context, historyList);
+        historyListAdapter = new HistoryListAdapter(context, historyList, windowStruct);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setAdapter(historyListAdapter);
@@ -206,7 +180,10 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                 removeHistory(viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(recyclerView);
+    }
 
+
+    public void onResume() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -217,6 +194,8 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
                         historyListAdapter.notifyDataSetChanged();
                         if(historyList.size() == 0)
                             HistoryList.this.recyclerView.setVisibility(View.GONE);
+                        else
+                            HistoryList.this.recyclerView.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -241,18 +220,13 @@ public class HistoryList implements WindowStruct.constructionAndDeconstructionWi
         }).start();
     }
 
-    @Override
-    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-    }
-
-    @Override
-    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-    }
-
-    @Override
-    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
+    public void Deconstruction(){
+        historyDao = null;
+        historyList = null;
+        context = null;
+        iw = null;
+        recyclerView = null;
+        historyListAdapter.Deconstruction();
+        historyListAdapter = null;
     }
 }

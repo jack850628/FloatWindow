@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="WindiowText">
+        <item name="android:shadowColor">#cefffefe</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">15</item>
+        <item name="android:textColor">#313131</item>
+    </style>
+
+    <style name="WindiowTitleText">
+        <item name="android:shadowColor">#ce000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">15</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+</resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="app_name">浮动视窗</string>
-        <string name="version">版本:1.1.7.6</string>
+        <string name="version">版本:1.2.2</string>
 
         <string name="web_browser">网页浏览器</string>
         <string name="note">便条纸</string>
@@ -48,9 +48,9 @@
     <string name="bookmarks">书签</string>
     <string name="history">历史纪录</string>
     <string name="delete">删除</string>
-    <string name="add_to_bookmarks">加入至书签</string>
+    <string name="add_to_bookmarks">添加至书签</string>
     <string name="title">标题</string>
-    <string name="add">加入</string>
+    <string name="add">添加</string>
     <string name="edit">编辑</string>
     <string name="no_data">没有资料</string>
     <string name="bookmark_added">已加入书签</string>
@@ -61,4 +61,23 @@
     <string name="display_zoom_button">显示缩放按钮</string>
     <string name="web_browser_setting">网页浏览器设定</string>
     <string name="AD_ID">ca-app-pub-4604853118314154~2222092369</string>
+    <string name="brickout">打砖块</string>
+    <string name="play">玩</string>
+    <string name="score">得分:</string>
+    <string name="life">生命:</string>
+    <string name="total_score">总得分:</string>
+    <string name="game_over">游戏结束</string>
+    <string name="brick">砖块</string>
+    <string name="enable_ads_block">启用广告阻挡 (Beta)</string>
+    <string name="calculator">计算机</string>
+    <string name="shortcut_desabled">Shortcut不可用</string>
+    <string name="add_to_home_screen">添加至主屏幕</string>
+    <string name="tip_Long_press_add_home_screen">提示：长按可以加入至主画面</string>
+    <string name="added_to_the_home_screen">已添加至主屏幕</string>
+    <string name="new_functions">新功能</string>
+    <string name="help">说明</string>
+    <string name="help_string1">基本操作</string>
+    <string name="help_string2">当使用浮动视窗时会再通知栏建立通知，可以透过通知前往设定或查看所有运行中的视窗。</string>
+    <string name="help_string3">所有工具已经个别独立出来，不再集中于一个视窗里。</string>
+    <string name="help_string4">可以为工具建立捷径于主画面上。</string>
 </resources>

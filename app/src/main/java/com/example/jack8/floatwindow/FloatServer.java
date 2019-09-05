@@ -11,9 +11,11 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +23,15 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Field;
@@ -35,10 +42,17 @@ import java.util.HashMap;
  * 浮動視窗服務
  */
 public class FloatServer extends Service {
-    public static final int OPEN_FLOAT_WINDOW = 0;
-    public static final int OPEN_EXTRA_URL = 1;
-    public static final int SHOW_WINDOW_MANAGER = 2;
-    public static final int SHOW_FLOAT_WINDOW_MENU = 3;
+    public static final int OPEN_NONE = 0x0000;
+    public static final int OPEN_FLOAT_WINDOW = 0x0001;
+    public static final int OPEN_EXTRA_URL = 0x0002;
+    public static final int SHOW_WINDOW_MANAGER = 0x0004;
+    public static final int SHOW_FLOAT_WINDOW_MENU = 0x0008;
+    public static final int OPEN_WEB_BROWSER = 0x0010;
+    public static final int OPEN_NOTE_PAGE = 0x0020;
+    public static final int OPEN_CALCULATO = 0x0040;
+    public static final int OPEN_MAIN_MENU = 0x0080;
+    public static final int OPEN_SETTING = 0x0100;
+    public static final String LAUNCHER = "launcher";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -50,7 +64,8 @@ public class FloatServer extends Service {
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
     HashMap<Integer, WindowStruct> windowList;
     WindowStruct windowManager = null;//視窗管理員
-    WindowStruct menu;
+    WindowStruct menu = null;
+    WindowStruct help = null;
     Handler handler = new Handler();
     WindowStruct.WindowAction windowAction = new WindowStruct.WindowAction() {
         @Override
@@ -130,39 +145,231 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        if(intent.getIntExtra("intent",-1) == OPEN_FLOAT_WINDOW || intent.getIntExtra("intent",-1) == OPEN_EXTRA_URL) {
-            int[] layouts = intent.getExtras().getIntArray("Layouts");
+        int initCode = intent.getIntExtra("intent",OPEN_NONE);
+        if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
-            String[] titles = intent.getExtras().getStringArray("Titles");
-            if(intent.getIntExtra("intent",-1) == OPEN_FLOAT_WINDOW)
+            new WindowStruct.Builder(this,wm)
+                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                    .windowPages(new int[]{R.layout.main_menu})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
+                    .windowInitArgs(new Object[1][0])
+                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .windowAction(windowAction)
+                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                        AdView adView;
+                        @Override
+                        public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                            View.OnClickListener onClickListener = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Class clazz = null;
+                                    switch (v.getId()){
+                                        case R.id.web_browser:{
+                                            clazz = WebBrowserLauncher.class;
+                                            break;
+                                        }
+                                        case R.id.note:{
+                                            clazz = NotePageLauncher.class;
+                                            break;
+                                        }
+                                        case R.id.calculato:{
+                                            clazz = CalculatorLauncher.class;
+                                            break;
+                                        }
+                                        case R.id.setting:{
+                                            clazz = Setting.class;
+                                            break;
+                                        }
+                                    }
+                                    Intent intent = new Intent(FloatServer.this, clazz);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    FloatServer.this.startActivity(intent);
+                                    windowStruct.close();
+                                }
+                            };
+                            pageView.findViewById(R.id.web_browser).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.note).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.calculato).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.setting).setOnClickListener(onClickListener);
+                            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+                                pageView.findViewById(R.id.tip).setVisibility(View.VISIBLE);
+                                View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(final View v) {
+                                        ListView menu_list = new ListView(FloatServer.this);
+                                        menu_list.setAdapter(new ArrayAdapter<String>(FloatServer.this, R.layout.list_item, R.id.item_text, new String[]{getResources().getString(R.string.add_to_home_screen)}));
+                                        menu_list.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                                        final PopupWindow popupWindow =new PopupWindow(FloatServer.this);
+                                        popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+                                        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+                                        popupWindow.setContentView(menu_list);
+                                        popupWindow.setFocusable(true);
+                                        int anchorLoc[] = new int[2];
+                                        v.getLocationInWindow(anchorLoc);
+                                        popupWindow.showAtLocation(v, Gravity.LEFT | Gravity.TOP,0, anchorLoc[1]);
+                                        menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                int name = 0, R_icon = 0;
+                                                Intent shortcutIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT"),
+                                                        launcher = new Intent(getApplicationContext() , MainActivity.class);
+                                                switch (v.getId()){
+                                                    case R.id.web_browser:{
+                                                        name = R.string.web_browser;
+                                                        R_icon = R.drawable.browser;
+                                                        launcher.putExtra(LAUNCHER, OPEN_WEB_BROWSER);
+                                                        break;
+                                                    }
+                                                    case R.id.note:{
+                                                        name = R.string.note;
+                                                        R_icon = R.drawable.note;
+                                                        launcher.putExtra(LAUNCHER, OPEN_NOTE_PAGE);
+                                                        break;
+                                                    }
+                                                    case R.id.calculato:{
+                                                        name = R.string.calculator;
+                                                        R_icon = R.drawable.calculator;
+                                                        launcher.putExtra(LAUNCHER, OPEN_CALCULATO);
+                                                        break;
+                                                    }
+                                                    case R.id.setting:{
+                                                        name = R.string.setting;
+                                                        R_icon = R.drawable.setting_icon;
+                                                        launcher.putExtra(LAUNCHER, OPEN_SETTING);
+                                                        break;
+                                                    }
+                                                }
+                                                //shortcutIntent.putExtra("duplicate", false);//是否可以重複建立
+                                                shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(name));
+                                                Parcelable icon = Intent.ShortcutIconResource.fromContext(getApplicationContext(), R_icon);
+                                                shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
+                                                shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
+                                                sendBroadcast(shortcutIntent);
+                                                popupWindow.dismiss();
+                                                Toast.makeText(FloatServer.this,getString(R.string.added_to_the_home_screen),Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                        return true;
+                                    }
+                                };
+                                pageView.findViewById(R.id.web_browser).setOnLongClickListener(onLongClickListener);
+                                pageView.findViewById(R.id.note).setOnLongClickListener(onLongClickListener);
+                                pageView.findViewById(R.id.calculato).setOnLongClickListener(onLongClickListener);
+                                pageView.findViewById(R.id.setting).setOnLongClickListener(onLongClickListener);
+                            }
+                            adView = pageView.findViewById(R.id.adView);
+                            AdRequest adRequest = new AdRequest.Builder()
+                                    .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
+                                    .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
+                                    .addTestDevice("F4734F4691C588DB93799277888EA573")
+                                    .build();
+                            adView.loadAd(adRequest);
+
+                            Button helpButton = new Button(context);
+                            helpButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+                            helpButton.setPadding(0,0,0,0);
+                            helpButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.help));
+                            helpButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(help == null) {
+                                        wm_count++;
+                                        help = new WindowStruct.Builder(FloatServer.this, wm)
+                                                .windowPages(new int[]{R.layout.new_functions, R.layout.help})
+                                                .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
+                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(FloatServer.this))
+                                                .windowAction(new WindowStruct.WindowAction() {
+                                                    @Override
+                                                    public void goHide(WindowStruct windowStruct) {
+
+                                                    }
+
+                                                    @Override
+                                                    public void goClose(WindowStruct windowStruct) {
+                                                        help = null;
+                                                        windowAction.goClose(windowStruct);
+                                                    }
+                                                })
+                                                .constructionAndDeconstructionWindow(new Help())
+                                                .show();
+                                    }else
+                                        help.focusAndShowWindow();
+                                }
+                            });
+                            ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
+                            micro_max_button.addView(helpButton,0);
+                        }
+
+                        @Override
+                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
+                            adView.destroy();
+                        }
+
+                        @Override
+                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+                    })
+                    .show();
+        }else if((initCode & OPEN_WEB_BROWSER) == OPEN_WEB_BROWSER) {
+            wm_count++;
+            if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
                 new WindowStruct.Builder(this,wm)
-                        .windowPages(layouts)
-                        .windowPageTitles(titles)
-                        .windowInitArgs(new Object[layouts.length][0])
+                        .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new initWindow())
+                        .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
-                //new WindowStruct(this, wm, layouts, titles, new Object[layouts.length][0], windowAction,new initWindow());
             else{
                 String extra_url = intent.getStringExtra("extra_url");
-                ListView menu_list = new ListView(this);
-                menu_list.setId(0);
-                menu_list.setAdapter(new ArrayAdapter<String>(this,R.layout.hide_menu_item,R.id.item_text,titles));
                 new WindowStruct.Builder(this,wm)
-                        .windowPages(new View[]{menu_list})
-                        .windowPageTitles(new String[]{getString(R.string.open_page_of)})
-                        .windowInitArgs(new Object[][]{new Object[]{layouts,titles,extra_url}})
-                        .top(60)
-                        .left(60)
-                        .height((int)(getResources().getDisplayMetrics().density*70*layouts.length))
-                        .width((int)(getResources().getDisplayMetrics().density*200))
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                        .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
+                        .windowInitArgs(new Object[][]{new Object[]{extra_url}})
                         .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
                         .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new ProcessShare(wm,windowAction))
+                        .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
             }
+        }else if((initCode & OPEN_NOTE_PAGE) == OPEN_NOTE_PAGE) {
+            wm_count++;
+            if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
+                new WindowStruct.Builder(this,wm)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                        .windowPages(new int[]{R.layout.note_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.note)})
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .windowAction(windowAction)
+                        .constructionAndDeconstructionWindow(new NotePage())
+                        .show();
+            else{
+                String extra_url = intent.getStringExtra("extra_url");
+                new WindowStruct.Builder(this,wm)
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                        .windowPages(new int[]{R.layout.note_page})
+                        .windowPageTitles(new String[]{getResources().getString(R.string.note)})
+                        .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})
+                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .windowAction(windowAction)
+                        .constructionAndDeconstructionWindow(new NotePage())
+                        .show();
+            }
+        }else if((initCode & OPEN_CALCULATO) == OPEN_CALCULATO) {
+            wm_count++;
+            new WindowStruct.Builder(this,wm)
+                    .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
+                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .height((int)(getResources().getDisplayMetrics().density * 309))
+                    .windowAction(windowAction)
+                    .constructionAndDeconstructionWindow(new Calculator())
+                    .show();
         }else{
             //---------------------收起下拉選單-----------------------------
             try {
@@ -179,10 +386,10 @@ public class FloatServer extends Service {
                 localException.printStackTrace();
             }
             //-----------------------------------------------------------------------
-            if(intent.getIntExtra("intent",-1) == SHOW_FLOAT_WINDOW_MENU){
+            if((initCode & SHOW_FLOAT_WINDOW_MENU) == SHOW_FLOAT_WINDOW_MENU){
                 ListView menuView = new ListView(this);
                 menuView.setAdapter(new ArrayAdapter<String>(FloatServer.this,R.layout.hide_menu_item,R.id.item_text,new String[]{getString(R.string.setting),getString(R.string.windows_list)}));
-                if(menu!=null)
+                if(menu != null)
                     menu.focusAndShowWindow();
                 else {
                     wm_count++;
@@ -244,7 +451,7 @@ public class FloatServer extends Service {
                         }
                     });
                 }
-            }else if(intent.getIntExtra("intent",-1) == SHOW_WINDOW_MANAGER)
+            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER)
                 showUnWindowMenu();
         }
 

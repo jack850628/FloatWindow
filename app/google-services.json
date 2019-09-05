@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "166120455707",
+    "firebase_url": "https://floatwindow-270aa.firebaseio.com",
+    "project_id": "floatwindow-270aa",
+    "storage_bucket": "floatwindow-270aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166120455707:android:e1c6a96aaa0fad25",
+        "android_client_info": {
+          "package_name": "com.jack850628.floatwindow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166120455707-49l6gbcc76chrmv5ra40hu1fdjn6die4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jack850628.floatwindow",
+            "certificate_hash": "b546707e12016a4c707a94d6ed155e6f5050b192"
+          }
+        },
+        {
+          "client_id": "166120455707-0k4a5kpemo2qe0smn1fi0b6uh1f6aip3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz8gjZdss0aQTj95_qgs86mFsUvVNqhCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166120455707-0k4a5kpemo2qe0smn1fi0b6uh1f6aip3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-4604853118314154~2222092369"
+    }
+  ],
+  "configuration_version": "1"
+}

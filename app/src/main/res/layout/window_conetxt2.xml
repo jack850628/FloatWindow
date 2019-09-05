@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/height"
-            android:textColor="#666666" />
+            style="@style/AppTheme.WindiowText" />
 
         <EditText
             android:id="@+id/H"
@@ -22,7 +22,7 @@
             android:ems="10"
             android:hint="@string/cm"
             android:inputType="numberDecimal"
-            android:textColor="#000000"
+            style="@style/AppTheme.WindiowText"
             android:textColorHint="#AAAAAA" />
 
     </LinearLayout>
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/weight"
-            android:textColor="#666666" />
+            style="@style/AppTheme.WindiowText" />
 
         <EditText
             android:id="@+id/W"
@@ -46,34 +46,45 @@
             android:ems="10"
             android:hint="@string/kg"
             android:inputType="numberDecimal"
-            android:textColor="#000000"
+            style="@style/AppTheme.WindiowText"
             android:textColorHint="#AAAAAA" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/CH"
+            style="@style/AppTheme.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/conversion" />
+            android:text="@string/conversion"
+            android:theme="@style/AppTheme.Button" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="BMI:"
-            android:textColor="#666666" />
+            style="@style/AppTheme.WindiowText" />
 
         <TextView
             android:id="@+id/BMI"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#666666" />
+            style="@style/AppTheme.WindiowText" />
     </LinearLayout>
+
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-4604853118314154/1626459247"></com.google.android.gms.ads.AdView>
 
 </LinearLayout>

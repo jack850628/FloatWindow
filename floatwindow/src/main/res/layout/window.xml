@@ -41,12 +41,8 @@
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
                 android:marqueeRepeatLimit="-1"
-                android:shadowColor="#ce000000"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="15"
-                android:singleLine="true"
-                android:textColor="#FFFFFF" />
+                style="@style/WindiowTitleText"
+                android:singleLine="true" />
         </LinearLayout>
 
         <LinearLayout

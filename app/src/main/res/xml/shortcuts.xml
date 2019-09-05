@@ -1,0 +1,58 @@
+<shortcuts xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="launcher_web_browser"
+        android:enabled="true"
+        android:icon="@drawable/browser"
+        android:shortcutShortLabel="@string/web_browser"
+        android:shortcutLongLabel="@string/web_browser"
+        android:shortcutDisabledMessage="@string/shortcut_desabled"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jack850628.floatwindow"
+            android:targetClass="com.example.jack8.floatwindow.WebBrowserLauncher" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="launcher_note"
+        android:enabled="true"
+        android:icon="@drawable/note"
+        android:shortcutShortLabel="@string/note"
+        android:shortcutLongLabel="@string/note"
+        android:shortcutDisabledMessage="@string/shortcut_desabled"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jack850628.floatwindow"
+            android:targetClass="com.example.jack8.floatwindow.NotePageLauncher" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="launcher_calculator"
+        android:enabled="true"
+        android:icon="@drawable/calculator"
+        android:shortcutShortLabel="@string/calculator"
+        android:shortcutLongLabel="@string/calculator"
+        android:shortcutDisabledMessage="@string/shortcut_desabled"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jack850628.floatwindow"
+            android:targetClass="com.example.jack8.floatwindow.CalculatorLauncher" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="launcher_setting"
+        android:enabled="true"
+        android:icon="@drawable/setting_icon"
+        android:shortcutShortLabel="@string/setting"
+        android:shortcutLongLabel="@string/setting"
+        android:shortcutDisabledMessage="@string/shortcut_desabled"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jack850628.floatwindow"
+            android:targetClass="com.example.jack8.floatwindow.Setting" />
+    </shortcut>
+</shortcuts>

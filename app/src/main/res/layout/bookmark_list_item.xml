@@ -8,21 +8,14 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
-        android:textColor="#313131"
+        style="@style/AppTheme.WindiowText"
         android:textSize="18sp" />
 
     <TextView
         android:id="@+id/home_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:shadowColor="#cefffefe"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
+        style="@style/AppTheme.WindiowText"
         android:textColor="#5A5A5A"
         android:textSize="12sp" />
 

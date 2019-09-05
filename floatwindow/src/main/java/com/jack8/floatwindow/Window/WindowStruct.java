@@ -68,6 +68,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private TextView title;
     private String[] windowTitle;
 
+    private MenuList menuList;
+
     private final Handler runUi= new Handler(Looper.getMainLooper());
 
     private constructionAndDeconstructionWindow CDAW;
@@ -383,7 +385,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 pm.show();
             }
         });*/
-        menu.setOnClickListener(new menuList(windowPageTitles));
+        menuList = new MenuList(windowPageTitles);
+        menu.setOnClickListener(menuList);
         //------------------------------------------------------------------
         //---------------------------縮到最小與最大按鈕---------------------------
         hide.setOnClickListener(this);
@@ -468,12 +471,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             return id > 0 && context.getResources().getBoolean(id);
         }
     }
-    public class menuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
+    private class MenuList implements View.OnClickListener,AdapterView.OnItemClickListener,Runnable{
         private ListView menu;
         private LinearLayout menuListAndContext;
         private Scroller scroller = new Scroller(context);
         private boolean isOpen = false;
-        public menuList(final String[] menuItems){
+        public MenuList(final String[] menuItems){
             menuListAndContext = (LinearLayout) winform.findViewById(R.id.menu_list_and_context);
             menu = (ListView) winform.findViewById(R.id.menu_list);
             menu.setAdapter(new BaseAdapter() {
@@ -505,34 +508,35 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             menu.setOnItemClickListener(this);
         }
         public void showMenu(){
+            isOpen = true;
             scroller.startScroll(0,0,-menu.getLayoutParams().width,0);
             runUi.post(this);
         }
         public void closeMenu(){
+            isOpen = false;
             scroller.startScroll(-menu.getLayoutParams().width,0,menu.getLayoutParams().width,0);
             runUi.post(this);
         }
-        @Override
-        public void onClick(View v) {
-            Log.i("startMenu",isOpen+","+menu.getLayoutParams().width);
-            if(!isOpen) {
-                showMenu();
-                isOpen = true;
-            }else {
-                closeMenu();
-                isOpen = false;
-            }
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            isOpen = false;
+        public void showPage(int position){
             CDAW.onPause(context,winconPage[currentWindowPagePosition],currentWindowPagePosition,WindowStruct.this);
             wincon.removeView(winconPage[currentWindowPagePosition]);
             wincon.addView(winconPage[position]);
             CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
             title.setText(windowTitle[position]);
             currentWindowPagePosition = position;
+        }
+        @Override
+        public void onClick(View v) {
+            Log.i("startMenu",isOpen+","+menu.getLayoutParams().width);
+            if(!isOpen)
+                showMenu();
+            else
+                closeMenu();
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            showPage(position);
             closeMenu();
         }
 
@@ -997,7 +1001,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @return X座標
      */
     public int getPositionX(){
-        return wmlp.x;
+        return (nowState == State.MINI) ? wmlp.x : left;
     }
 
     /**
@@ -1005,6 +1009,21 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @return Y座標
      */
     public int getPositionY(){
+        return (nowState == State.MINI) ? wmlp.y: top;
+    }
+    /**
+     * 視窗當下真正的X座標
+     * @return X座標
+     */
+    public int getRealPositionX(){
+        return wmlp.x;
+    }
+
+    /**
+     * 視窗當下真正的Y座標
+     * @return Y座標
+     */
+    public int getRealPositionY(){
         return wmlp.y;
     }
 
@@ -1013,18 +1032,25 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param width 寬度
      */
     public void setWidth(int width){
+        this.width = Math.max(width, 30);
         if(nowState == State.GENERAL) {
-            this.width = Math.max(width,30);
             winform.getLayoutParams().width = this.width;
             wm.updateViewLayout(winform, wmlp);
         }
     }
 
     /**
-     * 取得視窗寬度
+     * 取得general狀態視窗寬度
      * @return  寬度
      */
     public int getWidth(){
+        return this.width;
+    }
+    /**
+     * 取得視窗當下真正的寬度
+     * @return  寬度
+     */
+    public int getRealWidth(){
         return wmlp.width;
     }
 
@@ -1033,18 +1059,25 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param height 高度
      */
     public void setHeight(int height){
+        this.height = Math.max(height, winform.getHeight() - wincon.getHeight());
         if(nowState == State.GENERAL) {
-            this.height = Math.max(height,winform.getHeight()-wincon.getHeight());
             winform.getLayoutParams().height = this.height;
             wm.updateViewLayout(winform, wmlp);
         }
     }
 
     /**
-     * 取得視窗高度
+     * 取得general狀態視窗高度
      * @return  高度
      */
     public int getHeight(){
+        return this.height;
+    }
+    /**
+     * 取得視窗當下真正的高度
+     * @return  高度
+     */
+    public int getRealHeight(){
         return wmlp.height;
     }
 
@@ -1134,5 +1167,27 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public constructionAndDeconstructionWindow getConstructionAndDeconstructionWindow(){
         return CDAW;
+    }
+
+    /**
+     * 顯示側邊選單
+     */
+    public void showMenu(){
+        menuList.showMenu();
+    }
+
+    /**
+     * 關閉側邊選單
+     */
+    public void closeMenu(){
+        menuList.closeMenu();
+    }
+
+    /**
+     * 顯示指定頁面
+     * @param position 頁面編號
+     */
+    public void showPage(int position){
+        menuList.showPage(position);
     }
 }
