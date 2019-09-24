@@ -43,8 +43,7 @@ class Count_Set {
                                             double a=IsNumeric.isNumeric(CountRecord.get(CountRecord.size()-1).get(index+1).Value.toString());
                                             CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
-                                            CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                                            CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)?")?String.format("%.0f", a):a);
                                             CountRecord.get(CountRecord.size()-1).remove(index);
                                     }
                                     break;
@@ -64,8 +63,7 @@ class Count_Set {
                                             double a=IsNumeric.isNumeric(CountRecord.get(CountRecord.size()-1).get(index+1).Value.toString());
                                             CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
-                                            CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", -a):-a);
+                                            CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", -a):-a);
                                             CountRecord.get(CountRecord.size()-1).remove(index);
                                     }
                                     break;
@@ -122,8 +120,7 @@ class Count_Set {
                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                         CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                                     a=pow(a,b);
-                                    CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                                    CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                                     CountRecord.get(CountRecord.size()-1).remove(index);
                                 }
                                 break;
@@ -142,8 +139,7 @@ class Count_Set {
                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                             CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                                     a=pow(b,1d/a);
-                                    CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                            &&a%1.0==0)?String.format("%.0f", a):a);
+                                    CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                                     CountRecord.get(CountRecord.size()-1).remove(index);
                                 }
                                 break;
@@ -173,8 +169,7 @@ class Count_Set {
                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                         CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                                     a*=b;
-                                    CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                                    CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                                 CountRecord.get(CountRecord.size()-1).remove(index);
                                 break;
                             }
@@ -186,8 +181,7 @@ class Count_Set {
                                 CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                                 a/=b;
-                                CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                                CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                                 CountRecord.get(CountRecord.size()-1).remove(index);
                                 break;
                             }
@@ -198,8 +192,7 @@ class Count_Set {
                                 CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                                 a%=b;
-                                CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                                CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                                 CountRecord.get(CountRecord.size()-1).remove(index);
                                 break;
                             }
@@ -228,8 +221,7 @@ class Count_Set {
                                 CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                         CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                                 a+=b;
-                                CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                                CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                                 CountRecord.get(CountRecord.size()-1).remove(index);
                             break;
                         }
@@ -239,8 +231,7 @@ class Count_Set {
                             CountRecord.get(CountRecord.size()-1).get(index+1).Value.delete(0,
                                     CountRecord.get(CountRecord.size()-1).get(index+1).Value.length());
                             a-=b;
-                            CountRecord.get(CountRecord.size()-1).get(index+1).Value.append((!String.valueOf(a).matches("[-]?\\d+\\.\\d+E\\d+")
-                                        &&a%1.0==0)?String.format("%.0f", a):a);
+                            CountRecord.get(CountRecord.size()-1).get(index+1).Value.append(String.valueOf(a).matches("[+]?\\d+(?:\\.0)")?String.format("%.0f", a):a);
                             CountRecord.get(CountRecord.size()-1).remove(index);
                             break;
                         }
