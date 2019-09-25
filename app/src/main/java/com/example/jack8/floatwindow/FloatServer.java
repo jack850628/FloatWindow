@@ -266,7 +266,7 @@ public class FloatServer extends Service {
                             adView.loadAd(adRequest);
 
                             Button helpButton = new Button(context);
-                            helpButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+                            helpButton.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(), windowStruct.getWindowButtonsHeight()));
                             helpButton.setPadding(0,0,0,0);
                             helpButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.help));
                             helpButton.setOnClickListener(new View.OnClickListener() {

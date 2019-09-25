@@ -173,7 +173,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
 
         moveWindow = new MoveWindow(context,windowStruct);
         nodePageMenuButton = new Button(context);
-        nodePageMenuButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+        nodePageMenuButton.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(),windowStruct.getWindowButtonsHeight()));
         nodePageMenuButton.setPadding(0,0,0,0);
         nodePageMenuButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.menu));
         nodePageMenuButton.setOnClickListener(new View.OnClickListener() {
