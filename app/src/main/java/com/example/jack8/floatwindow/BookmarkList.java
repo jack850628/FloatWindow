@@ -94,7 +94,7 @@ public class BookmarkList {
                                             .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
                                             .windowInitArgs(new Object[][]{new String[]{bookmarkList.get(viewHolder.getAdapterPosition()).url}})
                                             .windowAction(((FloatServer)context).windowAction)
-                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
                                             .constructionAndDeconstructionWindow(new WebBrowser())
                                             .show();
                                     break;
@@ -104,7 +104,7 @@ public class BookmarkList {
                                             .parentWindow(windowStruct)
                                             .windowPageTitles(new String[]{context.getString(R.string.edit_bookmark)})
                                             .windowPages(new int[]{R.layout.add_to_bookmark})
-                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
                                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                                             .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
                                             .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*155) / 2)

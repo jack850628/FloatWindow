@@ -96,7 +96,10 @@ public class HistoryList {
                                             .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
                                             .windowInitArgs(new Object[][]{new String[]{historyList.get(viewHolder.getAdapterPosition()).url}})
                                             .windowAction(((FloatServer)context).windowAction)
-                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                             .constructionAndDeconstructionWindow(new WebBrowser())
                                             .show();
                                     break;

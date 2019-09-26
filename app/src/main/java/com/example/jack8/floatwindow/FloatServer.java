@@ -153,7 +153,10 @@ public class FloatServer extends Service {
                     .windowPages(new int[]{R.layout.main_menu})
                     .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
                     .windowInitArgs(new Object[1][0])
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         AdView adView;
@@ -277,7 +280,10 @@ public class FloatServer extends Service {
                                         help = new WindowStruct.Builder(FloatServer.this, wm)
                                                 .windowPages(new int[]{R.layout.new_functions, R.layout.help})
                                                 .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
-                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(FloatServer.this))
+                                                .transitionsDuration(WindowParameter.getWindowTransitionsDuration(FloatServer.this))
+                                                .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(FloatServer.this)))
+                                                .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(FloatServer.this)))
+                                                .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(FloatServer.this)))
                                                 .windowAction(new WindowStruct.WindowAction() {
                                                     @Override
                                                     public void goHide(WindowStruct windowStruct) {
@@ -322,7 +328,10 @@ public class FloatServer extends Service {
                 new WindowStruct.Builder(this,wm)
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
@@ -332,7 +341,10 @@ public class FloatServer extends Service {
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
                         .windowInitArgs(new Object[][]{new Object[]{extra_url}})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
@@ -344,7 +356,10 @@ public class FloatServer extends Service {
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
@@ -355,7 +370,10 @@ public class FloatServer extends Service {
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
@@ -365,8 +383,11 @@ public class FloatServer extends Service {
             new WindowStruct.Builder(this,wm)
                     .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
                     .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
-                    .height((int)(getResources().getDisplayMetrics().density * 309))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .height((int)(getResources().getDisplayMetrics().density * (269 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this))))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
                     .show();
@@ -396,12 +417,13 @@ public class FloatServer extends Service {
                     menu = new WindowStruct.Builder(this, wm)
                             .windowPages(new View[]{menuView})
                             .windowPageTitles(new String[]{getString(R.string.app_name)})
-                            .top(60)
-                            .left(60)
-                            .height((int) (140 * this.getResources().getDisplayMetrics().density))
+                            .height((int) ((110 + WindowParameter.getWindowButtonsHeight(this)) * this.getResources().getDisplayMetrics().density))
                             .width((int) (200 * this.getResources().getDisplayMetrics().density))
                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
                                 public void goHide(WindowStruct windowStruct) {
@@ -476,12 +498,13 @@ public class FloatServer extends Service {
             windowManager = new WindowStruct.Builder(this, wm)
                     .windowPages(new View[]{hideMenu})
                     .windowPageTitles(new String[]{getString(R.string.windows_list)})
-                    .top(60)
-                    .left(60)
-                    .height((int) (200 * this.getResources().getDisplayMetrics().density))
+                    .height((int) ((160 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this)) * this.getResources().getDisplayMetrics().density))
                     .width((int) (195 * this.getResources().getDisplayMetrics().density))
                     .displayObject(WindowStruct.SIZE_BAR | WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override
                         public void goHide(WindowStruct windowStruct) {

@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jack8.floatwindow.AShCalculator.AShCalculator;
 import com.google.android.gms.ads.AdRequest;

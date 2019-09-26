@@ -104,8 +104,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private View[] windowPages;
         private String[] windowPageTitles = new String[]{""};
         private Object[][] windowInitArgs = new Object[0][0];
-        private int top = 60;
-        private int left = 60;
+        private int top = 160;
+        private int left = 160;
         private int height;
         private int width;
         private int displayObject = TITLE_BAR_AND_BUTTONS | MENU_BUTTON | HIDE_BUTTON | MINI_BUTTON | MAX_BUTTON | CLOSE_BUTTON | SIZE_BAR;

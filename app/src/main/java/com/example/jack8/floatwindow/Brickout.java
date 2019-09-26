@@ -95,7 +95,10 @@ public class Brickout {
                                     .left(screenSize.getWidth() / 2 - (int) (activity.getResources().getDisplayMetrics().density * 60))
                                     .top(screenSize.getHeight() / 2 - (int) (activity.getResources().getDisplayMetrics().density * 30))
                                     .width((int) (activity.getResources().getDisplayMetrics().density * 120))
-                                    .height((int) (activity.getResources().getDisplayMetrics().density * 60))
+                                    .height((int) (activity.getResources().getDisplayMetrics().density * (30 + WindowParameter.getWindowButtonsHeight(activity))))
+                                    .windowButtonsHeight((int) (activity.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(activity)))
+                                    .windowButtonsWidth((int) (activity.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(activity)))
+                                    .windowSizeBarHeight((int) (activity.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(activity)))
                                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                         @Override
                                         public void Construction(Context context, View view, int i, Object[] objects, WindowStruct windowStruct) {

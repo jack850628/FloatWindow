@@ -1,5 +1,5 @@
 # compiler: R8
-# compiler_version: 1.4.77
+# compiler_version: 1.4.94
 # min_api: 1
 com.jack8.floatwindow.Window.WindowColor -> a.a.a.a.a:
     android.content.SharedPreferences spf -> g

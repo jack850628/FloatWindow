@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">浮動視窗</string>
-    <string name="version">版本:1.2.2</string>
+    <string name="version">版本:1.2.2.0926</string>
 
     <string name="web_browser">網頁瀏覽器</string>
     <string name="note">便條紙</string>
@@ -80,4 +80,8 @@
     <string name="help_string2">當使用浮動視窗時會再通知欄建立通知，可以透過通知前往設定或查看所有運行中的視窗。</string>
     <string name="help_string3">所有工具已經個別獨立出來，不再集中於一個視窗裡。</string>
     <string name="help_string4">可以為工具建立捷徑於主畫面上。</string>
+    <string name="window_buttons_height">視窗按鈕高度</string>
+    <string name="window_buttons_width">視窗按鈕寬度</string>
+    <string name="window_size_bar_height">視窗大小調整列高度</string>
+    <string name="help_string5">點擊“設定”前往浮動視窗設定，點擊“所有視窗清單”會顯示所有運行中視窗的視窗清單，點擊通知本身會顯示具有“設置”和“視窗清單”選項的視窗。</string>
 </resources>

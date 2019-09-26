@@ -186,7 +186,10 @@ public class WebBrowserSetting {
             settingPage = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                     .windowPages(new int[]{R.layout.web_browser_setting})
                     .windowPageTitles(new String[]{context.getString(R.string.web_browser_setting)})
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                    .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                    .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                    .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                     .windowAction(((FloatServer) context).windowAction)
                     .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {

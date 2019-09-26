@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,9 +27,12 @@ public class Setting extends AppCompatActivity {
     private AdView mAdView;
 
     WindowColor wColor;
-    ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
-    ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs;
-    SeekBar secondSet;
+    ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground,titleBarAndButtons;
+    ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs,titleBarAndButtonsNotFoucs;
+    Button menu,close,mini,max,hide;
+    Button menuNotFoucs,closeNotFoucs,miniNotFoucs,maxNotFoucs,hideNotFoucs;
+    TextView title, titleNotFoucs;
+    SeekBar secondSet, buttonsHeight, buttonsWidth, sizeBarHeight;
     int adoutWindow = -1;
 
     Brickout brickout = null;
@@ -55,6 +57,75 @@ public class Setting extends AppCompatActivity {
             getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
         setTitle(getString(R.string.float_window_setting));
 
+        View FoucsWindow = findViewById(R.id.focus_winodw), NotFoucsWindow = findViewById(R.id.unfocus_winodw);
+
+        //-------------------------初始化一般視窗設定畫面----------------------------
+        TextView prompt=new TextView(this);
+        prompt.setText(getString(R.string.select_window_color));
+        prompt.setTextSize(15f);
+        ((ViewGroup) FoucsWindow.findViewById(R.id.wincon)).addView(prompt);
+
+        windowsBackground=(ViewGroup) FoucsWindow.findViewById(R.id.menu_list_and_context);
+        windowsBackground.setOnClickListener(setColor);
+        titleBar=(ViewGroup) FoucsWindow.findViewById(R.id.title_bar);
+        titleBar.setOnClickListener(setColor);
+        sizeBar=(ViewGroup) FoucsWindow.findViewById(R.id.size);
+        sizeBar.setOnClickListener(setColor);
+        microMaxButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.micro_max_button_background);
+        hide = FoucsWindow.findViewById(R.id.hide);
+        hide.setOnClickListener(setColor);
+        mini = FoucsWindow.findViewById(R.id.mini);
+        mini.setOnClickListener(setColor);
+        max = FoucsWindow.findViewById(R.id.max);
+        max.setOnClickListener(setColor);
+        menu = FoucsWindow.findViewById(R.id.menu);
+        menu.setOnClickListener(setColor);
+        close = FoucsWindow.findViewById(R.id.close_button);
+        close.setOnClickListener(setColor);
+        closeButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.close_button_background);
+        title = ((TextView)FoucsWindow.findViewById(R.id.title));
+        title.setText(getString(R.string.window_title));
+
+        microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
+        titleBar.setBackgroundColor(wColor.getTitleBar());
+        sizeBar.setBackgroundColor(wColor.getSizeBar());
+        closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
+        titleBarAndButtons = FoucsWindow.findViewById(R.id.title_bar_and_buttons);
+        //---------------------------------------------------------------------------
+        //-------------------------初始化失焦視窗設定畫面----------------------------
+        TextView promptNotFoucs=new TextView(this);
+        promptNotFoucs.setText(getString(R.string.select_window_out_of_focus_color));
+        promptNotFoucs.setTextSize(15f);
+        ((ViewGroup) NotFoucsWindow.findViewById(R.id.wincon)).addView(promptNotFoucs);
+
+        windowsBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.menu_list_and_context);
+        windowsBackgroundNotFoucs.setOnClickListener(setColor);
+        titleBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.title_bar);
+        titleBarNotFoucs.setOnClickListener(setColorForNotFoucs);
+        sizeBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.size);
+        sizeBarNotFoucs.setOnClickListener(setColorForNotFoucs);
+        microMaxButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.micro_max_button_background);
+        hideNotFoucs = NotFoucsWindow.findViewById(R.id.hide);
+        hideNotFoucs.setOnClickListener(setColorForNotFoucs);
+        miniNotFoucs = NotFoucsWindow.findViewById(R.id.mini);
+        hideNotFoucs.setOnClickListener(setColorForNotFoucs);
+        maxNotFoucs = NotFoucsWindow.findViewById(R.id.max);
+        maxNotFoucs.setOnClickListener(setColorForNotFoucs);
+        menuNotFoucs = NotFoucsWindow.findViewById(R.id.menu);
+        menuNotFoucs.setOnClickListener(setColorForNotFoucs);
+        closeNotFoucs = NotFoucsWindow.findViewById(R.id.close_button);
+        closeNotFoucs.setOnClickListener(setColorForNotFoucs);
+        closeButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.close_button_background);
+        titleNotFoucs = ((TextView)NotFoucsWindow.findViewById(R.id.title));
+        titleNotFoucs.setText(getString(R.string.window_title));
+
+        microMaxButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
+        titleBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
+        sizeBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
+        closeButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
+        titleBarAndButtonsNotFoucs = NotFoucsWindow.findViewById(R.id.title_bar_and_buttons);
+        //---------------------------------------------------------------------------
+
         secondSet=(SeekBar) findViewById(R.id.secondSet);
         secondSet.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView secondText=(TextView) findViewById(R.id.second);
@@ -73,77 +144,104 @@ public class Setting extends AppCompatActivity {
 
             }
         });
-        secondSet.setProgress(WindowTransitionsDuration.getWindowTransitionsDuration(this));
+        secondSet.setProgress(WindowParameter.getWindowTransitionsDuration(this));
 
-        ViewGroup content = (ViewGroup)findViewById(R.id.content);
-        View FoucsWindow,NotFoucsWindow;
-        TextView windowColorSetTitle=new TextView(this);
-        windowColorSetTitle.setText(getString(R.string.window_color));
-        windowColorSetTitle.setTextSize(20f);
-        content.addView(windowColorSetTitle);
-        content.addView(FoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
-        TextView windowNotFoucsColorNotFoucsSetTitle=new TextView(this);
-        windowNotFoucsColorNotFoucsSetTitle.setText(getString(R.string.window_out_of_focus_color));
-        windowNotFoucsColorNotFoucsSetTitle.setTextSize(20f);
-        content.addView(windowNotFoucsColorNotFoucsSetTitle);
-        content.addView(NotFoucsWindow=LayoutInflater.from(this).inflate(R.layout.window,null));
+        buttonsHeight=(SeekBar) findViewById(R.id.buttons_height_set);
+        buttonsHeight.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView buttonsHeightText=(TextView) findViewById(R.id.buttons_height);
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ViewGroup.LayoutParams layoutParams = menu.getLayoutParams();
+                progress += 20;
+                buttonsHeightText.setText(String.valueOf(progress));
+                layoutParams.height = (int)(getResources().getDisplayMetrics().density*progress);
+                menu.setLayoutParams(layoutParams);
+                hide.setLayoutParams(layoutParams);
+                mini.setLayoutParams(layoutParams);
+                max.setLayoutParams(layoutParams);
+                close.setLayoutParams(layoutParams);
+                menuNotFoucs.setLayoutParams(layoutParams);
+                hideNotFoucs.setLayoutParams(layoutParams);
+                miniNotFoucs.setLayoutParams(layoutParams);
+                maxNotFoucs.setLayoutParams(layoutParams);
+                closeNotFoucs.setLayoutParams(layoutParams);
+                layoutParams = title.getLayoutParams();
+                layoutParams.height = (int)(getResources().getDisplayMetrics().density*progress);
+                title.setLayoutParams(layoutParams);
+                titleNotFoucs.setLayoutParams(layoutParams);
+                titleBarAndButtons.getLayoutParams().height = (int)(getResources().getDisplayMetrics().density*progress);
+                titleBarAndButtonsNotFoucs.getLayoutParams().height = (int)(getResources().getDisplayMetrics().density*progress);
+            }
 
-        //-------------------------初始化一般視窗設定畫面----------------------------
-        TextView prompt=new TextView(this);
-        prompt.setText(getString(R.string.select_window_color));
-        prompt.setTextSize(15f);
-        ((ViewGroup) FoucsWindow.findViewById(R.id.wincon)).addView(prompt);
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
-        windowsBackground=(ViewGroup) FoucsWindow.findViewById(R.id.menu_list_and_context);
-        //windowsBackground.getLayoutParams().width=(int)(getResources().getDisplayMetrics().density*200);
-        windowsBackground.getLayoutParams().height=(int)(getResources().getDisplayMetrics().density*240);
-        windowsBackground.setOnClickListener(setColor);
-        titleBar=(ViewGroup) FoucsWindow.findViewById(R.id.title_bar);
-        titleBar.setOnClickListener(setColor);
-        sizeBar=(ViewGroup) FoucsWindow.findViewById(R.id.size);
-        sizeBar.setOnClickListener(setColor);
-        microMaxButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.micro_max_button_background);
-        FoucsWindow.findViewById(R.id.hide).setOnClickListener(setColor);
-        FoucsWindow.findViewById(R.id.mini).setOnClickListener(setColor);
-        FoucsWindow.findViewById(R.id.max).setOnClickListener(setColor);
-        FoucsWindow.findViewById(R.id.menu).setOnClickListener(setColor);
-        FoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColor);
-        closeButtonBackground=(ViewGroup) FoucsWindow.findViewById(R.id.close_button_background);
-        ((TextView)FoucsWindow.findViewById(R.id.title)).setText(getString(R.string.window_title));
+            }
 
-        microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
-        titleBar.setBackgroundColor(wColor.getTitleBar());
-        sizeBar.setBackgroundColor(wColor.getSizeBar());
-        closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
-        //---------------------------------------------------------------------------
-        //-------------------------初始化失焦視窗設定畫面----------------------------
-        TextView promptNotFoucs=new TextView(this);
-        promptNotFoucs.setText(getString(R.string.select_window_out_of_focus_color));
-        promptNotFoucs.setTextSize(15f);
-        ((ViewGroup) NotFoucsWindow.findViewById(R.id.wincon)).addView(promptNotFoucs);
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
-        windowsBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.menu_list_and_context);
-        //windowsBackgroundNotFoucs.getLayoutParams().width=(int)(getResources().getDisplayMetrics().density*200);
-        windowsBackgroundNotFoucs.getLayoutParams().height=(int)(getResources().getDisplayMetrics().density*240);
-        windowsBackgroundNotFoucs.setOnClickListener(setColor);
-        titleBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.title_bar);
-        titleBarNotFoucs.setOnClickListener(setColorForNotFoucs);
-        sizeBarNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.size);
-        sizeBarNotFoucs.setOnClickListener(setColorForNotFoucs);
-        microMaxButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.micro_max_button_background);
-        NotFoucsWindow.findViewById(R.id.hide).setOnClickListener(setColorForNotFoucs);
-        NotFoucsWindow.findViewById(R.id.mini).setOnClickListener(setColorForNotFoucs);
-        NotFoucsWindow.findViewById(R.id.max).setOnClickListener(setColorForNotFoucs);
-        NotFoucsWindow.findViewById(R.id.menu).setOnClickListener(setColorForNotFoucs);
-        NotFoucsWindow.findViewById(R.id.close_button).setOnClickListener(setColorForNotFoucs);
-        closeButtonBackgroundNotFoucs=(ViewGroup) NotFoucsWindow.findViewById(R.id.close_button_background);
-        ((TextView)NotFoucsWindow.findViewById(R.id.title)).setText(getString(R.string.window_title));
+            }
+        });
+        buttonsHeight.setProgress(WindowParameter.getWindowButtonsHeight(this) - 20);
 
-        microMaxButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
-        titleBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
-        sizeBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
-        closeButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
-        //---------------------------------------------------------------------------
+        buttonsWidth=(SeekBar) findViewById(R.id.buttons_width_set);
+        buttonsWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView buttonsWidthText=(TextView) findViewById(R.id.buttons_width);
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ViewGroup.LayoutParams layoutParams = menu.getLayoutParams();
+                progress += 20;
+                buttonsWidthText.setText(String.valueOf(progress));
+                layoutParams.width = (int)(getResources().getDisplayMetrics().density*progress);
+                menu.setLayoutParams(layoutParams);
+                hide.setLayoutParams(layoutParams);
+                mini.setLayoutParams(layoutParams);
+                max.setLayoutParams(layoutParams);
+                close.setLayoutParams(layoutParams);
+                menuNotFoucs.setLayoutParams(layoutParams);
+                hideNotFoucs.setLayoutParams(layoutParams);
+                miniNotFoucs.setLayoutParams(layoutParams);
+                maxNotFoucs.setLayoutParams(layoutParams);
+                closeNotFoucs.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        buttonsWidth.setProgress(WindowParameter.getWindowButtonsWidth(this) - 20);
+
+        sizeBarHeight=(SeekBar) findViewById(R.id.size_bar_height_set);
+        sizeBarHeight.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView sizeBarHeightText=(TextView) findViewById(R.id.size_bar_height);
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ViewGroup.LayoutParams layoutParams = sizeBar.getLayoutParams();
+                progress += 5;
+                sizeBarHeightText.setText(String.valueOf(progress));
+                layoutParams.height = (int)(getResources().getDisplayMetrics().density*progress);
+                sizeBar.setLayoutParams(layoutParams);
+                sizeBarNotFoucs.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        sizeBarHeight.setProgress(WindowParameter.getWindowSizeBarHeight(this) - 5);
 
         ((Button)findViewById(R.id.ok)).setOnClickListener(save);
         ((Button)findViewById(R.id.no)).setOnClickListener(save);
@@ -235,7 +333,10 @@ public class Setting extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(v.getId()==R.id.ok) {
-                WindowTransitionsDuration.setWindowTransitionsDuration(Setting.this,secondSet.getProgress());
+                WindowParameter.setWindowTransitionsDuration(Setting.this,secondSet.getProgress());
+                WindowParameter.setWindowButtonsHeight(Setting.this,buttonsHeight.getProgress() + 20);
+                WindowParameter.setWindowButtonsWidth(Setting.this,buttonsWidth.getProgress() + 20);
+                WindowParameter.setWindowwSizeBarHeight(Setting.this,sizeBarHeight.getProgress() + 5);
                 wColor.save();
             }
             finish();
@@ -278,14 +379,15 @@ public class Setting extends AppCompatActivity {
                     adoutWindow = new WindowStruct.Builder(this, (WindowManager) getSystemService(Context.WINDOW_SERVICE))
                             .windowPages(new int[]{R.layout.about})
                             .windowPageTitles(new String[]{getString(R.string.about)})
-                            .top(60)
-                            .left(60)
                             .left(getResources().getDisplayMetrics().widthPixels / 2 - (int) (getResources().getDisplayMetrics().density * 97))
                             .top(getResources().getDisplayMetrics().heightPixels / 2 - (int) (getResources().getDisplayMetrics().density * 55))
-                            .height((int) (110 * getResources().getDisplayMetrics().density))
+                            .height((int) ((80 + WindowParameter.getWindowButtonsHeight(this)) * getResources().getDisplayMetrics().density))
                             .width((int) (195 * getResources().getDisplayMetrics().density))
                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON)
-                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
                                 public void goHide(WindowStruct windowStruct) {

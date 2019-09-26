@@ -204,7 +204,10 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                                                     :new Object[][]{{NotePage.OPEN_NOTE,otherNodeListAdapter.noteList.get(position)[0]}}
                                                     )
                                                     .windowAction(((FloatServer)context).windowAction)
-                                                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                                    .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                                    .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                                    .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                                     .constructionAndDeconstructionWindow(new NotePage())
                                                     .show();
                                         }
@@ -214,7 +217,10 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                             .windowPages(new View[]{nodeList})
                                             .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
                                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
-                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                             .windowAction(new WindowStruct.WindowAction() {
                                                 @Override
                                                 public void goHide(WindowStruct windowStruct) {
