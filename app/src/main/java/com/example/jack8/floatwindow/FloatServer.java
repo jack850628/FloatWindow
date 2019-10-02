@@ -278,7 +278,7 @@ public class FloatServer extends Service {
                                     if(help == null) {
                                         wm_count++;
                                         help = new WindowStruct.Builder(FloatServer.this, wm)
-                                                .windowPages(new int[]{R.layout.new_functions, R.layout.help})
+                                                .windowPages(new int[]{R.layout.what_is_new, R.layout.help})
                                                 .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
                                                 .transitionsDuration(WindowParameter.getWindowTransitionsDuration(FloatServer.this))
                                                 .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(FloatServer.this)))

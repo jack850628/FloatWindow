@@ -23,10 +23,6 @@
             android:layout_height="315dp"
             android:src="@drawable/demonstration" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="56dp" />
-
         <TextView
             style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
@@ -39,11 +35,26 @@
             android:layout_height="142dp"
             android:src="@drawable/notify_image" />
 
-
         <TextView
             style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/help_string5" />
+
+        <!--<Space
+            android:layout_width="match_parent"
+            android:layout_height="56dp" />-->
+
+        <ImageView
+            android:id="@+id/demonstration_image3"
+            android:layout_width="270dp"
+            android:layout_height="249dp"
+            android:src="@drawable/add_shortcut_image1" />
+
+        <TextView
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/help_string4" />
     </LinearLayout>
 </ScrollView>
