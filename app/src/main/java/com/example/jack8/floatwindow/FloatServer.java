@@ -77,7 +77,7 @@ public class FloatServer extends Service {
         public void goClose(WindowStruct windowStruct) {
             if (--wm_count == 0) {
                 FloatServer.this.stopForeground(true);
-                FloatServer.this.unregisterReceiver(ScreenChangeListener.getInstance());
+                FloatServer.this.unregisterReceiver(ScreenChangeListener.getInstance(FloatServer.this));
                 stopSelf();
             }
         }
@@ -125,7 +125,7 @@ public class FloatServer extends Service {
         //---------------註冊翻轉事件廣播接收---------------
         IntentFilter filter = new IntentFilter();
         filter.addAction(BCAST_CONFIGCHANGED);
-        this.registerReceiver(ScreenChangeListener.getInstance(), filter);
+        this.registerReceiver(ScreenChangeListener.getInstance(this), filter);
         //-------------------------------------------------
 
         try {//用反射取得所有視窗清單

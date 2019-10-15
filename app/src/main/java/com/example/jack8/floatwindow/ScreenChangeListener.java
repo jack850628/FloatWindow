@@ -15,11 +15,13 @@ import java.util.Map;
  */
 public class ScreenChangeListener extends BroadcastReceiver {
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
-    private static final ScreenChangeListener instance = new ScreenChangeListener();
+    private static ScreenChangeListener instance = null;
 
     private HashMap<Integer,WindowStruct> windowList;
+    private int screenOrientation;
 
-    private  ScreenChangeListener(){
+    private  ScreenChangeListener(Context context){
+        screenOrientation = context.getResources().getConfiguration().orientation;
         try {//用反射取得所有視窗清單
             Field field = WindowStruct.class.getDeclaredField("windowList");
             field.setAccessible(true);
@@ -31,13 +33,16 @@ public class ScreenChangeListener extends BroadcastReceiver {
         }
     }
 
-    public static ScreenChangeListener getInstance(){
+    public static ScreenChangeListener getInstance(Context context){
+        if(instance == null)
+            instance = new ScreenChangeListener(context);
         return instance;
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.getAction().equals(BCAST_CONFIGCHANGED)) {
+        if(intent.getAction().equals(BCAST_CONFIGCHANGED) && screenOrientation != context.getResources().getConfiguration().orientation) {
+            screenOrientation = context.getResources().getConfiguration().orientation;
             if(windowList != null)
                 for(Map.Entry<Integer,WindowStruct> entry : windowList.entrySet()){
                     WindowStruct windowStruct = entry.getValue();
