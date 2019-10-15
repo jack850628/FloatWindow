@@ -20,6 +20,7 @@ import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class HistoryList {
 
@@ -34,7 +35,7 @@ public class HistoryList {
 
         ArrayList<DataBaseForBrowser.History> historyList;
         Context context;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         WindowStruct windowStruct;
 
         @NonNull
