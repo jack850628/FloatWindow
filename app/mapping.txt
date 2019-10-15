@@ -10569,11 +10569,10 @@ com.example.jack8.floatwindow.MoveWindow -> com.example.jack8.floatwindow.wa:
     int getStatusBarHeight() -> h
 com.example.jack8.floatwindow.NotePage -> com.example.jack8.floatwindow.Fa:
     java.util.Date dNow -> e
-    android.widget.Button nodePageMenuButton -> g
-    java.text.SimpleDateFormat formatter -> f
+    android.widget.Button nodePageMenuButton -> f
+    int nodePageDisplayObj -> h
     com.example.jack8.floatwindow.NotePage$OtherNodeListAdapter otherNodeListAdapter -> c
-    int nodePageDisplayObj -> i
-    com.example.jack8.floatwindow.MoveWindow moveWindow -> h
+    com.example.jack8.floatwindow.MoveWindow moveWindow -> g
     java.util.LinkedList showingNoteIdList -> a
     com.jack8.floatwindow.Window.WindowStruct otherNoteList -> b
     java.lang.String noteId -> d
@@ -10623,7 +10622,8 @@ com.example.jack8.floatwindow.NotePageLauncher -> com.example.jack8.floatwindow.
 com.example.jack8.floatwindow.ScreenChangeListener -> com.example.jack8.floatwindow.Ga:
     com.example.jack8.floatwindow.ScreenChangeListener instance -> a
     java.util.HashMap windowList -> b
-    com.example.jack8.floatwindow.ScreenChangeListener getInstance() -> a
+    int screenOrientation -> c
+    com.example.jack8.floatwindow.ScreenChangeListener getInstance(android.content.Context) -> a
 com.example.jack8.floatwindow.Setting -> com.example.jack8.floatwindow.Setting:
     android.widget.TextView titleNotFoucs -> O
     android.widget.SeekBar secondSet -> P
