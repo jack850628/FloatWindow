@@ -26,7 +26,6 @@ import com.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -128,7 +127,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
     static OtherNodeListAdapter otherNodeListAdapter = null;
     String noteId=null;
     Date dNow = new Date();
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
+    //SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss", Locale.getDefault());
     Button nodePageMenuButton;
     MoveWindow moveWindow;
     int nodePageDisplayObj;
@@ -316,7 +315,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                     note.setText(notes.getString(noteId));
                     otherNodeListAdapter.update(showingNoteIdList);
                 }else{
-                    noteId = formatter.format(dNow);
+                    noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
                     showingNoteIdList.add(noteId);
                 }
             } catch (JSONException e) {
@@ -326,7 +325,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
             int flag = (int)args[0];
             switch (flag){
                 case ADD_NOTE: {
-                    noteId = formatter.format(dNow);
+                    noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
                     showingNoteIdList.add(noteId);
                     note.setText((String) args[1]);
                     break;
