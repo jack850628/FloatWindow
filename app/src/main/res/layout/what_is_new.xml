@@ -15,15 +15,28 @@
             style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/help_string3" />
+            android:text="@string/what_is_new_string1" />
 
         <ImageView
-            android:layout_width="270dp"
-            android:layout_height="249dp"
-            android:src="@drawable/adjust_the_size_window" />
-
-        <!--<Space
+            android:id="@+id/what_is_new_image1"
             android:layout_width="match_parent"
-            android:layout_height="56dp" />-->
+            android:layout_height="wrap_content"
+            android:src="@drawable/auto_run" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+
+        <TextView
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/help_string2" />
+
+        <ImageView
+            android:id="@+id/what_is_new_image2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/notify_image" />
     </LinearLayout>
 </ScrollView>

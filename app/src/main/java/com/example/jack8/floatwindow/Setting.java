@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class Setting extends AppCompatActivity {
     Button menuNotFoucs,closeNotFoucs,miniNotFoucs,maxNotFoucs,hideNotFoucs;
     TextView title, titleNotFoucs;
     SeekBar secondSet, buttonsHeight, buttonsWidth, sizeBarHeight;
+    CheckBox isAutoRun, isPermanent;
     int adoutWindow = -1;
 
     Brickout brickout = null;
@@ -124,6 +126,9 @@ public class Setting extends AppCompatActivity {
         sizeBarNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         closeButtonBackgroundNotFoucs.setBackgroundColor(wColor.getWindowNotFoucs());
         titleBarAndButtonsNotFoucs = NotFoucsWindow.findViewById(R.id.title_bar_and_buttons);
+
+        isAutoRun = findViewById(R.id.is_auto_run);
+        isPermanent = findViewById(R.id.is_permanent);
         //---------------------------------------------------------------------------
 
         secondSet=(SeekBar) findViewById(R.id.secondSet);
@@ -243,6 +248,9 @@ public class Setting extends AppCompatActivity {
         });
         sizeBarHeight.setProgress(WindowParameter.getWindowSizeBarHeight(this) - 5);
 
+        isAutoRun.setChecked(WindowParameter.isAutoRun(this));
+        isPermanent.setChecked(WindowParameter.isPermanent(this));
+
         ((Button)findViewById(R.id.ok)).setOnClickListener(save);
         ((Button)findViewById(R.id.no)).setOnClickListener(save);
     }
@@ -337,6 +345,8 @@ public class Setting extends AppCompatActivity {
                 WindowParameter.setWindowButtonsHeight(Setting.this,buttonsHeight.getProgress() + 20);
                 WindowParameter.setWindowButtonsWidth(Setting.this,buttonsWidth.getProgress() + 20);
                 WindowParameter.setWindowwSizeBarHeight(Setting.this,sizeBarHeight.getProgress() + 5);
+                WindowParameter.setAutoRun(Setting.this, isAutoRun.isChecked());
+                WindowParameter.setPermanent(Setting.this, isPermanent.isChecked());
                 wColor.save();
             }
             finish();

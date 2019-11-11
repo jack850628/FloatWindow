@@ -2506,16 +2506,6 @@ android.support.v4.app.NotificationCompat$Action -> android.support.v4.app.Y$a:
     int getSemanticAction() -> g
     boolean getShowsUserInterface() -> h
     java.lang.CharSequence getTitle() -> i
-android.support.v4.app.NotificationCompat$Action$Builder -> android.support.v4.app.Y$a$a:
-    java.lang.CharSequence mTitle -> b
-    android.os.Bundle mExtras -> e
-    android.app.PendingIntent mIntent -> c
-    java.util.ArrayList mRemoteInputs -> f
-    int mSemanticAction -> g
-    boolean mShowsUserInterface -> h
-    int mIcon -> a
-    boolean mAllowGeneratedReplies -> d
-    android.support.v4.app.NotificationCompat$Action build() -> a
 android.support.v4.app.NotificationCompat$BigTextStyle -> android.support.v4.app.Y$b:
     java.lang.CharSequence mBigText -> e
     void apply(android.support.v4.app.NotificationBuilderWithBuilderAccessor) -> a
@@ -2563,11 +2553,11 @@ android.support.v4.app.NotificationCompat$Builder -> android.support.v4.app.Y$c:
     java.lang.String mCategory -> A
     int mProgressMax -> r
     android.support.v4.app.NotificationCompat$Builder addAction(int,java.lang.CharSequence,android.app.PendingIntent) -> a
-    android.support.v4.app.NotificationCompat$Builder addAction(android.support.v4.app.NotificationCompat$Action) -> a
     android.app.Notification build() -> a
     java.lang.CharSequence limitCharSequenceLength(java.lang.CharSequence) -> a
     android.support.v4.app.NotificationCompat$Builder setAutoCancel(boolean) -> a
     android.support.v4.app.NotificationCompat$Builder setChannelId(java.lang.String) -> a
+    android.support.v4.app.NotificationCompat$Builder setContent(android.widget.RemoteViews) -> a
     android.support.v4.app.NotificationCompat$Builder setContentIntent(android.app.PendingIntent) -> a
     void setFlag(int,boolean) -> a
     android.support.v4.app.NotificationCompat$Builder setPriority(int) -> a
@@ -2622,21 +2612,9 @@ android.support.v4.app.OneShotPreDrawListener -> android.support.v4.app.ba:
     android.support.v4.app.OneShotPreDrawListener add(android.view.View,java.lang.Runnable) -> a
     void removeListener() -> a
 android.support.v4.app.RemoteInput -> android.support.v4.app.ca:
-    java.lang.CharSequence mLabel -> b
-    android.os.Bundle mExtras -> e
-    java.util.Set mAllowedDataTypes -> f
-    java.lang.String mResultKey -> a
-    java.lang.CharSequence[] mChoices -> c
-    boolean mAllowFreeFormTextInput -> d
     android.app.RemoteInput fromCompat(android.support.v4.app.RemoteInput) -> a
     android.app.RemoteInput[] fromCompat(android.support.v4.app.RemoteInput[]) -> a
-    boolean getAllowFreeFormInput() -> a
-    java.util.Set getAllowedDataTypes() -> b
-    java.lang.CharSequence[] getChoices() -> c
-    android.os.Bundle getExtras() -> d
-    java.lang.CharSequence getLabel() -> e
-    java.lang.String getResultKey() -> f
-    boolean isDataOnly() -> g
+    java.lang.String getResultKey() -> a
 android.support.v4.app.SharedElementCallback -> android.support.v4.app.da:
     void onMapSharedElements(java.util.List,java.util.Map) -> a
     void onSharedElementEnd(java.util.List,java.util.List,java.util.List) -> a
@@ -10431,7 +10409,9 @@ com.example.jack8.floatwindow.FloatServer -> com.example.jack8.floatwindow.Float
     android.os.Handler handler -> j
     java.lang.String NOTIFY_CHANNEL_ID -> e
     int wm_count -> a
+    void access$000(com.example.jack8.floatwindow.FloatServer) -> a
     void showUnWindowMenu() -> a
+    void closeFloatWindow() -> b
 com.example.jack8.floatwindow.FloatServer$1 -> com.example.jack8.floatwindow.U:
     com.example.jack8.floatwindow.FloatServer this$0 -> a
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
@@ -10470,46 +10450,55 @@ com.example.jack8.floatwindow.FloatServer$4 -> com.example.jack8.floatwindow.ca:
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
 com.example.jack8.floatwindow.FloatServer$5 -> com.example.jack8.floatwindow.da:
     com.example.jack8.floatwindow.FloatServer this$0 -> a
-com.example.jack8.floatwindow.FloatServer$6 -> com.example.jack8.floatwindow.ea:
+com.example.jack8.floatwindow.FloatServer$6 -> com.example.jack8.floatwindow.fa:
     com.example.jack8.floatwindow.FloatServer this$0 -> a
     void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.FloatServer$7 -> com.example.jack8.floatwindow.fa:
+com.example.jack8.floatwindow.FloatServer$6$1 -> com.example.jack8.floatwindow.ea:
+    com.example.jack8.floatwindow.FloatServer$6 this$1 -> b
+    com.jack8.floatwindow.Window.WindowStruct val$ws -> a
+com.example.jack8.floatwindow.FloatServer$7 -> com.example.jack8.floatwindow.ga:
+    com.example.jack8.floatwindow.FloatServer this$0 -> a
+    void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
+    void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
+    void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
+    void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
+com.example.jack8.floatwindow.FloatServer$8 -> com.example.jack8.floatwindow.ha:
     com.example.jack8.floatwindow.FloatServer this$0 -> a
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
-com.example.jack8.floatwindow.FloatServer$8 -> com.example.jack8.floatwindow.ha:
+com.example.jack8.floatwindow.FloatServer$9 -> com.example.jack8.floatwindow.ja:
     com.example.jack8.floatwindow.FloatServer$hideMenuAdapter val$hma -> a
     com.example.jack8.floatwindow.FloatServer this$0 -> b
-com.example.jack8.floatwindow.FloatServer$8$1 -> com.example.jack8.floatwindow.ga:
-    com.example.jack8.floatwindow.FloatServer$8 this$1 -> a
+com.example.jack8.floatwindow.FloatServer$9$1 -> com.example.jack8.floatwindow.ia:
+    com.example.jack8.floatwindow.FloatServer$9 this$1 -> a
 com.example.jack8.floatwindow.FloatServer$hideMenuAdapter -> com.example.jack8.floatwindow.FloatServer$a:
     java.lang.Integer[] key -> a
     com.example.jack8.floatwindow.FloatServer this$0 -> b
     void updateWindowList() -> a
-com.example.jack8.floatwindow.FloatServer$hideMenuAdapter$1 -> com.example.jack8.floatwindow.ia:
+com.example.jack8.floatwindow.FloatServer$hideMenuAdapter$1 -> com.example.jack8.floatwindow.ka:
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> a
     com.example.jack8.floatwindow.FloatServer$hideMenuAdapter this$1 -> b
-com.example.jack8.floatwindow.FloatServer$hideMenuAdapter$2 -> com.example.jack8.floatwindow.ja:
+com.example.jack8.floatwindow.FloatServer$hideMenuAdapter$2 -> com.example.jack8.floatwindow.la:
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> a
     com.example.jack8.floatwindow.FloatServer$hideMenuAdapter this$1 -> b
 com.example.jack8.floatwindow.FwEditView -> com.example.jack8.floatwindow.FwEditView:
     void addPopWindow(android.content.Context) -> a
-com.example.jack8.floatwindow.FwEditView$1 -> com.example.jack8.floatwindow.la:
+com.example.jack8.floatwindow.FwEditView$1 -> com.example.jack8.floatwindow.na:
     android.content.Context val$context -> a
     com.example.jack8.floatwindow.Clipboard val$clipboard -> b
     com.example.jack8.floatwindow.FwEditView this$0 -> c
-com.example.jack8.floatwindow.FwEditView$1$1 -> com.example.jack8.floatwindow.ka:
+com.example.jack8.floatwindow.FwEditView$1$1 -> com.example.jack8.floatwindow.ma:
     com.example.jack8.floatwindow.FwEditView$1 this$1 -> b
     android.widget.PopupWindow val$popupWindow -> a
-com.example.jack8.floatwindow.Help -> com.example.jack8.floatwindow.ma:
+com.example.jack8.floatwindow.Help -> com.example.jack8.floatwindow.oa:
     void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.HistoryList -> com.example.jack8.floatwindow.va:
+com.example.jack8.floatwindow.HistoryList -> com.example.jack8.floatwindow.xa:
     com.example.jack8.floatwindow.DataBaseForBrowser$HistoryDao historyDao -> a
     android.content.Context context -> c
     android.support.v7.widget.RecyclerView recyclerView -> e
@@ -10519,20 +10508,20 @@ com.example.jack8.floatwindow.HistoryList -> com.example.jack8.floatwindow.va:
     void Deconstruction() -> a
     void removeHistory(int) -> a
     void onResume() -> b
-com.example.jack8.floatwindow.HistoryList$1 -> com.example.jack8.floatwindow.na:
+com.example.jack8.floatwindow.HistoryList$1 -> com.example.jack8.floatwindow.pa:
     com.example.jack8.floatwindow.HistoryList this$0 -> f
     boolean onMove(android.support.v7.widget.RecyclerView,android.support.v7.widget.RecyclerView$ViewHolder,android.support.v7.widget.RecyclerView$ViewHolder) -> b
     void onSwiped(android.support.v7.widget.RecyclerView$ViewHolder,int) -> b
-com.example.jack8.floatwindow.HistoryList$2 -> com.example.jack8.floatwindow.pa:
+com.example.jack8.floatwindow.HistoryList$2 -> com.example.jack8.floatwindow.ra:
     com.example.jack8.floatwindow.HistoryList this$0 -> a
-com.example.jack8.floatwindow.HistoryList$2$1 -> com.example.jack8.floatwindow.oa:
+com.example.jack8.floatwindow.HistoryList$2$1 -> com.example.jack8.floatwindow.qa:
     com.example.jack8.floatwindow.HistoryList$2 this$1 -> a
-com.example.jack8.floatwindow.HistoryList$3 -> com.example.jack8.floatwindow.ra:
+com.example.jack8.floatwindow.HistoryList$3 -> com.example.jack8.floatwindow.ta:
     com.example.jack8.floatwindow.HistoryList this$0 -> b
     int val$index -> a
-com.example.jack8.floatwindow.HistoryList$3$1 -> com.example.jack8.floatwindow.qa:
+com.example.jack8.floatwindow.HistoryList$3$1 -> com.example.jack8.floatwindow.sa:
     com.example.jack8.floatwindow.HistoryList$3 this$1 -> a
-com.example.jack8.floatwindow.HistoryList$HistoryListAdapter -> com.example.jack8.floatwindow.va$a:
+com.example.jack8.floatwindow.HistoryList$HistoryListAdapter -> com.example.jack8.floatwindow.xa$a:
     java.text.SimpleDateFormat formatter -> e
     com.jack8.floatwindow.Window.WindowStruct windowStruct -> f
     java.util.ArrayList historyList -> c
@@ -10544,16 +10533,16 @@ com.example.jack8.floatwindow.HistoryList$HistoryListAdapter -> com.example.jack
     android.support.v7.widget.RecyclerView$ViewHolder onCreateViewHolder(android.view.ViewGroup,int) -> b
     com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$ViewHolder onCreateViewHolder(android.view.ViewGroup,int) -> b
     void Deconstruction() -> d
-com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$1 -> com.example.jack8.floatwindow.sa:
+com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$1 -> com.example.jack8.floatwindow.ua:
     com.example.jack8.floatwindow.HistoryList$HistoryListAdapter this$1 -> b
     com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$ViewHolder val$viewHolder -> a
-com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$2 -> com.example.jack8.floatwindow.ua:
+com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$2 -> com.example.jack8.floatwindow.wa:
     com.example.jack8.floatwindow.HistoryList$HistoryListAdapter this$1 -> b
     com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$ViewHolder val$viewHolder -> a
-com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$2$1 -> com.example.jack8.floatwindow.ta:
+com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$2$1 -> com.example.jack8.floatwindow.va:
     com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$2 this$2 -> b
     android.widget.PopupWindow val$popupWindow -> a
-com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$ViewHolder -> com.example.jack8.floatwindow.va$a$a:
+com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$ViewHolder -> com.example.jack8.floatwindow.xa$a$a:
     android.widget.TextView url -> u
     android.widget.TextView title -> t
     android.widget.TextView date -> v
@@ -10561,13 +10550,13 @@ com.example.jack8.floatwindow.HistoryList$HistoryListAdapter$ViewHolder -> com.e
     android.view.View v -> w
 com.example.jack8.floatwindow.MainActivity -> com.example.jack8.floatwindow.MainActivity:
     void startFloatWindow() -> l
-com.example.jack8.floatwindow.MoveWindow -> com.example.jack8.floatwindow.wa:
+com.example.jack8.floatwindow.MoveWindow -> com.example.jack8.floatwindow.ya:
     android.content.Context context -> c
     float W -> b
     float H -> a
     com.jack8.floatwindow.Window.WindowStruct windowStruct -> d
     int getStatusBarHeight() -> h
-com.example.jack8.floatwindow.NotePage -> com.example.jack8.floatwindow.Fa:
+com.example.jack8.floatwindow.NotePage -> com.example.jack8.floatwindow.Ha:
     java.util.Date dNow -> e
     android.widget.Button nodePageMenuButton -> f
     int nodePageDisplayObj -> h
@@ -10580,28 +10569,28 @@ com.example.jack8.floatwindow.NotePage -> com.example.jack8.floatwindow.Fa:
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.NotePage$1 -> com.example.jack8.floatwindow.xa:
+com.example.jack8.floatwindow.NotePage$1 -> com.example.jack8.floatwindow.za:
     android.content.SharedPreferences val$noteSpf -> a
     com.example.jack8.floatwindow.NotePage this$0 -> b
-com.example.jack8.floatwindow.NotePage$2 -> com.example.jack8.floatwindow.Ba:
+com.example.jack8.floatwindow.NotePage$2 -> com.example.jack8.floatwindow.Da:
     android.content.Context val$context -> a
     com.example.jack8.floatwindow.NotePage this$0 -> e
     android.widget.EditText val$note -> b
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> c
     android.widget.ImageView val$showFrame -> d
-com.example.jack8.floatwindow.NotePage$2$1 -> com.example.jack8.floatwindow.Aa:
+com.example.jack8.floatwindow.NotePage$2$1 -> com.example.jack8.floatwindow.Ca:
     android.widget.PopupWindow val$popupWindow -> a
     com.example.jack8.floatwindow.NotePage$2 this$1 -> b
-com.example.jack8.floatwindow.NotePage$2$1$1 -> com.example.jack8.floatwindow.ya:
+com.example.jack8.floatwindow.NotePage$2$1$1 -> com.example.jack8.floatwindow.Aa:
     com.example.jack8.floatwindow.NotePage$2$1 this$2 -> a
-com.example.jack8.floatwindow.NotePage$2$1$2 -> com.example.jack8.floatwindow.za:
+com.example.jack8.floatwindow.NotePage$2$1$2 -> com.example.jack8.floatwindow.Ba:
     com.example.jack8.floatwindow.NotePage$2$1 this$2 -> a
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
-com.example.jack8.floatwindow.NotePage$3 -> com.example.jack8.floatwindow.Ca:
+com.example.jack8.floatwindow.NotePage$3 -> com.example.jack8.floatwindow.Ea:
     com.example.jack8.floatwindow.NotePage this$0 -> b
     android.view.View val$toolsBar -> a
-com.example.jack8.floatwindow.NotePage$4 -> com.example.jack8.floatwindow.Da:
+com.example.jack8.floatwindow.NotePage$4 -> com.example.jack8.floatwindow.Fa:
     com.example.jack8.floatwindow.Clipboard val$clipboard -> a
     android.content.Context val$context -> c
     com.example.jack8.floatwindow.NotePage this$0 -> g
@@ -10609,17 +10598,17 @@ com.example.jack8.floatwindow.NotePage$4 -> com.example.jack8.floatwindow.Da:
     android.widget.EditText val$note -> b
     android.widget.ImageView val$showFrame -> e
     android.view.View val$toolsBar -> f
-com.example.jack8.floatwindow.NotePage$OtherNodeListAdapter -> com.example.jack8.floatwindow.Fa$a:
+com.example.jack8.floatwindow.NotePage$OtherNodeListAdapter -> com.example.jack8.floatwindow.Ha$a:
     android.content.Context context -> b
     java.util.ArrayList noteList -> a
     void update(java.util.LinkedList) -> a
     void updateNodeList(java.util.LinkedList) -> b
-com.example.jack8.floatwindow.NotePage$OtherNodeListAdapter$1 -> com.example.jack8.floatwindow.Ea:
+com.example.jack8.floatwindow.NotePage$OtherNodeListAdapter$1 -> com.example.jack8.floatwindow.Ga:
     com.example.jack8.floatwindow.NotePage$OtherNodeListAdapter this$0 -> b
     int val$position -> a
 com.example.jack8.floatwindow.NotePageLauncher -> com.example.jack8.floatwindow.NotePageLauncher:
     void startFloatWindow() -> l
-com.example.jack8.floatwindow.ScreenChangeListener -> com.example.jack8.floatwindow.Ga:
+com.example.jack8.floatwindow.ScreenChangeListener -> com.example.jack8.floatwindow.Ia:
     com.example.jack8.floatwindow.ScreenChangeListener instance -> a
     java.util.HashMap windowList -> b
     int screenOrientation -> c
@@ -10627,7 +10616,9 @@ com.example.jack8.floatwindow.ScreenChangeListener -> com.example.jack8.floatwin
 com.example.jack8.floatwindow.Setting -> com.example.jack8.floatwindow.Setting:
     android.widget.TextView titleNotFoucs -> O
     android.widget.SeekBar secondSet -> P
+    android.view.View$OnClickListener setColorForNotFoucs -> Y
     android.view.ViewGroup titleBar -> s
+    android.widget.CheckBox isPermanent -> U
     android.view.ViewGroup microMaxButtonBackground -> u
     android.view.ViewGroup titleBarAndButtons -> w
     android.view.ViewGroup titleBarNotFoucs -> y
@@ -10637,14 +10628,15 @@ com.example.jack8.floatwindow.Setting -> com.example.jack8.floatwindow.Setting:
     android.widget.Button mini -> F
     android.widget.Button maxNotFoucs -> L
     android.widget.Button closeNotFoucs -> J
-    int adoutWindow -> T
+    int adoutWindow -> V
     android.widget.SeekBar sizeBarHeight -> S
     android.widget.Button menu -> D
     android.widget.SeekBar buttonsHeight -> Q
-    android.view.View$OnClickListener setColorForNotFoucs -> W
+    com.example.jack8.floatwindow.Brickout brickout -> W
     android.view.ViewGroup windowsBackground -> r
+    android.widget.CheckBox isAutoRun -> T
+    android.view.View$OnClickListener save -> Z
     android.widget.TextView title -> N
-    com.example.jack8.floatwindow.Brickout brickout -> U
     android.view.ViewGroup sizeBar -> t
     android.view.ViewGroup closeButtonBackground -> v
     android.view.ViewGroup windowsBackgroundNotFoucs -> x
@@ -10657,43 +10649,42 @@ com.example.jack8.floatwindow.Setting -> com.example.jack8.floatwindow.Setting:
     android.widget.Button miniNotFoucs -> K
     com.google.android.gms.ads.AdView mAdView -> p
     android.widget.Button close -> E
-    android.view.View$OnClickListener setColor -> V
-    android.view.View$OnClickListener save -> X
+    android.view.View$OnClickListener setColor -> X
     android.widget.SeekBar buttonsWidth -> R
-com.example.jack8.floatwindow.Setting$1 -> com.example.jack8.floatwindow.Ha:
+com.example.jack8.floatwindow.Setting$1 -> com.example.jack8.floatwindow.Ja:
     android.widget.TextView secondText -> a
     com.example.jack8.floatwindow.Setting this$0 -> b
-com.example.jack8.floatwindow.Setting$2 -> com.example.jack8.floatwindow.Ia:
+com.example.jack8.floatwindow.Setting$2 -> com.example.jack8.floatwindow.Ka:
     android.widget.TextView buttonsHeightText -> a
     com.example.jack8.floatwindow.Setting this$0 -> b
-com.example.jack8.floatwindow.Setting$3 -> com.example.jack8.floatwindow.Ja:
+com.example.jack8.floatwindow.Setting$3 -> com.example.jack8.floatwindow.La:
     android.widget.TextView buttonsWidthText -> a
     com.example.jack8.floatwindow.Setting this$0 -> b
-com.example.jack8.floatwindow.Setting$4 -> com.example.jack8.floatwindow.Ka:
+com.example.jack8.floatwindow.Setting$4 -> com.example.jack8.floatwindow.Ma:
     android.widget.TextView sizeBarHeightText -> a
     com.example.jack8.floatwindow.Setting this$0 -> b
-com.example.jack8.floatwindow.Setting$5 -> com.example.jack8.floatwindow.Pa:
+com.example.jack8.floatwindow.Setting$5 -> com.example.jack8.floatwindow.Ra:
     com.example.jack8.floatwindow.Setting this$0 -> a
-com.example.jack8.floatwindow.Setting$5$1 -> com.example.jack8.floatwindow.La:
+com.example.jack8.floatwindow.Setting$5$1 -> com.example.jack8.floatwindow.Na:
     com.example.jack8.floatwindow.Setting$5 this$1 -> a
     void onColorChanged(int) -> a
-com.example.jack8.floatwindow.Setting$5$2 -> com.example.jack8.floatwindow.Ma:
+com.example.jack8.floatwindow.Setting$5$2 -> com.example.jack8.floatwindow.Oa:
     com.example.jack8.floatwindow.Setting$5 this$1 -> a
     void onColorChanged(int) -> a
-com.example.jack8.floatwindow.Setting$5$3 -> com.example.jack8.floatwindow.Na:
+com.example.jack8.floatwindow.Setting$5$3 -> com.example.jack8.floatwindow.Pa:
     com.example.jack8.floatwindow.Setting$5 this$1 -> a
     void onColorChanged(int) -> a
-com.example.jack8.floatwindow.Setting$5$4 -> com.example.jack8.floatwindow.Oa:
+com.example.jack8.floatwindow.Setting$5$4 -> com.example.jack8.floatwindow.Qa:
     com.example.jack8.floatwindow.Setting$5 this$1 -> a
     void onColorChanged(int) -> a
-com.example.jack8.floatwindow.Setting$6 -> com.example.jack8.floatwindow.Ra:
+com.example.jack8.floatwindow.Setting$6 -> com.example.jack8.floatwindow.Ta:
     com.example.jack8.floatwindow.Setting this$0 -> a
-com.example.jack8.floatwindow.Setting$6$1 -> com.example.jack8.floatwindow.Qa:
+com.example.jack8.floatwindow.Setting$6$1 -> com.example.jack8.floatwindow.Sa:
     com.example.jack8.floatwindow.Setting$6 this$1 -> a
     void onColorChanged(int) -> a
-com.example.jack8.floatwindow.Setting$7 -> com.example.jack8.floatwindow.Sa:
+com.example.jack8.floatwindow.Setting$7 -> com.example.jack8.floatwindow.Ua:
     com.example.jack8.floatwindow.Setting this$0 -> a
-com.example.jack8.floatwindow.Setting$8 -> com.example.jack8.floatwindow.Va:
+com.example.jack8.floatwindow.Setting$8 -> com.example.jack8.floatwindow.Xa:
     com.example.jack8.floatwindow.Setting this$0 -> e
     android.widget.TextView version -> c
     android.widget.TextView app_name -> b
@@ -10703,15 +10694,15 @@ com.example.jack8.floatwindow.Setting$8 -> com.example.jack8.floatwindow.Va:
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.Setting$8$1 -> com.example.jack8.floatwindow.Ta:
+com.example.jack8.floatwindow.Setting$8$1 -> com.example.jack8.floatwindow.Va:
     com.example.jack8.floatwindow.Setting$8 this$1 -> a
-com.example.jack8.floatwindow.Setting$8$2 -> com.example.jack8.floatwindow.Ua:
+com.example.jack8.floatwindow.Setting$8$2 -> com.example.jack8.floatwindow.Wa:
     com.example.jack8.floatwindow.Setting$8 this$1 -> a
-com.example.jack8.floatwindow.Setting$9 -> com.example.jack8.floatwindow.Wa:
+com.example.jack8.floatwindow.Setting$9 -> com.example.jack8.floatwindow.Ya:
     com.example.jack8.floatwindow.Setting this$0 -> a
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
-com.example.jack8.floatwindow.WebBrowser -> com.example.jack8.floatwindow.xb:
+com.example.jack8.floatwindow.WebBrowser -> com.example.jack8.floatwindow.zb:
     android.os.Handler handler -> a
     android.webkit.WebView web -> f
     com.example.jack8.floatwindow.BookmarkList bookmarkList -> h
@@ -10728,16 +10719,16 @@ com.example.jack8.floatwindow.WebBrowser -> com.example.jack8.floatwindow.xb:
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void page0(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.WebBrowser$1 -> com.example.jack8.floatwindow.Ya:
+com.example.jack8.floatwindow.WebBrowser$1 -> com.example.jack8.floatwindow._a:
     android.view.View val$pageView -> a
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> b
     int val$position -> c
     com.example.jack8.floatwindow.WebBrowser this$0 -> d
-com.example.jack8.floatwindow.WebBrowser$1$1 -> com.example.jack8.floatwindow.Xa:
+com.example.jack8.floatwindow.WebBrowser$1$1 -> com.example.jack8.floatwindow.Za:
     com.example.jack8.floatwindow.WebBrowser$1 this$1 -> c
     java.lang.String val$title -> a
     java.lang.String val$url -> b
-com.example.jack8.floatwindow.WebBrowser$2 -> com.example.jack8.floatwindow.jb:
+com.example.jack8.floatwindow.WebBrowser$2 -> com.example.jack8.floatwindow.lb:
     com.example.jack8.floatwindow.WebBrowser this$0 -> g
     android.view.ViewGroup val$controlsBar -> f
     android.webkit.WebChromeClient$CustomViewCallback customViewCallback -> b
@@ -10745,106 +10736,106 @@ com.example.jack8.floatwindow.WebBrowser$2 -> com.example.jack8.floatwindow.jb:
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> c
     android.view.View val$pageView -> e
     android.content.Context val$context -> d
-com.example.jack8.floatwindow.WebBrowser$2$1 -> com.example.jack8.floatwindow.Za:
+com.example.jack8.floatwindow.WebBrowser$2$1 -> com.example.jack8.floatwindow.ab:
     android.webkit.JsResult val$result -> a
     com.example.jack8.floatwindow.WebBrowser$2 this$1 -> b
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
-com.example.jack8.floatwindow.WebBrowser$2$2 -> com.example.jack8.floatwindow.ab:
+com.example.jack8.floatwindow.WebBrowser$2$2 -> com.example.jack8.floatwindow.cb:
     com.example.jack8.floatwindow.WebBrowser$2 this$1 -> a
     void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.WebBrowser$2$2$1 -> com.example.jack8.floatwindow._a:
+com.example.jack8.floatwindow.WebBrowser$2$2$1 -> com.example.jack8.floatwindow.bb:
     com.example.jack8.floatwindow.WebBrowser$2$2 this$2 -> b
     com.jack8.floatwindow.Window.WindowStruct val$ws -> a
-com.example.jack8.floatwindow.WebBrowser$2$3 -> com.example.jack8.floatwindow.bb:
+com.example.jack8.floatwindow.WebBrowser$2$3 -> com.example.jack8.floatwindow.db:
     android.webkit.JsResult val$result -> a
     com.example.jack8.floatwindow.WebBrowser$2 this$1 -> b
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
-com.example.jack8.floatwindow.WebBrowser$2$4 -> com.example.jack8.floatwindow.eb:
+com.example.jack8.floatwindow.WebBrowser$2$4 -> com.example.jack8.floatwindow.gb:
     android.webkit.JsResult val$result -> a
     com.example.jack8.floatwindow.WebBrowser$2 this$1 -> b
     void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.WebBrowser$2$4$1 -> com.example.jack8.floatwindow.cb:
+com.example.jack8.floatwindow.WebBrowser$2$4$1 -> com.example.jack8.floatwindow.eb:
     com.example.jack8.floatwindow.WebBrowser$2$4 this$2 -> b
     com.jack8.floatwindow.Window.WindowStruct val$ws -> a
-com.example.jack8.floatwindow.WebBrowser$2$4$2 -> com.example.jack8.floatwindow.db:
+com.example.jack8.floatwindow.WebBrowser$2$4$2 -> com.example.jack8.floatwindow.fb:
     com.example.jack8.floatwindow.WebBrowser$2$4 this$2 -> b
     com.jack8.floatwindow.Window.WindowStruct val$ws -> a
-com.example.jack8.floatwindow.WebBrowser$2$5 -> com.example.jack8.floatwindow.fb:
+com.example.jack8.floatwindow.WebBrowser$2$5 -> com.example.jack8.floatwindow.hb:
     android.webkit.JsPromptResult val$result -> a
     com.example.jack8.floatwindow.WebBrowser$2 this$1 -> b
     void goHide(com.jack8.floatwindow.Window.WindowStruct) -> a
     void goClose(com.jack8.floatwindow.Window.WindowStruct) -> b
-com.example.jack8.floatwindow.WebBrowser$2$6 -> com.example.jack8.floatwindow.ib:
+com.example.jack8.floatwindow.WebBrowser$2$6 -> com.example.jack8.floatwindow.kb:
     android.webkit.JsPromptResult val$result -> a
     com.example.jack8.floatwindow.WebBrowser$2 this$1 -> b
     void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.WebBrowser$2$6$1 -> com.example.jack8.floatwindow.gb:
+com.example.jack8.floatwindow.WebBrowser$2$6$1 -> com.example.jack8.floatwindow.ib:
     android.view.View val$pageView -> a
     com.example.jack8.floatwindow.WebBrowser$2$6 this$2 -> c
     com.jack8.floatwindow.Window.WindowStruct val$ws -> b
-com.example.jack8.floatwindow.WebBrowser$2$6$2 -> com.example.jack8.floatwindow.hb:
+com.example.jack8.floatwindow.WebBrowser$2$6$2 -> com.example.jack8.floatwindow.jb:
     com.jack8.floatwindow.Window.WindowStruct val$ws -> a
     com.example.jack8.floatwindow.WebBrowser$2$6 this$2 -> b
-com.example.jack8.floatwindow.WebBrowser$3 -> com.example.jack8.floatwindow.lb:
+com.example.jack8.floatwindow.WebBrowser$3 -> com.example.jack8.floatwindow.nb:
     android.content.Context val$context -> a
     com.example.jack8.floatwindow.Clipboard val$clipboard -> b
     com.example.jack8.floatwindow.WebBrowser this$0 -> c
-com.example.jack8.floatwindow.WebBrowser$3$1 -> com.example.jack8.floatwindow.kb:
+com.example.jack8.floatwindow.WebBrowser$3$1 -> com.example.jack8.floatwindow.mb:
     com.example.jack8.floatwindow.WebBrowser$3 this$1 -> c
     android.app.AlertDialog val$alertDialog -> b
     android.webkit.WebView$HitTestResult val$result -> a
-com.example.jack8.floatwindow.WebBrowser$4 -> com.example.jack8.floatwindow.mb:
+com.example.jack8.floatwindow.WebBrowser$4 -> com.example.jack8.floatwindow.ob:
     java.lang.Object[] val$args -> a
     com.example.jack8.floatwindow.WebBrowser this$0 -> b
     void operated(com.example.jack8.floatwindow.WebBrowserSetting) -> a
-com.example.jack8.floatwindow.WebBrowser$5 -> com.example.jack8.floatwindow.nb:
+com.example.jack8.floatwindow.WebBrowser$5 -> com.example.jack8.floatwindow.pb:
     com.example.jack8.floatwindow.WebBrowser this$0 -> a
-com.example.jack8.floatwindow.WebBrowser$6 -> com.example.jack8.floatwindow.ob:
+com.example.jack8.floatwindow.WebBrowser$6 -> com.example.jack8.floatwindow.qb:
     com.example.jack8.floatwindow.WebBrowser this$0 -> a
-com.example.jack8.floatwindow.WebBrowser$7 -> com.example.jack8.floatwindow.wb:
+com.example.jack8.floatwindow.WebBrowser$7 -> com.example.jack8.floatwindow.yb:
     android.content.Context val$context -> a
     com.example.jack8.floatwindow.WebBrowser this$0 -> c
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> b
-com.example.jack8.floatwindow.WebBrowser$7$1 -> com.example.jack8.floatwindow.vb:
+com.example.jack8.floatwindow.WebBrowser$7$1 -> com.example.jack8.floatwindow.xb:
     android.widget.PopupWindow val$popupWindow -> a
     com.example.jack8.floatwindow.WebBrowser$7 this$1 -> b
-com.example.jack8.floatwindow.WebBrowser$7$1$1 -> com.example.jack8.floatwindow.ub:
+com.example.jack8.floatwindow.WebBrowser$7$1$1 -> com.example.jack8.floatwindow.wb:
     com.example.jack8.floatwindow.WebBrowser$7$1 this$2 -> a
     com.example.jack8.floatwindow.DataBaseForBrowser$Bookmark doInBackground(com.example.jack8.floatwindow.DataBaseForBrowser$Bookmark[]) -> a
     void onPostExecute(com.example.jack8.floatwindow.DataBaseForBrowser$Bookmark) -> a
-com.example.jack8.floatwindow.WebBrowser$7$1$1$1 -> com.example.jack8.floatwindow.tb:
+com.example.jack8.floatwindow.WebBrowser$7$1$1$1 -> com.example.jack8.floatwindow.vb:
     com.example.jack8.floatwindow.DataBaseForBrowser$Bookmark val$result -> a
     com.example.jack8.floatwindow.WebBrowser$7$1$1 this$3 -> b
     void Construction(android.content.Context,android.view.View,int,java.lang.Object[],com.jack8.floatwindow.Window.WindowStruct) -> a
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.WebBrowser$7$1$1$1$1 -> com.example.jack8.floatwindow.qb:
+com.example.jack8.floatwindow.WebBrowser$7$1$1$1$1 -> com.example.jack8.floatwindow.sb:
     android.widget.EditText val$url_box -> b
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> c
     android.widget.EditText val$title_box -> a
     com.example.jack8.floatwindow.WebBrowser$7$1$1$1 this$4 -> d
-com.example.jack8.floatwindow.WebBrowser$7$1$1$1$1$1 -> com.example.jack8.floatwindow.pb:
+com.example.jack8.floatwindow.WebBrowser$7$1$1$1$1$1 -> com.example.jack8.floatwindow.rb:
     com.example.jack8.floatwindow.WebBrowser$7$1$1$1$1 this$5 -> a
-com.example.jack8.floatwindow.WebBrowser$7$1$1$1$2 -> com.example.jack8.floatwindow.sb:
+com.example.jack8.floatwindow.WebBrowser$7$1$1$1$2 -> com.example.jack8.floatwindow.ub:
     com.example.jack8.floatwindow.WebBrowser$7$1$1$1 this$4 -> b
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> a
-com.example.jack8.floatwindow.WebBrowser$7$1$1$1$2$1 -> com.example.jack8.floatwindow.rb:
+com.example.jack8.floatwindow.WebBrowser$7$1$1$1$2$1 -> com.example.jack8.floatwindow.tb:
     com.example.jack8.floatwindow.WebBrowser$7$1$1$1$2 this$5 -> a
 com.example.jack8.floatwindow.WebBrowserLauncher -> com.example.jack8.floatwindow.WebBrowserLauncher:
     void startFloatWindow() -> l
-com.example.jack8.floatwindow.WebBrowserSetting -> com.example.jack8.floatwindow.Ib:
+com.example.jack8.floatwindow.WebBrowserSetting -> com.example.jack8.floatwindow.Kb:
     java.util.LinkedHashSet webBrowserWindowList -> f
     com.google.firebase.database.DatabaseReference databaseReference -> e
     com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus adServerListStatus -> b
@@ -10873,24 +10864,24 @@ com.example.jack8.floatwindow.WebBrowserSetting -> com.example.jack8.floatwindow
     com.example.jack8.floatwindow.DataBaseForBrowser access$400(com.example.jack8.floatwindow.WebBrowserSetting) -> e
     void onDestroy() -> e
     void access$500(com.example.jack8.floatwindow.WebBrowserSetting) -> f
-com.example.jack8.floatwindow.WebBrowserSetting$1 -> com.example.jack8.floatwindow.Bb:
+com.example.jack8.floatwindow.WebBrowserSetting$1 -> com.example.jack8.floatwindow.Db:
     com.example.jack8.floatwindow.WebBrowserSetting this$0 -> a
     void onCancelled(com.google.firebase.database.DatabaseError) -> a
     void onDataChange(com.google.firebase.database.DataSnapshot) -> a
-com.example.jack8.floatwindow.WebBrowserSetting$1$1 -> com.example.jack8.floatwindow.yb:
+com.example.jack8.floatwindow.WebBrowserSetting$1$1 -> com.example.jack8.floatwindow.Ab:
     com.example.jack8.floatwindow.WebBrowserSetting$1 this$1 -> a
-com.example.jack8.floatwindow.WebBrowserSetting$1$2 -> com.example.jack8.floatwindow.zb:
+com.example.jack8.floatwindow.WebBrowserSetting$1$2 -> com.example.jack8.floatwindow.Bb:
     com.example.jack8.floatwindow.WebBrowserSetting$1 this$1 -> a
-com.example.jack8.floatwindow.WebBrowserSetting$1$3 -> com.example.jack8.floatwindow.Ab:
+com.example.jack8.floatwindow.WebBrowserSetting$1$3 -> com.example.jack8.floatwindow.Cb:
     com.google.firebase.database.DataSnapshot val$dataSnapshot -> a
     com.example.jack8.floatwindow.WebBrowserSetting$1 this$1 -> b
-com.example.jack8.floatwindow.WebBrowserSetting$2 -> com.example.jack8.floatwindow.Db:
+com.example.jack8.floatwindow.WebBrowserSetting$2 -> com.example.jack8.floatwindow.Fb:
     com.example.jack8.floatwindow.WebBrowserSetting$Operated val$operated -> b
     com.example.jack8.floatwindow.DataBaseForBrowser val$dataBaseForBrowser -> a
     com.example.jack8.floatwindow.WebBrowserSetting this$0 -> c
-com.example.jack8.floatwindow.WebBrowserSetting$2$1 -> com.example.jack8.floatwindow.Cb:
+com.example.jack8.floatwindow.WebBrowserSetting$2$1 -> com.example.jack8.floatwindow.Eb:
     com.example.jack8.floatwindow.WebBrowserSetting$2 this$1 -> a
-com.example.jack8.floatwindow.WebBrowserSetting$3 -> com.example.jack8.floatwindow.Gb:
+com.example.jack8.floatwindow.WebBrowserSetting$3 -> com.example.jack8.floatwindow.Ib:
     java.lang.Runnable val$operated -> b
     com.google.android.gms.ads.AdView mAdView -> a
     com.example.jack8.floatwindow.WebBrowserSetting this$0 -> c
@@ -10898,37 +10889,43 @@ com.example.jack8.floatwindow.WebBrowserSetting$3 -> com.example.jack8.floatwind
     void Deconstruction(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> a
     void onPause(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> b
     void onResume(android.content.Context,android.view.View,int,com.jack8.floatwindow.Window.WindowStruct) -> c
-com.example.jack8.floatwindow.WebBrowserSetting$3$1 -> com.example.jack8.floatwindow.Eb:
+com.example.jack8.floatwindow.WebBrowserSetting$3$1 -> com.example.jack8.floatwindow.Gb:
     com.example.jack8.floatwindow.WebBrowserSetting$3 this$1 -> b
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> a
-com.example.jack8.floatwindow.WebBrowserSetting$3$2 -> com.example.jack8.floatwindow.Fb:
+com.example.jack8.floatwindow.WebBrowserSetting$3$2 -> com.example.jack8.floatwindow.Hb:
     com.example.jack8.floatwindow.WebBrowserSetting$3 this$1 -> c
     android.view.View val$pageView -> a
     com.jack8.floatwindow.Window.WindowStruct val$windowStruct -> b
-com.example.jack8.floatwindow.WebBrowserSetting$4 -> com.example.jack8.floatwindow.Hb:
+com.example.jack8.floatwindow.WebBrowserSetting$4 -> com.example.jack8.floatwindow.Jb:
     java.lang.Runnable val$operated -> a
     com.example.jack8.floatwindow.WebBrowserSetting this$0 -> b
-com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus -> com.example.jack8.floatwindow.Ib$a:
+com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus -> com.example.jack8.floatwindow.Kb$a:
     com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus INIT -> a
     com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus UPDATE -> b
     com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus COMPLETE -> c
     com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus NOT_USE -> d
     com.example.jack8.floatwindow.WebBrowserSetting$AdServerListStatus[] $VALUES -> e
-com.example.jack8.floatwindow.WebBrowserSetting$Operated -> com.example.jack8.floatwindow.Ib$b:
+com.example.jack8.floatwindow.WebBrowserSetting$Operated -> com.example.jack8.floatwindow.Kb$b:
     void operated(com.example.jack8.floatwindow.WebBrowserSetting) -> a
-com.example.jack8.floatwindow.WindowParameter -> com.example.jack8.floatwindow.Jb:
+com.example.jack8.floatwindow.WindowParameter -> com.example.jack8.floatwindow.Lb:
+    int PERMANENT_TEMP -> f
     int SIZE_BAR_HEIGHT_TEMP -> d
+    int AUTO_RUN_TEMP -> e
     int BUTTONS_HEIGHT_TEMP -> b
     int BUTTONS_WIDTH_TEMP -> c
     int SECOND_TEMP -> a
     int getWindowButtonsHeight(android.content.Context) -> a
+    void setAutoRun(android.content.Context,boolean) -> a
     void setWindowButtonsHeight(android.content.Context,int) -> a
     int getWindowButtonsWidth(android.content.Context) -> b
+    void setPermanent(android.content.Context,boolean) -> b
     void setWindowButtonsWidth(android.content.Context,int) -> b
     int getWindowSizeBarHeight(android.content.Context) -> c
     void setWindowTransitionsDuration(android.content.Context,int) -> c
     int getWindowTransitionsDuration(android.content.Context) -> d
     void setWindowwSizeBarHeight(android.content.Context,int) -> d
+    boolean isAutoRun(android.content.Context) -> e
+    boolean isPermanent(android.content.Context) -> f
 com.google.ads.AdRequest$ErrorCode -> b.a.a.a:
     com.google.ads.AdRequest$ErrorCode NO_FILL -> b
     com.google.ads.AdRequest$ErrorCode NETWORK_ERROR -> c

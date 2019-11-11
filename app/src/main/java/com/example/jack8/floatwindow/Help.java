@@ -12,6 +12,12 @@ public class Help implements WindowStruct.constructionAndDeconstructionWindow  {
     public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
         switch (position){
             case 0:{
+                if(context.getResources().getConfiguration().locale.getCountry().equals("TW") ||
+                        context.getResources().getConfiguration().locale.getCountry().equals("HK") ||
+                        context.getResources().getConfiguration().locale.getCountry().equals("CN")){
+                    ((ImageView)pageView.findViewById(R.id.what_is_new_image1)).setImageResource(R.drawable.auto_run2);
+                    ((ImageView)pageView.findViewById(R.id.what_is_new_image2)).setImageResource(R.drawable.notify_image2);
+                }
                 break;
             }
             case 1:{

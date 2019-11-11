@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +53,10 @@ public class FloatServer extends Service {
     public static final int OPEN_CALCULATO = 0x0040;
     public static final int OPEN_MAIN_MENU = 0x0080;
     public static final int OPEN_SETTING = 0x0100;
+    public static final int SHOW_CLOSE_FLOAT_WINDOW = 0x0200;
     public static final String LAUNCHER = "launcher";
+    public static final String INTENT = "intent";
+    public static final String EXYRA_URL = "extra_url";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -76,33 +80,76 @@ public class FloatServer extends Service {
         @Override
         public void goClose(WindowStruct windowStruct) {
             if (--wm_count == 0) {
-                FloatServer.this.stopForeground(true);
-                FloatServer.this.unregisterReceiver(ScreenChangeListener.getInstance(FloatServer.this));
-                stopSelf();
+                if(!WindowParameter.isPermanent(FloatServer.this))
+                    closeFloatWindow();
             }
         }
     };
+
+    private void closeFloatWindow(){
+        this.stopForeground(true);
+        unregisterReceiver(ScreenChangeListener.getInstance(this));
+        stopSelf();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 
-        Intent toSetup = new Intent(this, Setting.class);
-
-        Intent showWindowManager = new Intent(this,FloatServer.class);
-        showWindowManager.putExtra("intent",SHOW_WINDOW_MANAGER);
-
-        Intent showFloatWindowMenu = new Intent(this,FloatServer.class);
-        showFloatWindowMenu.putExtra("intent",SHOW_FLOAT_WINDOW_MENU);
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_view);
+        remoteViews.setOnClickPendingIntent(R.id.web_browser,
+                PendingIntent.getActivity(this,
+                        0,
+                        new Intent(this, WebBrowserLauncher.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.note,
+                PendingIntent.getActivity(this,
+                        1,
+                        new Intent(this, NotePageLauncher.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.calculato,
+                PendingIntent.getActivity(this,
+                        2,
+                        new Intent(this, CalculatorLauncher.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.setting,
+                PendingIntent.getActivity(this,
+                        3,
+                        new Intent(this, Setting.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.window_list,
+                PendingIntent.getService(this,
+                        4,
+                        new Intent(this,FloatServer.class).putExtra(INTENT,SHOW_WINDOW_MANAGER),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.close,
+                PendingIntent.getService(this,
+                        5,
+                        new Intent(this,FloatServer.class).putExtra(INTENT,SHOW_CLOSE_FLOAT_WINDOW),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             NotificationCompat.Builder NFB = new NotificationCompat.Builder(this);
             NFB.setSmallIcon(R.drawable.mini_window).
                     setContentTitle(getString(R.string.app_name)).
-                    addAction(new NotificationCompat.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    addAction(new NotificationCompat.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    setContentText(getString(R.string.runing));
-            NFB.setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
+                    setContent(remoteViews);
+//                    addAction(new NotificationCompat.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+//                    addAction(new NotificationCompat.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+//                    setContentText(getString(R.string.runing)).
+//                    setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }else{
@@ -113,10 +160,11 @@ public class FloatServer extends Service {
             Notification.Builder NFB = new Notification.Builder(this,NOTIFY_CHANNEL_ID);
             NFB.setSmallIcon(R.drawable.mini_window).
                     setContentTitle(getString(R.string.app_name)).
-                    addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    setContentText(getString(R.string.runing));
-            NFB.setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
+                    setCustomContentView(remoteViews);
+                    //addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    //addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    //setContentText(getString(R.string.runing))
+                    //setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }
@@ -145,7 +193,7 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        int initCode = intent.getIntExtra("intent",OPEN_NONE);
+        int initCode = intent.getIntExtra(INTENT,OPEN_NONE);
         if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
@@ -336,7 +384,7 @@ public class FloatServer extends Service {
                         .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
             else{
-                String extra_url = intent.getStringExtra("extra_url");
+                String extra_url = intent.getStringExtra(EXYRA_URL);
                 new WindowStruct.Builder(this,wm)
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
@@ -364,7 +412,7 @@ public class FloatServer extends Service {
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
             else{
-                String extra_url = intent.getStringExtra("extra_url");
+                String extra_url = intent.getStringExtra(EXYRA_URL);
                 new WindowStruct.Builder(this,wm)
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
@@ -473,8 +521,58 @@ public class FloatServer extends Service {
                         }
                     });
                 }
-            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER)
+            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER) {
                 showUnWindowMenu();
+            }else if((initCode & SHOW_CLOSE_FLOAT_WINDOW) == SHOW_CLOSE_FLOAT_WINDOW) {
+                if(windowList.isEmpty())
+                    closeFloatWindow();
+                else{
+                    View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
+                    ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.close_notification_message));
+                    messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    wm_count++;
+                    new WindowStruct.Builder(this, (WindowManager) this.getSystemService(Context.WINDOW_SERVICE))
+                            .windowPageTitles(new String[]{getString(R.string.close_notification)})
+                            .windowPages(new View[]{messageView})
+                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                            .left((getResources().getDisplayMetrics().widthPixels / 2) - messageView.getMeasuredWidth() / 2)
+                            .top((getResources().getDisplayMetrics().heightPixels / 2) - (messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))) / 2)
+                            .width(messageView.getMeasuredWidth())
+                            .height((messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))))
+                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                @Override
+                                public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                                    pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            ws.close();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                                }
+
+                                @Override
+                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                }
+
+                                @Override
+                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                }
+                            })
+                            .windowAction(windowAction)
+                            .show();
+                }
+            }
         }
 
         return START_REDELIVER_INTENT;

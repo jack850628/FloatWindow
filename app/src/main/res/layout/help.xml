@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/demonstration_image1"
             android:layout_width="match_parent"
-            android:layout_height="315dp"
+            android:layout_height="wrap_content"
             android:src="@drawable/demonstration" />
 
         <TextView
@@ -32,14 +32,14 @@
         <ImageView
             android:id="@+id/demonstration_image2"
             android:layout_width="match_parent"
-            android:layout_height="142dp"
+            android:layout_height="wrap_content"
             android:src="@drawable/notify_image" />
 
         <TextView
             style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/help_string5" />
+            android:text="@string/help_string3" />
 
         <!--<Space
             android:layout_width="match_parent"
@@ -47,14 +47,9 @@
 
         <ImageView
             android:id="@+id/demonstration_image3"
-            android:layout_width="270dp"
-            android:layout_height="249dp"
-            android:src="@drawable/add_shortcut_image1" />
-
-        <TextView
-            style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/help_string4" />
+            android:src="@drawable/add_shortcut_image1" />
+
     </LinearLayout>
 </ScrollView>

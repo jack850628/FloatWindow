@@ -10,11 +10,15 @@ public class WindowParameter {
     private static final String BUTTONS_HEIGHT = "ButtonsHeight";
     private static final String BUTTONS_WIDTH = "ButtonsWidth";
     private static final String SIZE_BAR_HEIGHT = "SizeBarHeight";
+    private static final String AUTO_RUN = "autoRun";
+    private static final String PERMANENT = "permanent";
 
     private static int SECOND_TEMP = -1;
     private static int BUTTONS_HEIGHT_TEMP = -1;
     private static int BUTTONS_WIDTH_TEMP = -1;
     private static int SIZE_BAR_HEIGHT_TEMP = -1;
+    private static int AUTO_RUN_TEMP = -1;
+    private static int PERMANENT_TEMP = -1;
 
     public static int getWindowTransitionsDuration(Context context){
         if(SECOND_TEMP == -1)
@@ -35,6 +39,28 @@ public class WindowParameter {
         if(BUTTONS_HEIGHT_TEMP == -1)
             BUTTONS_HEIGHT_TEMP = context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(BUTTONS_HEIGHT,30);
         return BUTTONS_HEIGHT_TEMP;
+    }
+
+    /**
+     * 是否開機後自動執行
+     * @param context app context
+     * @return 是否開機後自動執行
+     */
+    public static boolean isAutoRun(Context context){
+        if(AUTO_RUN_TEMP == -1)
+            AUTO_RUN_TEMP = context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getBoolean(AUTO_RUN,false) ? 1 : 0;
+        return AUTO_RUN_TEMP == 1;
+    }
+
+    /**
+     * 關閉視窗後通知是否繼續常駐
+     * @param context app context
+     * @return 關閉視窗後通知是否繼續常駐
+     */
+    public static boolean isPermanent(Context context){
+        if(PERMANENT_TEMP == -1)
+            PERMANENT_TEMP = context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getBoolean(PERMANENT,false) ? 1 : 0;
+        return PERMANENT_TEMP == 1;
     }
 
     /**
@@ -88,4 +114,27 @@ public class WindowParameter {
         SIZE_BAR_HEIGHT_TEMP = sizeBarHeight;
         context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putInt(SIZE_BAR_HEIGHT,sizeBarHeight).apply();
     }
+
+
+
+    /**
+     * 設定是否開機後自動執行
+     * @param context app context
+     * @param value 是否開機後自動執行
+     */
+    public static void setAutoRun(Context context, boolean value){
+        AUTO_RUN_TEMP = value ? 1 : 0;
+        context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putBoolean(AUTO_RUN,value).apply();
+    }
+
+    /**
+     * 設定關閉視窗後通知是否繼續常駐
+     * @param context app context
+     * @param value 關閉視窗後通知是否繼續常駐
+     */
+    public static void setPermanent(Context context, boolean value){
+        PERMANENT_TEMP = value ? 1 : 0;
+        context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putBoolean(PERMANENT,value).apply();;
+    }
+
 }

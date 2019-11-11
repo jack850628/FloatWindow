@@ -491,6 +491,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 web.getSettings().setBuiltInZoomControls(true);
                 web.getSettings().setDisplayZoomControls(webBrowserSetting.getSetting().displayZoomControls);
                 web.getSettings().setUseWideViewPort(true);
+                web.getSettings().setDomStorageEnabled(true);
+                web.getSettings().setDatabaseEnabled(true);
                 web.resumeTimers();
                 String url = webBrowserSetting.getSetting().homeLink;
                 if(args != null && args.length != 0 && args[0] instanceof String) {

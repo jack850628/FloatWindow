@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="app_name">浮动视窗</string>
-        <string name="version">版本:1.2.2.1003</string>
+        <string name="version">版本:1.2.2.1021</string>
 
         <string name="web_browser">网页浏览器</string>
         <string name="note">便条纸</string>
@@ -77,11 +77,14 @@
     <string name="new_functions">新功能</string>
     <string name="help">说明</string>
     <string name="help_string1">基本操作</string>
-    <string name="help_string2">当使用浮动视窗时会再通知栏建立通知，可以透过通知前往设定或查看所有运行中的视窗。</string>
-    <string name="help_string3">可以在设定中调整视窗按钮大小以及视窗大小调整列大小。</string>
-    <string name="help_string4">可以为工具建立捷径于主画面上。</string>
+    <string name="help_string3">可以为工具建立捷径于主画面上。</string>
     <string name="window_buttons_height">视窗按钮高度</string>
     <string name="window_buttons_width">视窗按钮宽度</string>
     <string name="window_size_bar_height">视窗大小调整列高度</string>
-    <string name="help_string5">点击“设定”前往浮动视窗设定，点击“所有视窗清单”会显示所有运行中视窗的视窗清单，点击通知本身会显示具有“设置”和“视窗清单”选项的视窗。</string>
+    <string name="close_notification_message">请先关闭所有视窗</string>
+    <string name="close_notification">关闭通知</string>
+    <string name="auto_execute_in_boot_after">开机后自动运行</string>
+    <string name="resident_at_the_notification_center">常驻于通知中心</string>
+    <string name="what_is_new_string1">可以在设定中选择是否要开机后自动执行和常驻于通知中心</string>
+    <string name="help_string2">从通知中心可以快速开启浮动视窗的任意功能</string>
 </resources>

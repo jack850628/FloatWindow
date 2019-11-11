@@ -76,11 +76,14 @@
     <string name="new_functions">what is new?</string>
     <string name="help">Help</string>
     <string name="help_string1">Basic operation</string>
-    <string name="help_string2">When using the floating window, the notification bar will be set up to notify you of the settings or view all running windows.</string>
-    <string name="help_string3">You can adjust the size of the window button and the size of the window size bar size in the settings.</string>
-    <string name="help_string4">A shortcut to the tool can be created on the main screen.</string>
+    <string name="help_string3">A shortcut to the tool can be created on the main screen.</string>
     <string name="window_buttons_height">Winodw button height</string>
     <string name="window_buttons_width">Window button width</string>
     <string name="window_size_bar_height">Window size bar height</string>
-    <string name="help_string5">click \"Setting\" to Float Window setting, click \"Window List\" to show all running window list for window, click notify body to show have \"Setting\" \"Window List\" option for window.</string>
+    <string name="close_notification_message">Please close all windows first</string>
+    <string name="close_notification">Close Notification</string>
+    <string name="auto_execute_in_boot_after">auto execute in boot after</string>
+    <string name="resident_at_the_notification_center">resident at the notification center</string>
+    <string name="what_is_new_string1">You can choose whether you want to auto-execute after booting and stay in the notification center.</string>
+    <string name="help_string2">From the notification center, you can quickly open any function of the FloatWindow.</string>
 </resources>
