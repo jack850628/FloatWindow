@@ -74,6 +74,7 @@
         <activity
             android:name=".Setting"
             android:configChanges="orientation|screenSize" />
+        <activity android:name=".HelpMeAd"/>
 
         <service
             android:name=".FloatServer"

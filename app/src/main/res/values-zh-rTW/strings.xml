@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">浮動視窗</string>
-    <string name="version">版本:1.2.2.1021</string>
+    <string name="version">版本:</string>
 
     <string name="web_browser">網頁瀏覽器</string>
     <string name="note">便條紙</string>
@@ -87,4 +87,6 @@
     <string name="resident_at_the_notification_center">常駐於通知中心</string>
     <string name="what_is_new_string1">可以在設定中選擇是否要開機後自動執行和常駐於通知中心</string>
     <string name="help_string2">從通知中心可以快速開啟浮動視窗的任意功能</string>
+    <string name="watch_ad">看個廣告讓我們活下去</string>
+    <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
 </resources>

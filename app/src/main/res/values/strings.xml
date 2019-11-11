@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">FloatWindow</string>
-    <string name="version">ver:1.2.2.1003</string>
+    <string name="version">ver:</string>
 
     <string name="web_browser">Web Browser</string>
     <string name="note">Note</string>
@@ -86,4 +86,6 @@
     <string name="resident_at_the_notification_center">resident at the notification center</string>
     <string name="what_is_new_string1">You can choose whether you want to auto-execute after booting and stay in the notification center.</string>
     <string name="help_string2">From the notification center, you can quickly open any function of the FloatWindow.</string>
+    <string name="watch_ad">Watch an ad and let us live</string>
+    <string name="watched_ad">Thank you for your interest in advertising! Thank you!</string>
 </resources>

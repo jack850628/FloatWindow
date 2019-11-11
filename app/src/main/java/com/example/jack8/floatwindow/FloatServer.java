@@ -54,6 +54,7 @@ public class FloatServer extends Service {
     public static final int OPEN_MAIN_MENU = 0x0080;
     public static final int OPEN_SETTING = 0x0100;
     public static final int SHOW_CLOSE_FLOAT_WINDOW = 0x0200;
+    public static final int SHOW_WATCHED_AD = 0x0400;
     public static final String LAUNCHER = "launcher";
     public static final String INTENT = "intent";
     public static final String EXYRA_URL = "extra_url";
@@ -231,6 +232,10 @@ public class FloatServer extends Service {
                                             clazz = Setting.class;
                                             break;
                                         }
+                                        case R.id.watch_ad:{
+                                            clazz = HelpMeAd.class;
+                                            break;
+                                        }
                                     }
                                     Intent intent = new Intent(FloatServer.this, clazz);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -242,6 +247,7 @@ public class FloatServer extends Service {
                             pageView.findViewById(R.id.note).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.calculato).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.setting).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.watch_ad).setOnClickListener(onClickListener);
                             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
                                 pageView.findViewById(R.id.tip).setVisibility(View.VISIBLE);
                                 View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
@@ -438,6 +444,51 @@ public class FloatServer extends Service {
                     .height((int)(getResources().getDisplayMetrics().density * (269 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this))))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
+                    .show();
+        }else if((initCode & SHOW_WATCHED_AD) == SHOW_WATCHED_AD) {
+            View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
+            ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.watched_ad));
+            messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            wm_count++;
+            new WindowStruct.Builder(this, (WindowManager) this.getSystemService(Context.WINDOW_SERVICE))
+                    .windowPageTitles(new String[]{getString(R.string.app_name)})
+                    .windowPages(new View[]{messageView})
+                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                    .left((getResources().getDisplayMetrics().widthPixels / 2) - messageView.getMeasuredWidth() / 2)
+                    .top((getResources().getDisplayMetrics().heightPixels / 2) - (messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))) / 2)
+                    .width(messageView.getMeasuredWidth())
+                    .height((messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                        @Override
+                        public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                            pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    ws.close();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                        }
+
+                        @Override
+                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+                    })
+                    .windowAction(windowAction)
                     .show();
         }else{
             //---------------------收起下拉選單-----------------------------

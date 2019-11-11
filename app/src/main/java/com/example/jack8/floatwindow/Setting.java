@@ -440,6 +440,7 @@ public class Setting extends AppCompatActivity {
                                             brickout.onPlay(count % 2 == 1);
                                         }
                                     });
+                                    version.setText(version.getText() + BuildConfig.VERSION_NAME);
                                 }
 
                                 @Override
