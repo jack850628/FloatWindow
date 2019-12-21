@@ -1,7 +1,10 @@
 package com.jack8.floatwindow.Window;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -9,7 +12,18 @@ import android.widget.LinearLayout;
 
 import com.jack8.floatwindow.R;
 
+import java.util.Map;
+
 public class WindowFrom extends LinearLayout {
+    public interface WindowKeyEvent{
+        boolean dispatchKeyEvent(KeyEvent event);
+    }
+    private WindowKeyEvent windowKeyEvent = new WindowKeyEvent() {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            return false;
+        }
+    };
     final WindowManager wm;
     WindowStruct WS;
     public boolean inited = false;//判斷視窗畫面是否初始化完成
@@ -23,8 +37,14 @@ public class WindowFrom extends LinearLayout {
         wColor = new WindowColor(context);
         wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
-    public void setWindowStruct(WindowStruct WS){
+    void setWindowStruct(WindowStruct WS){
         this.WS = WS;
+    }
+    public void setWindowKeyEvent(@NonNull WindowKeyEvent windowKeyEvent){
+        this.windowKeyEvent = windowKeyEvent;
+    }
+    public WindowKeyEvent getWindowKeyEvent(){
+        return windowKeyEvent;
     }
     View titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground;
     WindowColor wColor;
@@ -48,6 +68,10 @@ public class WindowFrom extends LinearLayout {
         }
     }
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event){
+        return windowKeyEvent.dispatchKeyEvent(event);
+    }
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if(WS != null) {
             if(WindowStruct.NOW_FOCUS_NUMBER != WS.Number){//如果被觸碰的視窗編號不是現在焦點視窗編號
@@ -57,7 +81,7 @@ public class WindowFrom extends LinearLayout {
         }
         return super.onInterceptTouchEvent(event);
     }
-    public void setWindowStyleOfFocus(){
+    void setWindowStyleOfFocus(){
         if(!inited)
             return;
         titleBar.setBackgroundColor(wColor.getTitleBar());
@@ -65,7 +89,7 @@ public class WindowFrom extends LinearLayout {
         microMaxButtonBackground.setBackgroundColor(wColor.getMicroMaxButtonBackground());
         closeButtonBackground.setBackgroundColor(wColor.getCloseButtonBackground());
     }
-    public void setWindowStyleOfUnFocus(){
+    void setWindowStyleOfUnFocus(){
         if(!inited)
             return;
         titleBar.setBackgroundColor(wColor.getWindowNotFoucs());

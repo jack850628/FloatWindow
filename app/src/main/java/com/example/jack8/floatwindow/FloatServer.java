@@ -90,6 +90,7 @@ public class FloatServer extends Service {
     private void closeFloatWindow(){
         this.stopForeground(true);
         unregisterReceiver(ScreenChangeListener.getInstance(this));
+        unregisterReceiver(HomeKeyListener.getInstance(this));
         stopSelf();
     }
 
@@ -176,6 +177,9 @@ public class FloatServer extends Service {
         filter.addAction(BCAST_CONFIGCHANGED);
         this.registerReceiver(ScreenChangeListener.getInstance(this), filter);
         //-------------------------------------------------
+        //---------------註冊Home鍵廣播接收---------------
+        this.registerReceiver(HomeKeyListener.getInstance(this), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        //-------------------------------------------------
 
         try {//用反射取得所有視窗清單
             Field field = WindowStruct.class.getDeclaredField("windowList");
@@ -203,6 +207,7 @@ public class FloatServer extends Service {
                     .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
                     .windowInitArgs(new Object[1][0])
                     .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .heightAndTopAutoCenter((int)(getResources().getDisplayMetrics().density * 320))
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
@@ -442,6 +447,7 @@ public class FloatServer extends Service {
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .height((int)(getResources().getDisplayMetrics().density * (269 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this))))
+                    //.width((int)(getResources().getDisplayMetrics().density * 200))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
                     .show();

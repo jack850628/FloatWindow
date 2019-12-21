@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.RequiresApi;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.util.Date;
@@ -63,9 +65,19 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     }
 
     @Override
-    public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+    public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
         switch (position) {
             case 0:
+                windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
+                    @Override
+                    public boolean dispatchKeyEvent(KeyEvent event) {
+                        if(windowStruct.getCurrentPagePosition() == 0 && event.getKeyCode() == KeyEvent.KEYCODE_BACK){
+                            web.goBack();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
                 page0(context, pageView, position, args, windowStruct);
                 break;
             case 1:

@@ -104,8 +104,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private View[] windowPages;
         private String[] windowPageTitles = new String[]{""};
         private Object[][] windowInitArgs = new Object[0][0];
-        private int top = 160;
-        private int left = 160;
+        private int top;
+        private int left;
         private int height;
         private int width;
         private int displayObject = TITLE_BAR_AND_BUTTONS | MENU_BUTTON | HIDE_BUTTON | MINI_BUTTON | MAX_BUTTON | CLOSE_BUTTON | SIZE_BAR;
@@ -151,8 +151,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         public Builder(Context context, final WindowManager windowManager){
             this.context = context;
             this.windowManager = windowManager;
-            this.height = (int)(context.getResources().getDisplayMetrics().density*240);
-            this.width = (int)(context.getResources().getDisplayMetrics().density*200);
             this.buttonsHeight = this.buttonsWidth = (int)(context.getResources().getDisplayMetrics().density*30);
             this.sizeBarHeight = (int)(context.getResources().getDisplayMetrics().density*10);
             this.windowPages = new View[]{new LinearLayout(context)};
@@ -173,6 +171,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     return super.context.getResources().getDisplayMetrics().heightPixels - getStatusBarHeight();
                 }
             };
+            this.height = (int)(context.getResources().getDisplayMetrics().density * 240);
+            this.width = (int)(context.getResources().getDisplayMetrics().density * 200);
+            this.top = screenSize.getHeight() / 2 - height / 2;
+            this.left = screenSize.getWidth() / 2 - width / 2;
         }
         public Builder windowPages(View[] windowPages){
             this.windowPages = windowPages;
@@ -184,22 +186,32 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         }
         public Builder windowInitArgs(Object[][] windowInitArgs){
             this.windowInitArgs = windowInitArgs;
-            return  this;
+            return this;
         }
         public Builder top(int top){
             this.top = top;
-            return  this;
+            return this;
         }
         public Builder left(int left){
             this.left = left;
-            return  this;
+            return this;
         }
         public  Builder height(int height){
             this.height = height;
-            return  this;
+            return this;
+        }
+        public Builder heightAndTopAutoCenter(int height){
+            this.height = height;
+            this.top = screenSize.getHeight() / 2 - height / 2;
+            return this;
         }
         public Builder width(int width){
             this.width = width;
+            return this;
+        }
+        public Builder widthAndLeftAutoCenter(int width){
+            this.width = width;
+            this.left = screenSize.getWidth() / 2 - width / 2;
             return this;
         }
         public Builder windowButtonsWidth(int buttonsWidth){
@@ -243,6 +255,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         public Builder screenSize(ScreenSize screenSize){
             this.screenSize = screenSize;
             return this;
+        }
+
+        public ScreenSize getScreenSize(){
+            return screenSize;
         }
 
         public Builder parentWindow(WindowStruct parentWindow){
@@ -473,7 +489,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             if (resourceId > 0) {
                 return resources.getDimensionPixelSize(resourceId);
             }
-            return  0;
+            return 0;
         }
 
         /**
@@ -1188,6 +1204,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         for(int key : this.subWindowNumbers)
             subWindows.add(windowList.get(key));
         return subWindows;
+    }
+
+    /**
+     * 取得當前顯示的分頁編號
+     * @return 分頁編號
+     */
+    public int getCurrentPagePosition(){
+        return currentWindowPagePosition;
     }
 
     /**
