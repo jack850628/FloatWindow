@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.jack8.floatwindow.Window.WindowStruct;
@@ -89,8 +90,16 @@ public class FloatServer extends Service {
 
     private void closeFloatWindow(){
         this.stopForeground(true);
-        unregisterReceiver(ScreenChangeListener.getInstance(this));
-        unregisterReceiver(HomeKeyListener.getInstance(this));
+        try {
+            unregisterReceiver(ScreenChangeListener.getInstance(this));
+        }catch (IllegalArgumentException e){
+            Crashlytics.logException(e);
+        }
+        try {
+            unregisterReceiver(HomeKeyListener.getInstance(this));
+        }catch (IllegalArgumentException e){
+            Crashlytics.logException(e);
+        }
         stopSelf();
     }
 
@@ -632,7 +641,7 @@ public class FloatServer extends Service {
             }
         }
 
-        return START_REDELIVER_INTENT;
+        return START_NOT_STICKY;//START_REDELIVER_INTENT;
     }
     void showUnWindowMenu(){
         final ListView hideMenu=new ListView(this);
