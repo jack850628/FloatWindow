@@ -89,5 +89,5 @@
     <string name="help_string2">從通知中心可以快速開啟浮動視窗的任意功能</string>
     <string name="watch_ad">看個廣告讓我們活下去</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
-    <string name="what_is_new_string2">當有任一視窗活得焦點時可以使用首頁鍵將所有視窗最小化</string>
+    <string name="what_is_new_string2">當有任一視窗獲得焦點時可以使用首頁鍵將所有視窗最小化</string>
 </resources>
