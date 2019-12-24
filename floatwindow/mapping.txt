@@ -9,36 +9,14 @@ com.jack8.floatwindow.Window.WindowColor -> a.a.a.a.a:
     int titleBar -> b
     int sizeBar -> c
     int windowBackground -> a
-    1:2:void <init>(android.content.Context):19:20 -> <init>
-    3:8:void <init>(android.content.Context):23:28 -> <init>
 com.jack8.floatwindow.Window.WindowFrom -> com.jack8.floatwindow.Window.WindowFrom:
-    com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent windowKeyEvent -> a
-    com.jack8.floatwindow.Window.WindowColor wColor -> g
-    android.view.View titleBar -> c
-    android.view.View microMaxButtonBackground -> e
-    boolean inited -> b
-    android.view.View sizeBar -> d
-    android.view.View closeButtonBackground -> f
-    1:1:void <init>(android.content.Context):31:31 -> <init>
-    2:2:void <init>(android.content.Context):21:21 -> <init>
-    3:3:void <init>(android.content.Context):29:29 -> <init>
-    4:5:void <init>(android.content.Context):32:33 -> <init>
-    6:6:void <init>(android.content.Context,android.util.AttributeSet):36:36 -> <init>
-    7:7:void <init>(android.content.Context,android.util.AttributeSet):21:21 -> <init>
-    8:8:void <init>(android.content.Context,android.util.AttributeSet):29:29 -> <init>
-    9:10:void <init>(android.content.Context,android.util.AttributeSet):37:38 -> <init>
-    1:1:boolean dispatchKeyEvent(android.view.KeyEvent):72:72 -> dispatchKeyEvent
-    1:1:com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent getWindowKeyEvent():47:47 -> getWindowKeyEvent
-    1:1:boolean onInterceptTouchEvent(android.view.MotionEvent):82:82 -> onInterceptTouchEvent
-    1:6:void onLayout(boolean,int,int,int,int):53:58 -> onLayout
-    7:7:int com.jack8.floatwindow.Window.WindowColor.getWindowBackground():31:31 -> onLayout
-    7:7:void onLayout(boolean,int,int,int,int):58 -> onLayout
-    8:8:void onLayout(boolean,int,int,int,int):58:58 -> onLayout
-    9:10:void onLayout(boolean,int,int,int,int):60:61 -> onLayout
-    1:1:void setWindowKeyEvent(com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent):44:44 -> setWindowKeyEvent
-com.jack8.floatwindow.Window.WindowFrom$1 -> a.a.a.a.b:
-    1:1:void <init>(com.jack8.floatwindow.Window.WindowFrom):21:21 -> <init>
-    boolean dispatchKeyEvent(android.view.KeyEvent) -> a
-com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent -> com.jack8.floatwindow.Window.WindowFrom$a:
-com.jack8.floatwindow.Window.WindowStruct -> a.a.a.a.c:
-    1:1:void <clinit>():96:96 -> <clinit>
+    com.jack8.floatwindow.Window.WindowColor wColor -> f
+    android.view.View sizeBar -> c
+    android.view.View titleBar -> b
+    boolean inited -> a
+    android.view.View closeButtonBackground -> e
+    android.view.View microMaxButtonBackground -> d
+    1:1:int com.jack8.floatwindow.Window.WindowColor.getWindowBackground():0:0 -> onLayout
+    1:1:void onLayout(boolean,int,int,int,int):0 -> onLayout
+    2:2:void onLayout(boolean,int,int,int,int):0:0 -> onLayout
+com.jack8.floatwindow.Window.WindowStruct -> a.a.a.a.b:
