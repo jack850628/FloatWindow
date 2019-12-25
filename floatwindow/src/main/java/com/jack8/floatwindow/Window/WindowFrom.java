@@ -69,7 +69,7 @@ public class WindowFrom extends LinearLayout {
     }
     @Override
     public boolean dispatchKeyEvent(KeyEvent event){
-        return windowKeyEvent.dispatchKeyEvent(event);
+        return windowKeyEvent.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
     }
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
