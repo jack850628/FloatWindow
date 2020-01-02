@@ -102,7 +102,7 @@
         android:layout_height="match_parent"
         android:background="@color/windowBackground"
         android:layout_weight="1"
-        android:gravity="left"
+        android:gravity="start"
         android:orientation="horizontal">
 
         <ListView

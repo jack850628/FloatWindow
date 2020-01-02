@@ -90,4 +90,10 @@
     <string name="watch_ad">看個廣告讓我們活下去</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
     <string name="what_is_new_string2">当有任一视窗获得焦点时可以使用首页键将所有视窗最小化</string>
+    <string name="download_method">下载方式</string>
+    <string name="call_other_browsers_download">这将会调用其他浏览器进行下载</string>
+    <string name="are_you_sure_download">您确定要下载吗？</string>
+    <string name="type">类型</string>
+    <string name="size">大小</string>
+    <string name="what_is_new_string3">浏览器可以下载档案</string>
 </resources>

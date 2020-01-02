@@ -251,7 +251,7 @@ public class Setting extends AppCompatActivity {
         isAutoRun.setChecked(WindowParameter.isAutoRun(this));
         isPermanent.setChecked(WindowParameter.isPermanent(this));
 
-        ((Button)findViewById(R.id.ok)).setOnClickListener(save);
+        ((Button)findViewById(R.id.confirm)).setOnClickListener(save);
         ((Button)findViewById(R.id.no)).setOnClickListener(save);
     }
     View.OnClickListener setColor=new View.OnClickListener() {
@@ -340,7 +340,7 @@ public class Setting extends AppCompatActivity {
     View.OnClickListener save=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v.getId()==R.id.ok) {
+            if(v.getId()==R.id.confirm) {
                 WindowParameter.setWindowTransitionsDuration(Setting.this,secondSet.getProgress());
                 WindowParameter.setWindowButtonsHeight(Setting.this,buttonsHeight.getProgress() + 20);
                 WindowParameter.setWindowButtonsWidth(Setting.this,buttonsWidth.getProgress() + 20);

@@ -89,4 +89,10 @@
     <string name="watch_ad">Watch an ad and let us live</string>
     <string name="watched_ad">Thank you for your interest in advertising! Thank you!</string>
     <string name="what_is_new_string2">When any window gets focus, you can use the home button to minimize all windows</string>
+    <string name="download_method">Download method</string>
+    <string name="call_other_browsers_download">This will call other browsers to download</string>
+    <string name="are_you_sure_download">Are you sure to download?</string>
+    <string name="type">Type</string>
+    <string name="size">Size</string>
+    <string name="what_is_new_string3">Browser can download files</string>
 </resources>
