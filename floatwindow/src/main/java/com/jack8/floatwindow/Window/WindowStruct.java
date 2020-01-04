@@ -310,6 +310,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         windowList.put(Number,this);
         topMini = new Scroller(context);
         heightMini = new Scroller(context);
+        Top = Math.max(Top, 0);
 
         //wColor = new WindowColor(context);
 
@@ -320,8 +321,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         wmlp.format = PixelFormat.TRANSPARENT;//背景(透明)
         wmlp.flags = FOCUS_FLAGE;
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
-        wmlp.x = Top;//設定原點座標
-        wmlp.y = Left;
+        wmlp.x = Left;
+        wmlp.y = Top;//設定原點座標
         wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
         wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
@@ -1046,12 +1047,29 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void setPosition(int x,int y){
         if(nowState != State.CLOSE) {
-            y = Math.max(y,0);
+            y = Math.max(y,0);//防止與狀態列重疊
             if (nowState != State.MINI) {
                 left = x;
                 top = y;
             }
             if (nowState == State.GENERAL || nowState == State.MINI) {
+                wmlp.x = x;
+                wmlp.y = y;
+                wm.updateViewLayout(winform, wmlp);
+            }
+        }
+    }
+    /**
+     * 設定general狀態的視窗位置
+     * @param x X座標
+     * @param y Y座標
+     */
+    public void setGeneralPosition(int x,int y){
+        if(nowState != State.CLOSE) {
+            y = Math.max(y,0);//防止與狀態列重疊
+            left = x;
+            top = y;
+            if (nowState == State.GENERAL) {
                 wmlp.x = x;
                 wmlp.y = y;
                 wm.updateViewLayout(winform, wmlp);
@@ -1088,6 +1106,21 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public int getRealPositionY(){
         return wmlp.y;
+    }
+    /**
+     * 視窗general狀態的X座標
+     * @return X座標
+     */
+    public int getGeneralPositionX(){
+        return left;
+    }
+
+    /**
+     * 視窗general狀態的Y座標
+     * @return Y座標
+     */
+    public int getGeneralPositionY(){
+        return top;
     }
 
     /**
