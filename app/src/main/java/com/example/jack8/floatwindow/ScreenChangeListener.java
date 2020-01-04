@@ -46,10 +46,16 @@ public class ScreenChangeListener extends BroadcastReceiver {
             if(windowList != null)
                 for(Map.Entry<Integer,WindowStruct> entry : windowList.entrySet()){
                     WindowStruct windowStruct = entry.getValue();
-                    int x = windowStruct.getPositionX();
-                    int y = windowStruct.getPositionY();
-                    windowStruct.setPosition(y, x);
-                    if(windowStruct.nowState == WindowStruct.State.MAX){
+                    windowStruct.setPosition(
+                            windowStruct.getPositionY(),
+                            windowStruct.getPositionX()
+                    );
+                    if(windowStruct.nowState == WindowStruct.State.MINI){
+                        windowStruct.setGeneralPosition(
+                                windowStruct.getGeneralPositionY(),
+                                windowStruct.getGeneralPositionX()
+                        );
+                    }else if(windowStruct.nowState == WindowStruct.State.MAX){
                         int transitionsDuration = windowStruct.getTransitionsDuration();
                         windowStruct.setTransitionsDuration(0);
                         windowStruct.nowState = WindowStruct.State.GENERAL;
