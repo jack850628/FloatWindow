@@ -24,9 +24,18 @@ import com.google.android.gms.ads.MobileAds;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Stack;
 
 public class WebBrowserSetting {
     private static WebBrowserSetting webBrowserSetting = null;
+
+    public enum WebBrowserStatus{
+        INIT,
+        COMPLETE,
+        CLOSE
+    }
+    public static WebBrowserStatus webBrowserStatus = WebBrowserStatus.CLOSE;
+    private static Stack<Operated> operatedStack = new Stack<>();
 
     public enum AdServerListStatus{
         INIT,
@@ -36,6 +45,7 @@ public class WebBrowserSetting {
     }
     public AdServerListStatus adServerListStatus = AdServerListStatus.NOT_USE;
     public ArrayList<DataBaseForBrowser.AdServerData> adServerDatas = new ArrayList<>();
+
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
@@ -124,15 +134,20 @@ public class WebBrowserSetting {
     }
 
      static WebBrowserSetting init(DataBaseForBrowser dataBaseForBrowser, int windoiwId, Operated operated){
-         if(webBrowserSetting == null){
+         if(webBrowserStatus == WebBrowserStatus.CLOSE){
              synchronized (WebBrowserSetting.class){
-                 if(webBrowserSetting == null){
+                 if(webBrowserStatus == WebBrowserStatus.CLOSE){
+                     webBrowserStatus = WebBrowserStatus.INIT;
+                     operatedStack.push(operated);
                      webBrowserSetting = new WebBrowserSetting(dataBaseForBrowser, operated);
-                 }
+                 }else if(webBrowserStatus == WebBrowserStatus.INIT)
+                     operatedStack.push(operated);
                  else
                      operated.operated(webBrowserSetting);
              }
-         }else
+         }else if(webBrowserStatus == WebBrowserStatus.INIT)
+             operatedStack.push(operated);
+         else
              operated.operated(webBrowserSetting);
          webBrowserSetting.webBrowserWindowList.add(windoiwId);
          return webBrowserSetting;
@@ -163,7 +178,9 @@ public class WebBrowserSetting {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        operated.operated(WebBrowserSetting.this);
+                        while(!operatedStack.empty())
+                            operatedStack.pop().operated(WebBrowserSetting.this);
+                        webBrowserStatus = WebBrowserStatus.COMPLETE;
                     }
                 });
             }
@@ -277,6 +294,7 @@ public class WebBrowserSetting {
     private void onDestroy(){
         webBrowserSetting = null;
         adServerDatas.clear();
+        webBrowserStatus = WebBrowserStatus.CLOSE;
         Log.i("WebBrowserSetting", "onDestroy");
     }
 
