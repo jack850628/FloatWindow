@@ -142,8 +142,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onPageFinished(WebView webView, final String url) {
                 final String title = webView.getTitle();
-                pageView.setTag(title);
-                windowStruct.setWindowTitle(position,title);
+                //pageView.setTag(title);
+                windowStruct.setWindowTitle(position, title);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -744,12 +744,13 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             web.removeAllViews();
             WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
             web.clearHistory();
-            if (WebBrowserSetting.haveRuningBrowser())
+//            if (WebBrowserSetting.haveRuningBrowser())
                 web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
-            else {
-                web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
-                web.pauseTimers();//會導致其他的WebView的javascript停止執行
-            }
+//            else {//這將會導致AdMob無法運作
+//                web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
+//                web.pauseTimers();//會導致其他的WebView的javascript停止執行
+//            }
+            web.setWebViewClient(null);
             web.destroyDrawingCache();
             web.destroy();
             web = null;
