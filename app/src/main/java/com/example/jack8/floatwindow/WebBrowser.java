@@ -572,7 +572,6 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 web.getSettings().setUseWideViewPort(true);
                 web.getSettings().setDomStorageEnabled(true);
                 web.getSettings().setDatabaseEnabled(true);
-                web.resumeTimers();
                 String url = webBrowserSetting.getSetting().homeLink;
                 if(args != null && args.length != 0 && args[0] instanceof String) {
                     url = (String) args[0];
@@ -754,7 +753,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
 //                web.clearCache(true);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true
 //                web.pauseTimers();//會導致其他的WebView的javascript停止執行
 //            }
-            web.setWebViewClient(null);
+//            web.setWebViewClient(null);
             web.destroyDrawingCache();
             web.destroy();
             web = null;
