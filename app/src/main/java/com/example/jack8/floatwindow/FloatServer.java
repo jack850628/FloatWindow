@@ -106,6 +106,9 @@ public class FloatServer extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        JackLog.setWriteLogDrive(this,
+                "d936f0197b7e6c67"
+        );
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_view);

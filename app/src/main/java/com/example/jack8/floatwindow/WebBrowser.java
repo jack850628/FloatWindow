@@ -69,6 +69,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
         switch (position) {
             case 0:
+                JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
                 windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
                     @Override
                     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -131,6 +132,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {//廣告過濾
+                JackLog.writeLog(context, String.format("WebBrowser 請求網頁 %s\n",request.getUrl().toString()));
                 if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
                     for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
                         if (request.getUrl().getHost().contains(adServerData.adServer))
@@ -739,10 +741,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     @Override
     public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
         if(position == 0) {
+            JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Close\n", windowStruct.getNumber()));
             web.loadUrl("about:blank");
             web.onPause();
             web.removeAllViews();
             WebBrowserSetting.getInit().closeWebWindow(windowStruct.getNumber());
+            JackLog.writeLog(context, String.format("還有運行中的網頁? %b\n", WebBrowserSetting.haveRuningBrowser()));
             web.clearHistory();
 //            if (WebBrowserSetting.haveRuningBrowser())
                 web.clearCache(false);//清除RAM快取，傳遞true會加上清除磁碟快取，還有其他WWebViewc還有其他WebView運行中的話不建議用true

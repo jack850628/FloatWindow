@@ -1,6 +1,7 @@
 package com.example.jack8.floatwindow;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -374,6 +375,8 @@ public class Setting extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0,0,0,getString(R.string.about));
+        if(JackLog.isCanWriteLog())
+            menu.add(0,1,0,"Log View");
         return true;
     }
     @Override
@@ -460,6 +463,9 @@ public class Setting extends AppCompatActivity {
                             }).show().getNumber();
                 }else
                     WindowStruct.getWindowStruct(adoutWindow).focusAndShowWindow();
+                return true;
+            case 1:
+                startActivity(new Intent(Setting.this, LogView.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
