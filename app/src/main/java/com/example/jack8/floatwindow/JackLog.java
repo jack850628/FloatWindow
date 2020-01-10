@@ -52,7 +52,7 @@ public class JackLog {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                StringBuffer log = new StringBuffer();
+                final StringBuffer log = new StringBuffer();
                 try {
                     FileInputStream fileInputStream = context.openFileInput("logFile.txt");
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
@@ -63,12 +63,10 @@ public class JackLog {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                final StringBuffer str = log;
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        callback.callBack(str.toString());
+                        callback.callBack(log.toString());
                     }
                 });
             }
