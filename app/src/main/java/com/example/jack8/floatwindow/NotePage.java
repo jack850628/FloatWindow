@@ -26,7 +26,6 @@ import com.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -128,7 +127,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
     static OtherNodeListAdapter otherNodeListAdapter = null;
     String noteId=null;
     Date dNow = new Date();
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
+    //SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss", Locale.getDefault());
     Button nodePageMenuButton;
     MoveWindow moveWindow;
     int nodePageDisplayObj;
@@ -173,7 +172,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
 
         moveWindow = new MoveWindow(context,windowStruct);
         nodePageMenuButton = new Button(context);
-        nodePageMenuButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+        nodePageMenuButton.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(),windowStruct.getWindowButtonsHeight()));
         nodePageMenuButton.setPadding(0,0,0,0);
         nodePageMenuButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.menu));
         nodePageMenuButton.setOnClickListener(new View.OnClickListener() {
@@ -204,7 +203,10 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                                                     :new Object[][]{{NotePage.OPEN_NOTE,otherNodeListAdapter.noteList.get(position)[0]}}
                                                     )
                                                     .windowAction(((FloatServer)context).windowAction)
-                                                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                                    .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                                    .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                                    .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                                     .constructionAndDeconstructionWindow(new NotePage())
                                                     .show();
                                         }
@@ -214,7 +216,10 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                             .windowPages(new View[]{nodeList})
                                             .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
                                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
-                                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(context))
+                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                             .windowAction(new WindowStruct.WindowAction() {
                                                 @Override
                                                 public void goHide(WindowStruct windowStruct) {
@@ -310,7 +315,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                     note.setText(notes.getString(noteId));
                     otherNodeListAdapter.update(showingNoteIdList);
                 }else{
-                    noteId = formatter.format(dNow);
+                    noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
                     showingNoteIdList.add(noteId);
                 }
             } catch (JSONException e) {
@@ -320,7 +325,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
             int flag = (int)args[0];
             switch (flag){
                 case ADD_NOTE: {
-                    noteId = formatter.format(dNow);
+                    noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
                     showingNoteIdList.add(noteId);
                     note.setText((String) args[1]);
                     break;

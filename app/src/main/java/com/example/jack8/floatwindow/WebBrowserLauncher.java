@@ -31,10 +31,10 @@ public class WebBrowserLauncher extends AppCompatActivity {
         else if(extra_intent.getDataString() != null)//呼叫瀏覽器的的啟動方式
             url = extra_intent.getDataString();
         if(url == null) {
-            intent.putExtra("intent",FloatServer.OPEN_WEB_BROWSER);
+            intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_WEB_BROWSER);
         }else{
-            intent.putExtra("intent",FloatServer.OPEN_WEB_BROWSER | FloatServer.OPEN_EXTRA_URL);
-            intent.putExtra("extra_url",url);
+            intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_WEB_BROWSER | FloatServer.OPEN_EXTRA_URL);
+            intent.putExtra(FloatServer.EXYRA_URL,url);
         }
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

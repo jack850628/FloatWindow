@@ -26,10 +26,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.jack8.floatwindow.Window.WindowStruct;
@@ -52,7 +54,11 @@ public class FloatServer extends Service {
     public static final int OPEN_CALCULATO = 0x0040;
     public static final int OPEN_MAIN_MENU = 0x0080;
     public static final int OPEN_SETTING = 0x0100;
+    public static final int SHOW_CLOSE_FLOAT_WINDOW = 0x0200;
+    public static final int SHOW_WATCHED_AD = 0x0400;
     public static final String LAUNCHER = "launcher";
+    public static final String INTENT = "intent";
+    public static final String EXYRA_URL = "extra_url";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -76,33 +82,88 @@ public class FloatServer extends Service {
         @Override
         public void goClose(WindowStruct windowStruct) {
             if (--wm_count == 0) {
-                FloatServer.this.stopForeground(true);
-                FloatServer.this.unregisterReceiver(ScreenChangeListener.getInstance());
-                stopSelf();
+                if(!WindowParameter.isPermanent(FloatServer.this))
+                    closeFloatWindow();
             }
         }
     };
+
+    private void closeFloatWindow(){
+        this.stopForeground(true);
+        try {
+            unregisterReceiver(ScreenChangeListener.getInstance(this));
+        }catch (IllegalArgumentException e){
+            Crashlytics.logException(e);
+        }
+        try {
+            unregisterReceiver(HomeKeyListener.getInstance(this));
+        }catch (IllegalArgumentException e){
+            Crashlytics.logException(e);
+        }
+        stopSelf();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        JackLog.setWriteLogDrive(this,
+                "d936f0197b7e6c67"
+        );
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 
-        Intent toSetup = new Intent(this, Setting.class);
-
-        Intent showWindowManager = new Intent(this,FloatServer.class);
-        showWindowManager.putExtra("intent",SHOW_WINDOW_MANAGER);
-
-        Intent showFloatWindowMenu = new Intent(this,FloatServer.class);
-        showFloatWindowMenu.putExtra("intent",SHOW_FLOAT_WINDOW_MENU);
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_view);
+        remoteViews.setOnClickPendingIntent(R.id.web_browser,
+                PendingIntent.getActivity(this,
+                        0,
+                        new Intent(this, WebBrowserLauncher.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.note,
+                PendingIntent.getActivity(this,
+                        1,
+                        new Intent(this, NotePageLauncher.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.calculato,
+                PendingIntent.getActivity(this,
+                        2,
+                        new Intent(this, CalculatorLauncher.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.setting,
+                PendingIntent.getActivity(this,
+                        3,
+                        new Intent(this, Setting.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.window_list,
+                PendingIntent.getService(this,
+                        4,
+                        new Intent(this,FloatServer.class).putExtra(INTENT,SHOW_WINDOW_MANAGER),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
+        remoteViews.setOnClickPendingIntent(R.id.close,
+                PendingIntent.getService(this,
+                        5,
+                        new Intent(this,FloatServer.class).putExtra(INTENT,SHOW_CLOSE_FLOAT_WINDOW),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+        );
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             NotificationCompat.Builder NFB = new NotificationCompat.Builder(this);
             NFB.setSmallIcon(R.drawable.mini_window).
                     setContentTitle(getString(R.string.app_name)).
-                    addAction(new NotificationCompat.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    addAction(new NotificationCompat.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    setContentText(getString(R.string.runing));
-            NFB.setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
+                    setContent(remoteViews);
+//                    addAction(new NotificationCompat.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+//                    addAction(new NotificationCompat.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+//                    setContentText(getString(R.string.runing)).
+//                    setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }else{
@@ -113,10 +174,11 @@ public class FloatServer extends Service {
             Notification.Builder NFB = new Notification.Builder(this,NOTIFY_CHANNEL_ID);
             NFB.setSmallIcon(R.drawable.mini_window).
                     setContentTitle(getString(R.string.app_name)).
-                    addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    setContentText(getString(R.string.runing));
-            NFB.setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
+                    setCustomContentView(remoteViews);
+                    //addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    //addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+                    //setContentText(getString(R.string.runing))
+                    //setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }
@@ -125,7 +187,10 @@ public class FloatServer extends Service {
         //---------------註冊翻轉事件廣播接收---------------
         IntentFilter filter = new IntentFilter();
         filter.addAction(BCAST_CONFIGCHANGED);
-        this.registerReceiver(ScreenChangeListener.getInstance(), filter);
+        this.registerReceiver(ScreenChangeListener.getInstance(this), filter);
+        //-------------------------------------------------
+        //---------------註冊Home鍵廣播接收---------------
+        this.registerReceiver(HomeKeyListener.getInstance(this), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
         //-------------------------------------------------
 
         try {//用反射取得所有視窗清單
@@ -145,7 +210,7 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        int initCode = intent.getIntExtra("intent",OPEN_NONE);
+        int initCode = intent.getIntExtra(INTENT,OPEN_NONE);
         if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
@@ -153,7 +218,11 @@ public class FloatServer extends Service {
                     .windowPages(new int[]{R.layout.main_menu})
                     .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
                     .windowInitArgs(new Object[1][0])
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .heightAndTopAutoCenter((int)(getResources().getDisplayMetrics().density * 320))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         AdView adView;
@@ -180,6 +249,10 @@ public class FloatServer extends Service {
                                             clazz = Setting.class;
                                             break;
                                         }
+                                        case R.id.watch_ad:{
+                                            clazz = HelpMeAd.class;
+                                            break;
+                                        }
                                     }
                                     Intent intent = new Intent(FloatServer.this, clazz);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -191,6 +264,7 @@ public class FloatServer extends Service {
                             pageView.findViewById(R.id.note).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.calculato).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.setting).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.watch_ad).setOnClickListener(onClickListener);
                             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
                                 pageView.findViewById(R.id.tip).setVisibility(View.VISIBLE);
                                 View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
@@ -266,7 +340,7 @@ public class FloatServer extends Service {
                             adView.loadAd(adRequest);
 
                             Button helpButton = new Button(context);
-                            helpButton.setLayoutParams(new ViewGroup.LayoutParams((int)(30*context.getResources().getDisplayMetrics().density),(int)(30*context.getResources().getDisplayMetrics().density)));
+                            helpButton.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(), windowStruct.getWindowButtonsHeight()));
                             helpButton.setPadding(0,0,0,0);
                             helpButton.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.help));
                             helpButton.setOnClickListener(new View.OnClickListener() {
@@ -275,9 +349,12 @@ public class FloatServer extends Service {
                                     if(help == null) {
                                         wm_count++;
                                         help = new WindowStruct.Builder(FloatServer.this, wm)
-                                                .windowPages(new int[]{R.layout.new_functions, R.layout.help})
+                                                .windowPages(new int[]{R.layout.what_is_new, R.layout.help})
                                                 .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
-                                                .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(FloatServer.this))
+                                                .transitionsDuration(WindowParameter.getWindowTransitionsDuration(FloatServer.this))
+                                                .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(FloatServer.this)))
+                                                .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(FloatServer.this)))
+                                                .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(FloatServer.this)))
                                                 .windowAction(new WindowStruct.WindowAction() {
                                                     @Override
                                                     public void goHide(WindowStruct windowStruct) {
@@ -322,17 +399,23 @@ public class FloatServer extends Service {
                 new WindowStruct.Builder(this,wm)
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
             else{
-                String extra_url = intent.getStringExtra("extra_url");
+                String extra_url = intent.getStringExtra(EXYRA_URL);
                 new WindowStruct.Builder(this,wm)
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
                         .windowInitArgs(new Object[][]{new Object[]{extra_url}})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
@@ -344,18 +427,24 @@ public class FloatServer extends Service {
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
             else{
-                String extra_url = intent.getStringExtra("extra_url");
+                String extra_url = intent.getStringExtra(EXYRA_URL);
                 new WindowStruct.Builder(this,wm)
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})
-                        .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
@@ -365,10 +454,59 @@ public class FloatServer extends Service {
             new WindowStruct.Builder(this,wm)
                     .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
                     .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
-                    .height((int)(getResources().getDisplayMetrics().density * 309))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .height((int)(getResources().getDisplayMetrics().density * (269 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this))))
+                    //.width((int)(getResources().getDisplayMetrics().density * 200))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
+                    .show();
+        }else if((initCode & SHOW_WATCHED_AD) == SHOW_WATCHED_AD) {
+            View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
+            ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.watched_ad));
+            messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            wm_count++;
+            new WindowStruct.Builder(this, (WindowManager) this.getSystemService(Context.WINDOW_SERVICE))
+                    .windowPageTitles(new String[]{getString(R.string.app_name)})
+                    .windowPages(new View[]{messageView})
+                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                    .left((getResources().getDisplayMetrics().widthPixels / 2) - messageView.getMeasuredWidth() / 2)
+                    .top((getResources().getDisplayMetrics().heightPixels / 2) - (messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))) / 2)
+                    .width(messageView.getMeasuredWidth())
+                    .height((messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                        @Override
+                        public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                            pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    ws.close();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                        }
+
+                        @Override
+                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                        }
+                    })
+                    .windowAction(windowAction)
                     .show();
         }else{
             //---------------------收起下拉選單-----------------------------
@@ -396,12 +534,13 @@ public class FloatServer extends Service {
                     menu = new WindowStruct.Builder(this, wm)
                             .windowPages(new View[]{menuView})
                             .windowPageTitles(new String[]{getString(R.string.app_name)})
-                            .top(60)
-                            .left(60)
-                            .height((int) (140 * this.getResources().getDisplayMetrics().density))
+                            .height((int) ((110 + WindowParameter.getWindowButtonsHeight(this)) * this.getResources().getDisplayMetrics().density))
                             .width((int) (200 * this.getResources().getDisplayMetrics().density))
                             .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                            .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
                                 public void goHide(WindowStruct windowStruct) {
@@ -451,11 +590,61 @@ public class FloatServer extends Service {
                         }
                     });
                 }
-            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER)
+            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER) {
                 showUnWindowMenu();
+            }else if((initCode & SHOW_CLOSE_FLOAT_WINDOW) == SHOW_CLOSE_FLOAT_WINDOW) {
+                if(windowList.isEmpty())
+                    closeFloatWindow();
+                else{
+                    View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
+                    ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.close_notification_message));
+                    messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    wm_count++;
+                    new WindowStruct.Builder(this, (WindowManager) this.getSystemService(Context.WINDOW_SERVICE))
+                            .windowPageTitles(new String[]{getString(R.string.close_notification)})
+                            .windowPages(new View[]{messageView})
+                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                            .left((getResources().getDisplayMetrics().widthPixels / 2) - messageView.getMeasuredWidth() / 2)
+                            .top((getResources().getDisplayMetrics().heightPixels / 2) - (messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))) / 2)
+                            .width(messageView.getMeasuredWidth())
+                            .height((messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))))
+                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                @Override
+                                public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                                    pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            ws.close();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                                }
+
+                                @Override
+                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                }
+
+                                @Override
+                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                }
+                            })
+                            .windowAction(windowAction)
+                            .show();
+                }
+            }
         }
 
-        return START_REDELIVER_INTENT;
+        return START_NOT_STICKY;//START_REDELIVER_INTENT;
     }
     void showUnWindowMenu(){
         final ListView hideMenu=new ListView(this);
@@ -476,12 +665,13 @@ public class FloatServer extends Service {
             windowManager = new WindowStruct.Builder(this, wm)
                     .windowPages(new View[]{hideMenu})
                     .windowPageTitles(new String[]{getString(R.string.windows_list)})
-                    .top(60)
-                    .left(60)
-                    .height((int) (200 * this.getResources().getDisplayMetrics().density))
+                    .height((int) ((160 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this)) * this.getResources().getDisplayMetrics().density))
                     .width((int) (195 * this.getResources().getDisplayMetrics().density))
                     .displayObject(WindowStruct.SIZE_BAR | WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                    .transitionsDuration(WindowTransitionsDuration.getWindowTransitionsDuration(this))
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override
                         public void goHide(WindowStruct windowStruct) {

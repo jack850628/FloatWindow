@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         }else{
             if(launcher == FloatServer.OPEN_NONE)
                 launcher = FloatServer.OPEN_MAIN_MENU;
-            intent.putExtra("intent",launcher);
+            intent.putExtra(FloatServer.INTENT,launcher);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                 startService(intent);
             else

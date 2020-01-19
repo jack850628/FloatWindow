@@ -9,7 +9,7 @@ class IsNumeric {
 		}
 	}
 	public static boolean isNumericTest(String str){
-		return str.matches("[-+]?\\d+[.]?\\d*|[-+]?\\d+\\.\\d+E\\d+|[-+]?Infinity");
+		return str.matches("[-+]?\\d+[.]?\\d*|[-+]?\\d+\\.\\d+E[-]?\\d+|[-+]?Infinity");
                 /*try{
 			Double.valueOf(str);
 			return true;

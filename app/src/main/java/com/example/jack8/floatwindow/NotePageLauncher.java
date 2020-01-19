@@ -31,10 +31,10 @@ public class NotePageLauncher extends AppCompatActivity {
         else if(extra_intent.getDataString() != null)//呼叫瀏覽器的的啟動方式
             url = extra_intent.getDataString();
         if(url == null) {
-            intent.putExtra("intent",FloatServer.OPEN_NOTE_PAGE);
+            intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE);
         }else{
-            intent.putExtra("intent",FloatServer.OPEN_NOTE_PAGE | FloatServer.OPEN_EXTRA_URL);
-            intent.putExtra("extra_url",url);
+            intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE | FloatServer.OPEN_EXTRA_URL);
+            intent.putExtra(FloatServer.EXYRA_URL,url);
         }
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

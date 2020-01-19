@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">浮動視窗</string>
-    <string name="version">版本:1.2.2</string>
+    <string name="version">版本:</string>
 
     <string name="web_browser">網頁瀏覽器</string>
     <string name="note">便條紙</string>
@@ -77,7 +77,23 @@
     <string name="new_functions">新功能</string>
     <string name="help">說明</string>
     <string name="help_string1">基本操作</string>
-    <string name="help_string2">當使用浮動視窗時會再通知欄建立通知，可以透過通知前往設定或查看所有運行中的視窗。</string>
-    <string name="help_string3">所有工具已經個別獨立出來，不再集中於一個視窗裡。</string>
-    <string name="help_string4">可以為工具建立捷徑於主畫面上。</string>
+    <string name="help_string3">可以為工具建立捷徑於主畫面上。</string>
+    <string name="window_buttons_height">視窗按鈕高度</string>
+    <string name="window_buttons_width">視窗按鈕寬度</string>
+    <string name="window_size_bar_height">視窗大小調整列高度</string>
+    <string name="close_notification_message">請先關閉所有視窗</string>
+    <string name="close_notification">關閉通知</string>
+    <string name="auto_execute_in_boot_after">開機後自動執行</string>
+    <string name="resident_at_the_notification_center">常駐於通知中心</string>
+    <string name="what_is_new_string1">從此版本開始瀏覽器可以用返回鍵回到上一個網頁</string>
+    <string name="help_string2">從通知中心可以快速開啟浮動視窗的任意功能</string>
+    <string name="watch_ad">這是廣告</string>
+    <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
+    <string name="what_is_new_string2">當有任一視窗獲得焦點時可以使用首頁鍵將所有視窗最小化</string>
+    <string name="download_method">下載方式</string>
+    <string name="call_other_browsers_download">這將會調用其他瀏覽器進行下載</string>
+    <string name="are_you_sure_download">您確定要下載嗎？</string>
+    <string name="type">類型</string>
+    <string name="size">大小</string>
+    <string name="what_is_new_string3">瀏覽器可以下載檔案</string>
 </resources>
