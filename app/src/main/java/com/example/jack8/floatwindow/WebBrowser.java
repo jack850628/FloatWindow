@@ -37,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
 
@@ -70,6 +71,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
         switch (position) {
             case 0:
                 JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
+                Crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
                 windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
                     @Override
                     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -121,25 +123,46 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {//廣告過濾
                 Uri uri = Uri.parse(url);
-                if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
-                    for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
-                        if (uri.getHost().contains(adServerData.adServer))
-                            return new WebResourceResponse(null, null, null);
+                try {
+                    if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
+                        for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
+                            if (uri.getHost().contains(adServerData.adServer))
+                                return new WebResourceResponse(null, null, null);
+                        }
                     }
+                    return super.shouldInterceptRequest(webView, url);
+                }catch (Exception e){
+                    JackLog.writeLog(context, String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
+                    Crashlytics.log(String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
+                    JackLog.writeLog(context, String.format("異常發生時WebBrowser請求網頁: %s\n",url));
+                    Crashlytics.log(String.format("異常發生時WebBrowser請求網頁: %s\n",url));
+                    JackLog.writeLog(context, String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
+                    Crashlytics.log(String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
+                    Crashlytics.logException(e);
+                    return new WebResourceResponse(null, null, null);
                 }
-                return super.shouldInterceptRequest(webView, url);
             }
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {//廣告過濾
-                JackLog.writeLog(context, String.format("WebBrowser 請求網頁 %s\n",request.getUrl().toString()));
-                if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
-                    for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
-                        if (request.getUrl().getHost().contains(adServerData.adServer))
-                            return new WebResourceResponse(null, null, null);
+                try {
+                    if (WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
+                        for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
+                            if (request.getUrl().getHost().contains(adServerData.adServer))
+                                return new WebResourceResponse(null, null, null);
+                        }
                     }
+                    return super.shouldInterceptRequest(webView, request);
+                }catch (Exception e){
+                    JackLog.writeLog(context, String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
+                    Crashlytics.log(String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
+                    JackLog.writeLog(context, String.format("異常發生時WebBrowser請求網頁: %s\n",request.getUrl().toString()));
+                    Crashlytics.log(String.format("異常發生時WebBrowser請求網頁: %s\n",request.getUrl().toString()));
+                    JackLog.writeLog(context, String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
+                    Crashlytics.log(String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
+                    Crashlytics.logException(e);
+                    return new WebResourceResponse(null, null, null);
                 }
-                return super.shouldInterceptRequest(webView, request);
             }
             @Override
             public void onPageFinished(WebView webView, final String url) {
@@ -741,6 +764,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
         if(position == 0) {
             JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Close\n", windowStruct.getNumber()));
+            Crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Close\n", windowStruct.getNumber()));
             web.loadUrl("about:blank");
             web.onPause();
             web.removeAllViews();
