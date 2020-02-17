@@ -25,7 +25,7 @@ public class CalculatorLauncher extends AppCompatActivity {
     private void startFloatWindow(){
         Intent intent=new Intent(this, FloatServer.class);
 
-        intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_CALCULATO);
+        intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_CALCULATOR);
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             startService(intent);
