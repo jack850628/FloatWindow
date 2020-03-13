@@ -1,6 +1,7 @@
 package com.example.jack8.floatwindow;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -49,9 +50,9 @@ public class JackLog {
         }
     }
     public static void readLog(final Context context, final JackLogCallBack callback){
-        new Thread(new Runnable() {
+        new AsyncTask<Void, Void, StringBuffer>(){
             @Override
-            public void run() {
+            protected StringBuffer doInBackground(Void... voids) {
                 final StringBuffer log = new StringBuffer();
                 try {
                     FileInputStream fileInputStream = context.openFileInput("logFile.txt");
@@ -63,13 +64,13 @@ public class JackLog {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.callBack(log.toString());
-                    }
-                });
+                return log;
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(StringBuffer log){
+                callback.callBack(log.toString());
+            }
+        }.execute();
     }
 }

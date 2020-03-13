@@ -51,7 +51,7 @@ public class FloatServer extends Service {
     public static final int SHOW_FLOAT_WINDOW_MENU = 0x0008;
     public static final int OPEN_WEB_BROWSER = 0x0010;
     public static final int OPEN_NOTE_PAGE = 0x0020;
-    public static final int OPEN_CALCULATO = 0x0040;
+    public static final int OPEN_CALCULATOR = 0x0040;
     public static final int OPEN_MAIN_MENU = 0x0080;
     public static final int OPEN_SETTING = 0x0100;
     public static final int SHOW_CLOSE_FLOAT_WINDOW = 0x0200;
@@ -210,7 +210,9 @@ public class FloatServer extends Service {
      */
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        int initCode = intent.getIntExtra(INTENT,OPEN_NONE);
+        int initCode = (intent != null)
+                ? intent.getIntExtra(INTENT,OPEN_NONE)
+                : OPEN_NONE;
         if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
@@ -303,7 +305,7 @@ public class FloatServer extends Service {
                                                     case R.id.calculato:{
                                                         name = R.string.calculator;
                                                         R_icon = R.drawable.calculator;
-                                                        launcher.putExtra(LAUNCHER, OPEN_CALCULATO);
+                                                        launcher.putExtra(LAUNCHER, OPEN_CALCULATOR);
                                                         break;
                                                     }
                                                     case R.id.setting:{
@@ -449,7 +451,7 @@ public class FloatServer extends Service {
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
             }
-        }else if((initCode & OPEN_CALCULATO) == OPEN_CALCULATO) {
+        }else if((initCode & OPEN_CALCULATOR) == OPEN_CALCULATOR) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
                     .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
@@ -644,7 +646,7 @@ public class FloatServer extends Service {
             }
         }
 
-        return START_NOT_STICKY;//START_REDELIVER_INTENT;
+        return START_STICKY;//START_REDELIVER_INTENT;
     }
     void showUnWindowMenu(){
         final ListView hideMenu=new ListView(this);
