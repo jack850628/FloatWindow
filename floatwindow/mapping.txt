@@ -19,26 +19,25 @@ com.jack8.floatwindow.Window.WindowFrom -> com.jack8.floatwindow.Window.WindowFr
     boolean inited -> b
     android.view.View sizeBar -> d
     android.view.View closeButtonBackground -> f
-    1:1:void <init>(android.content.Context):31:31 -> <init>
-    2:2:void <init>(android.content.Context):21:21 -> <init>
-    3:3:void <init>(android.content.Context):29:29 -> <init>
-    4:5:void <init>(android.content.Context):32:33 -> <init>
-    6:6:void <init>(android.content.Context,android.util.AttributeSet):36:36 -> <init>
-    7:7:void <init>(android.content.Context,android.util.AttributeSet):21:21 -> <init>
-    8:8:void <init>(android.content.Context,android.util.AttributeSet):29:29 -> <init>
-    9:10:void <init>(android.content.Context,android.util.AttributeSet):37:38 -> <init>
-    1:1:boolean dispatchKeyEvent(android.view.KeyEvent):72:72 -> dispatchKeyEvent
-    1:1:com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent getWindowKeyEvent():47:47 -> getWindowKeyEvent
-    1:1:boolean onInterceptTouchEvent(android.view.MotionEvent):82:82 -> onInterceptTouchEvent
-    1:6:void onLayout(boolean,int,int,int,int):53:58 -> onLayout
+    1:1:void <init>(android.content.Context):28:28 -> <init>
+    2:2:void <init>(android.content.Context):18:18 -> <init>
+    3:3:void <init>(android.content.Context):26:26 -> <init>
+    4:5:void <init>(android.content.Context):29:30 -> <init>
+    6:6:void <init>(android.content.Context,android.util.AttributeSet):33:33 -> <init>
+    7:7:void <init>(android.content.Context,android.util.AttributeSet):18:18 -> <init>
+    8:8:void <init>(android.content.Context,android.util.AttributeSet):26:26 -> <init>
+    9:10:void <init>(android.content.Context,android.util.AttributeSet):34:35 -> <init>
+    1:1:boolean dispatchKeyEvent(android.view.KeyEvent):69:69 -> dispatchKeyEvent
+    1:1:com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent getWindowKeyEvent():44:44 -> getWindowKeyEvent
+    1:1:boolean onInterceptTouchEvent(android.view.MotionEvent):79:79 -> onInterceptTouchEvent
+    1:6:void onLayout(boolean,int,int,int,int):50:55 -> onLayout
     7:7:int com.jack8.floatwindow.Window.WindowColor.getWindowBackground():31:31 -> onLayout
-    7:7:void onLayout(boolean,int,int,int,int):58 -> onLayout
-    8:8:void onLayout(boolean,int,int,int,int):58:58 -> onLayout
-    9:10:void onLayout(boolean,int,int,int,int):60:61 -> onLayout
-    1:1:void setWindowKeyEvent(com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent):44:44 -> setWindowKeyEvent
+    7:7:void onLayout(boolean,int,int,int,int):55 -> onLayout
+    8:8:void onLayout(boolean,int,int,int,int):55:55 -> onLayout
+    9:10:void onLayout(boolean,int,int,int,int):57:58 -> onLayout
+    1:1:void setWindowKeyEvent(com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent):41:41 -> setWindowKeyEvent
 com.jack8.floatwindow.Window.WindowFrom$1 -> a.a.a.a.b:
-    1:1:void <init>(com.jack8.floatwindow.Window.WindowFrom):21:21 -> <init>
+    1:1:void <init>(com.jack8.floatwindow.Window.WindowFrom):18:18 -> <init>
     boolean dispatchKeyEvent(android.view.KeyEvent) -> a
 com.jack8.floatwindow.Window.WindowFrom$WindowKeyEvent -> com.jack8.floatwindow.Window.WindowFrom$a:
 com.jack8.floatwindow.Window.WindowStruct -> a.a.a.a.c:
-    1:1:void <clinit>():96:96 -> <clinit>
