@@ -36,9 +36,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.jack8.floatwindow.Window.WindowStruct;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 
 /**
  * 浮動視窗服務
@@ -68,7 +66,6 @@ public class FloatServer extends Service {
     Notification NF;
     final int NOTIFY_ID=851262;
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
-    HashMap<Integer, WindowStruct> windowList;
     WindowStruct windowManager = null;//視窗管理員
     WindowStruct menu = null;
     WindowStruct help = null;
@@ -193,15 +190,15 @@ public class FloatServer extends Service {
         this.registerReceiver(HomeKeyListener.getInstance(this), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
         //-------------------------------------------------
 
-        try {//用反射取得所有視窗清單
-            Field field = WindowStruct.class.getDeclaredField("windowList");
-            field.setAccessible(true);
-            windowList = (HashMap<Integer,WindowStruct>)field.get(WindowStruct.class);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+//        try {//用反射取得所有視窗清單
+//            Field field = WindowStruct.class.getDeclaredField("windowList");
+//            field.setAccessible(true);
+//            windowList = (HashMap<Integer,WindowStruct>)field.get(WindowStruct.class);
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /*
@@ -595,7 +592,7 @@ public class FloatServer extends Service {
             }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER) {
                 showUnWindowMenu();
             }else if((initCode & SHOW_CLOSE_FLOAT_WINDOW) == SHOW_CLOSE_FLOAT_WINDOW) {
-                if(windowList.isEmpty())
+                if(com.jack8.floatwindow.Window.WindowManager.count() == 0)
                     closeFloatWindow();
                 else{
                     View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
@@ -712,7 +709,7 @@ public class FloatServer extends Service {
                 public void run() {
                     int windowListLength = 0;
                     while (windowManager != null) {
-                        if (windowListLength != windowList.size())
+                        if (windowListLength != com.jack8.floatwindow.Window.WindowManager.count())
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -720,7 +717,7 @@ public class FloatServer extends Service {
                                     hma.notifyDataSetChanged();
                                 }
                             });
-                        windowListLength = windowList.size();
+                        windowListLength = com.jack8.floatwindow.Window.WindowManager.count();
                         try {
                             Thread.sleep(1l);
                         } catch (InterruptedException e) {
@@ -734,24 +731,24 @@ public class FloatServer extends Service {
     }
 
     class hideMenuAdapter extends BaseAdapter{
-        private Integer[] key;
+        private Integer[] windowNumbers;
 
         public hideMenuAdapter(){
             updateWindowList();
         }
 
         public void updateWindowList(){
-            key = windowList.keySet().toArray(new Integer[windowList.size()]);
+            windowNumbers = com.jack8.floatwindow.Window.WindowManager.getAllWindowNumber();
         }
 
         @Override
         public int getCount() {
-            return key.length;
+            return windowNumbers.length;
         }
 
         @Override
         public Object getItem(int position) {
-            return windowList.get(key[position]);
+            return com.jack8.floatwindow.Window.WindowManager.getWindowStruct(windowNumbers[position]);
         }
 
         @Override
@@ -763,8 +760,8 @@ public class FloatServer extends Service {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
                 convertView = LayoutInflater.from(FloatServer.this).inflate(R.layout.window_manager, null);
-            if(windowList.containsKey(key[position])) {
-                final WindowStruct windowStruct = windowList.get(key[position]);
+            if(com.jack8.floatwindow.Window.WindowManager.windowIn(windowNumbers[position])) {
+                final WindowStruct windowStruct = com.jack8.floatwindow.Window.WindowManager.getWindowStruct(windowNumbers[position]);
                 ((TextView) convertView.findViewById(R.id.title)).setText(windowStruct.getWindowTitle());
                 convertView.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -169,8 +169,8 @@ public class Brickout {
     public void onPause() {
         gameStatus = GameStatus.STOP;
         for(int number : windowsList) {
-            WindowStruct.getWindowStruct(number).setTransitionsDuration(0);
-            WindowStruct.getWindowStruct(number).close();
+            com.jack8.floatwindow.Window.WindowManager.getWindowStruct(number).setTransitionsDuration(0);
+            com.jack8.floatwindow.Window.WindowManager.getWindowStruct(number).close();
         }
     }
     public void onDestroy() {

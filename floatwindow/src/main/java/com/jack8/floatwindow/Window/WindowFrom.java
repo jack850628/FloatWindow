@@ -3,16 +3,13 @@ package com.jack8.floatwindow.Window;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.jack8.floatwindow.R;
 
-import java.util.Map;
 
 public class WindowFrom extends LinearLayout {
     public interface WindowKeyEvent{
@@ -24,18 +21,18 @@ public class WindowFrom extends LinearLayout {
             return false;
         }
     };
-    final WindowManager wm;
+    final android.view.WindowManager wm;
     WindowStruct WS;
     public boolean inited = false;//判斷視窗畫面是否初始化完成
     public WindowFrom(Context context) {
         super(context);
         wColor = new WindowColor(context);
-        wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        wm = (android.view.WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
     public WindowFrom(Context context, AttributeSet attrs) {
         super(context, attrs);
         wColor = new WindowColor(context);
-        wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        wm = (android.view.WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
     void setWindowStruct(WindowStruct WS){
         this.WS = WS;
@@ -60,7 +57,7 @@ public class WindowFrom extends LinearLayout {
         if(!inited){
             inited = true;
             if(WS != null) {
-                if(WindowStruct.NOW_FOCUS_NUMBER == WS.Number)//如果被觸碰的視窗編號是現在焦點視窗編號
+                if(WindowManager.focusedWindowNumber == WS.Number)//如果被觸碰的視窗編號是現在焦點視窗編號
                     setWindowStyleOfFocus();
                 else
                     setWindowStyleOfUnFocus();
@@ -74,7 +71,7 @@ public class WindowFrom extends LinearLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if(WS != null) {
-            if(WindowStruct.NOW_FOCUS_NUMBER != WS.Number){//如果被觸碰的視窗編號不是現在焦點視窗編號
+            if(WindowManager.focusedWindowNumber != WS.Number){//如果被觸碰的視窗編號不是現在焦點視窗編號
                 WS.focusWindow();
                 return true;//防止點擊事件因為至視窗至頂切換變成長按事件
             }

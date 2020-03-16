@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -25,7 +24,6 @@ import android.widget.TextView;
 import com.jack8.floatwindow.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 
@@ -33,27 +31,26 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private static int Index = 0;//計算視窗開啟數量
 
     final int Number;//視窗編號
-    static int NOW_FOCUS_NUMBER = -1;//現在點視窗
 
     private final int parentWindowNumber;//父視窗編號
     private final HashSet<Integer> subWindowNumbers = new HashSet<>();//所有子視窗編號
     private static final int TITLE_LIFT_TO_EDGE_DISTANCE = 10;
     //static final int START_POINT = 60;//視窗預設座標
-    private static final int FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
-            |WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
-            |WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH//如果你已經設置了FLAG_NOT_TOUCH_MODAL,那麼你可以設置FLAG_WATCH_OUTSIDE_TOUCH這個flag, 這樣一個點擊事件如果發生在你的window之外的範圍,你就會接收到一個特殊的MotionEvent,MotionEvent.ACTION_OUTSIDE 注意,你只會接收到點擊事件的第一下,而之後的DOWN/MOVE/UP等手勢全都不會接收到
+    private static final int FOCUS_FLAGE =  android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
+            | android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL//使可以操作視窗後方的物件
+            | android.view.WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH//如果你已經設置了FLAG_NOT_TOUCH_MODAL,那麼你可以設置FLAG_WATCH_OUTSIDE_TOUCH這個flag, 這樣一個點擊事件如果發生在你的window之外的範圍,你就會接收到一個特殊的MotionEvent,MotionEvent.ACTION_OUTSIDE 注意,你只會接收到點擊事件的第一下,而之後的DOWN/MOVE/UP等手勢全都不會接收到
             ;
-    private static final int NO_FOCUS_FLAGE = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
-            |WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+    private static final int NO_FOCUS_FLAGE =  android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS//讓視窗超出螢幕
+            | android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
             ;
-    private static final int NO_FOCUS_FLAGE_FOR_MINI_STATE = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+    private static final int NO_FOCUS_FLAGE_FOR_MINI_STATE =  android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
     private int top,left,height,width;//視窗的座標及大小
 
     private Context context;
     //private WindowColor wColor;//視窗顏色
-    private WindowManager wm;
-    private WindowManager.LayoutParams wmlp;
+    private android.view.WindowManager wm;
+    private android.view.WindowManager.LayoutParams wmlp;
     private ScreenSize screenSize;
     private WindowAction windowAction;
     private View winform;//視窗外框
@@ -93,14 +90,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public State nowState = State.GENERAL;//當前狀態
     public State previousState = null;//前一次的狀態
 
-    static final HashMap<Integer,WindowStruct> windowList = new HashMap<>();
-
     /**
      * 建構WindowStruct的工廠模式
      */
     public static class Builder{
         private Context context;
-        private WindowManager windowManager;
+        private android.view.WindowManager windowManager;
         private View[] windowPages;
         private String[] windowPageTitles = new String[]{""};
         private Object[][] windowInitArgs = new Object[0][0];
@@ -148,7 +143,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         };
         private ScreenSize screenSize;
 
-        public Builder(Context context, final WindowManager windowManager){
+        public Builder(Context context, final android.view.WindowManager windowManager){
             this.context = context;
             this.windowManager = windowManager;
             this.buttonsHeight = this.buttonsWidth = (int)(context.getResources().getDisplayMetrics().density*30);
@@ -289,12 +284,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber){
-        if(windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)){
-            WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
+    public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber){
+        if(WindowManager.windowList.containsKey(WindowManager.focusedWindowNumber)){
+            WindowStruct WS = WindowManager.getWindowStruct(WindowManager.focusedWindowNumber);
             WS.unFocusWindow();
         }
-        WindowStruct.NOW_FOCUS_NUMBER = this.Number = Index++;
+        WindowManager.focusedWindowNumber = this.Number = Index++;
         this.context = context;
         this.wm = wm;
         this.winconPage = windowPages;
@@ -307,24 +302,24 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         this.buttonsWidth = buttonsWidth;
         this.buttonsHeight = buttonsHeight;
         this.sizeBarHeight = sizeBarHeight;
-        windowList.put(Number,this);
+        WindowManager.addWindowStruct(this);
         topMini = new Scroller(context);
         heightMini = new Scroller(context);
         Top = Math.max(Top, 0);
 
         //wColor = new WindowColor(context);
 
-        wmlp = new WindowManager.LayoutParams();
+        wmlp = new android.view.WindowManager.LayoutParams();
         wmlp.type = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                ?WindowManager.LayoutParams.TYPE_PHONE
-                :WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;//類型
+                ?android.view.WindowManager.LayoutParams.TYPE_PHONE
+                :android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;//類型
         wmlp.format = PixelFormat.TRANSPARENT;//背景(透明)
         wmlp.flags = FOCUS_FLAGE;
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
         wmlp.x = Left;
         wmlp.y = Top;//設定原點座標
-        wmlp.width = WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
-        wmlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        wmlp.width = android.view.WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
+        wmlp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
 
         winform = LayoutInflater.from(context).inflate(R.layout.window,null);
         ((WindowFrom)winform).setWindowStruct(this);
@@ -454,7 +449,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         //---------------------------------------------------------------------------------------------
         this.parentWindowNumber = parentWindowNumber;
         if(parentWindowNumber != -1)
-            windowList.get(parentWindowNumber).subWindowNumbers.add(Number);
+            WindowManager.getWindowStruct(parentWindowNumber).subWindowNumbers.add(Number);
     }
 
     public interface WindowAction{
@@ -687,7 +682,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     CDAW.Deconstruction(context, winconPage[i], i, WindowStruct.this);
                 windowAction.goClose(WindowStruct.this);
                 wm.removeView(winform);
-                windowList.remove(Number);
+                WindowManager.removeWindowStruct(WindowStruct.this);
             }
         }
     }
@@ -840,10 +835,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             previousState = nowState;
             nowState = State.CLOSE;
             if(parentWindowNumber != -1)
-                windowList.get(this.parentWindowNumber).subWindowNumbers.remove(Number);
+                WindowManager.getWindowStruct(this.parentWindowNumber).subWindowNumbers.remove(Number);
             for(int key : this.subWindowNumbers.toArray(new Integer[this.subWindowNumbers.size()]))
-                if(windowList.containsKey(key))
-                    windowList.get(key).close();
+                if(WindowManager.windowIn(key))
+                    WindowManager.getWindowStruct(key).close();
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -975,12 +970,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * 讓該視窗獲得焦點
      */
     public void focusWindow(){
-        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER != this.Number) {//如果視窗編號不是現在焦點視窗編號
-            if (windowList.containsKey(WindowStruct.NOW_FOCUS_NUMBER)) {//如果現在焦點視窗編號在有視窗清單裡
-                WindowStruct WS = windowList.get(WindowStruct.NOW_FOCUS_NUMBER);
+        if(nowState != State.CLOSE && WindowManager.focusedWindowNumber != this.Number) {//如果視窗編號不是現在焦點視窗編號
+            if (WindowManager.windowIn(WindowManager.focusedWindowNumber)) {//如果現在焦點視窗編號在有視窗清單裡
+                WindowStruct WS = WindowManager.getWindowStruct(WindowManager.focusedWindowNumber);
                 WS.unFocusWindow();
             }
-            WindowStruct.NOW_FOCUS_NUMBER = this.Number;
+            WindowManager.focusedWindowNumber = this.Number;
             ((WindowFrom) winform).setWindowStyleOfFocus();
             wmlp.flags = (nowState == State.MINI) ? NO_FOCUS_FLAGE_FOR_MINI_STATE : FOCUS_FLAGE;
             wmlp.alpha =1.0f;
@@ -988,7 +983,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wm.addView(winform,wmlp);
         }
         for(int key : this.subWindowNumbers)
-            windowList.get(key).focusWindow();
+            WindowManager.getWindowStruct(key).focusWindow();
     }
 
     /**
@@ -1003,15 +998,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 general();
         }
         for(int key : this.subWindowNumbers)
-            windowList.get(key).focusAndShowWindow();
+            WindowManager.getWindowStruct(key).focusAndShowWindow();
     }
 
     /**
      * 讓該視窗失去焦點
      */
     public void unFocusWindow(){
-        if(nowState != State.CLOSE && WindowStruct.NOW_FOCUS_NUMBER == this.Number) {//如果視窗編號是現在焦點視窗編號
-            WindowStruct.NOW_FOCUS_NUMBER = -1;
+        if(nowState != State.CLOSE && WindowManager.focusedWindowNumber == this.Number) {//如果視窗編號是現在焦點視窗編號
+            WindowManager.focusedWindowNumber = -1;
             if(nowState == State.MINI)
                 wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
             else {
@@ -1235,7 +1230,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public ArrayList<WindowStruct> getSubWindow(){
         ArrayList<WindowStruct> subWindows = new ArrayList<>();
         for(int key : this.subWindowNumbers)
-            subWindows.add(windowList.get(key));
+            subWindows.add(WindowManager.getWindowStruct(key));
         return subWindows;
     }
 
@@ -1312,8 +1307,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param number 視窗編號'
      * @return 視窗實體
      */
+    @Deprecated
     public static WindowStruct getWindowStruct(int number){
-        return windowList.get(number);
+        return WindowManager.getWindowStruct(number);
     }
 
     /**

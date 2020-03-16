@@ -359,8 +359,8 @@ public class Setting extends AppCompatActivity {
         if(brickout != null)
             brickout.onPause();
         if(adoutWindow != -1) {
-            WindowStruct.getWindowStruct(adoutWindow).setTransitionsDuration(0);
-            WindowStruct.getWindowStruct(adoutWindow).close();
+            com.jack8.floatwindow.Window.WindowManager.getWindowStruct(adoutWindow).setTransitionsDuration(0);
+            com.jack8.floatwindow.Window.WindowManager.getWindowStruct(adoutWindow).close();
         }
         super.onPause();
     }
@@ -462,7 +462,7 @@ public class Setting extends AppCompatActivity {
                                 }
                             }).show().getNumber();
                 }else
-                    WindowStruct.getWindowStruct(adoutWindow).focusAndShowWindow();
+                    com.jack8.floatwindow.Window.WindowManager.getWindowStruct(adoutWindow).focusAndShowWindow();
                 return true;
             case 1:
                 startActivity(new Intent(Setting.this, LogView.class));
