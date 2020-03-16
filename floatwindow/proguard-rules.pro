@@ -23,5 +23,9 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
+-keep public class * {
+    public static **;
+    public **;
+}
 
 -printmapping mapping.txt
