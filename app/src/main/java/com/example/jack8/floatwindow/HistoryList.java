@@ -33,10 +33,8 @@ public class HistoryList {
 
     class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder>{
 
-        ArrayList<DataBaseForBrowser.History> historyList;
-        Context context;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         WindowStruct windowStruct;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
         @NonNull
         @Override
@@ -134,9 +132,7 @@ public class HistoryList {
             }
         }
 
-        public HistoryListAdapter(Context context, ArrayList<DataBaseForBrowser.History> historyList, WindowStruct windowStruct){
-            this.context = context;
-            this.historyList = historyList;
+        public HistoryListAdapter(WindowStruct windowStruct){
             this.windowStruct = windowStruct;
         }
 
@@ -149,25 +145,16 @@ public class HistoryList {
 //            ((TextView) convertView.findViewById(R.id.date)).setText(formatter.format(historyList.get(position).browserDate));
 //            return convertView;
 //        }
-
-        void Deconstruction(){
-            historyList.clear();
-            historyList = null;
-            context = null;
-            formatter = null;
-            windowStruct = null;
-        }
     }
 
     public HistoryList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.HistoryDao historyDao, WindowStruct windowStruct){
         this.context = context;
         this.iw = iw;
-        this.historyList = historyList;
         this.historyDao = historyDao;
 
 
         recyclerView = (RecyclerView) pageView.findViewById(R.id.history_list);
-        historyListAdapter = new HistoryListAdapter(context, historyList, windowStruct);
+        historyListAdapter = new HistoryListAdapter(windowStruct);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setAdapter(historyListAdapter);
@@ -226,11 +213,10 @@ public class HistoryList {
 
     public void Deconstruction(){
         historyDao = null;
-        historyList = null;
-        context = null;
+//        historyList = null;
+//        context = null;
         iw = null;
         recyclerView = null;
-        historyListAdapter.Deconstruction();
         historyListAdapter = null;
     }
 }

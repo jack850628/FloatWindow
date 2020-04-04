@@ -75,13 +75,17 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
                     @Override
                     public boolean dispatchKeyEvent(KeyEvent event) {
-                        if(windowStruct.getCurrentPagePosition() == 0 && event.getKeyCode() == KeyEvent.KEYCODE_BACK){
-                            if(event.getAction() == KeyEvent.ACTION_UP) {
-                                web.goBack();
-                                return true;
-                            }
+                    if(
+                        windowStruct.nowState != WindowStruct.State.CLOSE &&
+                        windowStruct.getCurrentPagePosition() == 0 &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_BACK
+                    ){
+                        if(event.getAction() == KeyEvent.ACTION_UP) {
+                            web.goBack();
+                            return true;
                         }
-                        return false;
+                    }
+                    return false;
                     }
                 });
                 page0(context, pageView, position, args, windowStruct);

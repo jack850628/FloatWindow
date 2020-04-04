@@ -3,7 +3,7 @@
     android:id="@+id/item_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#77FFFFFF"
+    android:background="#E6E7E7E7"
     android:paddingLeft="5dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dip"

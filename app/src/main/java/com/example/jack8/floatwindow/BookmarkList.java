@@ -32,8 +32,6 @@ public class BookmarkList {
 
     class BookmarkListAdapter extends RecyclerView.Adapter<BookmarkList.BookmarkListAdapter.ViewHolder>{
 
-        ArrayList<DataBaseForBrowser.Bookmark> bookmarkList;
-        Context context;
         WindowStruct windowStruct;
 
         @NonNull
@@ -203,10 +201,8 @@ public class BookmarkList {
             }
         }
 
-        public BookmarkListAdapter(Context context, WindowStruct windowStruct, ArrayList<DataBaseForBrowser.Bookmark> BookmarkList){
-            this.context = context;
+        public BookmarkListAdapter(WindowStruct windowStruct){
             this.windowStruct = windowStruct;
-            this.bookmarkList = BookmarkList;
         }
 
 //        @Override
@@ -218,13 +214,6 @@ public class BookmarkList {
 //            ((TextView) convertView.findViewById(R.id.date)).setText(formatter.format(BookmarkList.get(position).browserDate));
 //            return convertView;
 //        }
-
-        void Deconstruction(){
-            bookmarkList.clear();
-            bookmarkList = null;
-            context = null;
-            windowStruct = null;
-        }
     }
 
     public BookmarkList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.BookmarksDao bookmarksDao, WindowStruct windowStruct){
@@ -233,7 +222,7 @@ public class BookmarkList {
         this.bookmarksDao = bookmarksDao;
 
         recyclerView = (RecyclerView) pageView.findViewById(R.id.bookmark_list);
-        bookmarkListAdapter = new BookmarkList.BookmarkListAdapter(context, windowStruct, bookmarkList);
+        bookmarkListAdapter = new BookmarkList.BookmarkListAdapter(windowStruct);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setAdapter(bookmarkListAdapter);
@@ -279,11 +268,10 @@ public class BookmarkList {
 
     public void Deconstruction(){
         bookmarksDao = null;
-        bookmarkList = null;
-        context = null;
+//        bookmarkList = null;
+//        context = null;
         iw = null;
         recyclerView = null;
-        bookmarkListAdapter.Deconstruction();
         bookmarkListAdapter = null;
     }
 }

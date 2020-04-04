@@ -683,6 +683,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 windowAction.goClose(WindowStruct.this);
                 wm.removeView(winform);
                 WindowManager.removeWindowStruct(WindowStruct.this);
+                WindowManager.focusedWindowNumber = WindowManager.NON_FOCUSED_WINDOW;
             }
         }
     }
@@ -1006,7 +1007,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void unFocusWindow(){
         if(nowState != State.CLOSE && WindowManager.focusedWindowNumber == this.Number) {//如果視窗編號是現在焦點視窗編號
-            WindowManager.focusedWindowNumber = -1;
+            WindowManager.focusedWindowNumber = WindowManager.NON_FOCUSED_WINDOW;
             if(nowState == State.MINI)
                 wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
             else {
