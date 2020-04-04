@@ -95,4 +95,6 @@
     <string name="type">Type</string>
     <string name="size">Size</string>
     <string name="what_is_new_string3">Browser can download files</string>
+    <string name="delete_msg">are you sure delete?</string>
+    <string name="delete_note">delete note</string>
 </resources>

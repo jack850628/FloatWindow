@@ -96,4 +96,6 @@
     <string name="type">類型</string>
     <string name="size">大小</string>
     <string name="what_is_new_string3">瀏覽器可以下載檔案</string>
+    <string name="delete_msg">確定要刪除?</string>
+    <string name="delete_note">刪除便條紙</string>
 </resources>
