@@ -8,9 +8,14 @@ android {
         applicationId "com.jack850628.floatwindow"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 38
-        versionName "1.2.4.0404"
+        versionCode 39
+        versionName "1.2.4.0406"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]//這行會讓RoomDatabase在app/schemas建立SQLite資料庫結構json文件，更多說明:https://stackoverflow.com/questions/44322178/room-schema-export-directory-is-not-provided-to-the-annotation-processor-so-we
+            }
+        }
     }
     buildTypes {
         release {
