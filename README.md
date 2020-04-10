@@ -15,7 +15,7 @@ Float Window app for Android\
 
 ## 使用FloatWindoew在自己的APP裡
 
-1.下載[FloatWindow模組](/release_module/floatwindow-release.aar)
+1.下載[FloatWindow模組](https://github.com/jack850628/FloatWindow/releases/tag/1.2.0.0316)
 
 2.引入aar檔到專案中 \
 <img src="說明1.png" width="500"></img>
