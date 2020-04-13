@@ -41,13 +41,13 @@ public class BookmarkList {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BookmarkList.BookmarkListAdapter.ViewHolder viewHolder, final int i) {
-            viewHolder.title.setText(bookmarkList.get(viewHolder.getAdapterPosition()).title);
-            viewHolder.url.setText(bookmarkList.get(viewHolder.getAdapterPosition()).url);
+        public void onBindViewHolder(@NonNull final BookmarkList.BookmarkListAdapter.ViewHolder viewHolder, final int index) {
+            viewHolder.title.setText(bookmarkList.get(index).title);
+            viewHolder.url.setText(bookmarkList.get(index).url);
             viewHolder.v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    iw.loadUrl(bookmarkList.get(viewHolder.getAdapterPosition()).url);
+                    iw.loadUrl(bookmarkList.get(index).url);
                     windowStruct.showPage(0);
                 }
             });
@@ -62,7 +62,7 @@ public class BookmarkList {
 //                        public boolean onMenuItemClick(MenuItem menuItem) {
 //                            switch (menuItem.getItemId()){
 //                                case 0:
-//                                    BookmarkList.this.removeBookmark(viewHolder.getAdapterPosition());
+//                                    BookmarkList.this.removeBookmark(i);
 //                            }
 //                            popupMenu.dismiss();
 //                            return true;
@@ -90,7 +90,7 @@ public class BookmarkList {
                                     new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                             .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                                             .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
-                                            .windowInitArgs(new Object[][]{new String[]{bookmarkList.get(viewHolder.getAdapterPosition()).url}})
+                                            .windowInitArgs(new Object[][]{new String[]{bookmarkList.get(index).url}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
                                             .constructionAndDeconstructionWindow(new WebBrowser())
@@ -114,12 +114,11 @@ public class BookmarkList {
                                                     final EditText title_box = pageView.findViewById(R.id.title);
                                                     final EditText url_box = pageView.findViewById(R.id.home_link);
 
-                                                    title_box.setText(bookmarkList.get(viewHolder.getAdapterPosition()).title);
-                                                    url_box.setText(bookmarkList.get(viewHolder.getAdapterPosition()).url);
+                                                    title_box.setText(bookmarkList.get(index).title);
+                                                    url_box.setText(bookmarkList.get(index).url);
                                                     pageView.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            final int index = viewHolder.getAdapterPosition();
                                                             bookmarkList.get(index).title = title_box.getText().toString();
                                                             bookmarkList.get(index).url = url_box.getText().toString();
                                                             new Thread(new Runnable() {
@@ -128,7 +127,7 @@ public class BookmarkList {
                                                                     try {
                                                                         BookmarkList.this.bookmarksDao.upDataBookmark(bookmarkList.get(index).id, title_box.getText().toString(), url_box.getText().toString());
                                                                     }catch (SQLiteConstraintException e){
-                                                                        BookmarkList.this.bookmarksDao.deleteBookmark(url_box.getText().toString());
+                                                                        BookmarkList.this.bookmarksDao.deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
                                                                         BookmarkList.this.bookmarksDao.upDataBookmark(bookmarkList.get(index).id, title_box.getText().toString(), url_box.getText().toString());
                                                                         bookmarkList.clear();
                                                                         bookmarkList.addAll(BookmarkList.this.bookmarksDao.getBookmarks());
@@ -148,7 +147,7 @@ public class BookmarkList {
                                                     pageView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            removeBookmark(viewHolder.getAdapterPosition());
+                                                            removeBookmark(index);
                                                             windowStruct.close();
                                                         }
                                                     });
@@ -173,7 +172,7 @@ public class BookmarkList {
                                     break;
                                 }
                                 case 2:
-                                    BookmarkList.this.removeBookmark(viewHolder.getAdapterPosition());
+                                    BookmarkList.this.removeBookmark(index);
                                     break;
                             }
                             popupWindow.dismiss();
@@ -248,6 +247,10 @@ public class BookmarkList {
         }).start();
     }
 
+    public void onPause(){
+        bookmarkList.clear();
+    }
+
     void removeBookmark(final int index){
         new Thread(new Runnable() {
             @Override
@@ -258,6 +261,7 @@ public class BookmarkList {
                     public void run() {
                         bookmarkList.remove(index);
                         bookmarkListAdapter.notifyItemRemoved(index);
+                        bookmarkListAdapter.notifyItemRangeChanged(index, bookmarkList.size() - index);
                         if(bookmarkList.size() == 0)
                             BookmarkList.this.recyclerView.setVisibility(View.GONE);
                     }

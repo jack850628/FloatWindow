@@ -693,7 +693,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                                         try {
                                                                             dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }catch (SQLiteConstraintException e){
-                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());
+                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
                                                                             dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }
                                                                     }
@@ -805,8 +805,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     @Override
     public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
         if(position == 1)
-            bookmarkList.bookmarkList.clear();
+            bookmarkList.onPause();
         else if (position == 2)
-            historyList.historyList.clear();
+            historyList.onPause();
     }
 }
