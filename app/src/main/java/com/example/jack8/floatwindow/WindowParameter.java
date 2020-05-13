@@ -1,7 +1,7 @@
 package com.example.jack8.floatwindow;
 
 import android.content.Context;
-import android.support.annotation.IntRange;
+import androidx.annotation.IntRange;
 
 import com.jack8.floatwindow.Window.WindowConfig;
 

@@ -2,7 +2,7 @@ package com.example.jack8.floatwindow;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.arch.persistence.room.Room;
+import androidx.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
@@ -11,7 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,13 +75,17 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
                     @Override
                     public boolean dispatchKeyEvent(KeyEvent event) {
-                        if(windowStruct.getCurrentPagePosition() == 0 && event.getKeyCode() == KeyEvent.KEYCODE_BACK){
-                            if(event.getAction() == KeyEvent.ACTION_UP) {
-                                web.goBack();
-                                return true;
-                            }
+                    if(
+                        windowStruct.nowState != WindowStruct.State.CLOSE &&
+                        windowStruct.getCurrentPagePosition() == 0 &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_BACK
+                    ){
+                        if(event.getAction() == KeyEvent.ACTION_UP) {
+                            web.goBack();
+                            return true;
                         }
-                        return false;
+                    }
+                    return false;
                     }
                 });
                 page0(context, pageView, position, args, windowStruct);
@@ -689,7 +693,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                                         try {
                                                                             dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }catch (SQLiteConstraintException e){
-                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());
+                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
                                                                             dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }
                                                                     }
@@ -801,8 +805,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     @Override
     public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
         if(position == 1)
-            bookmarkList.bookmarkList.clear();
+            bookmarkList.onPause();
         else if (position == 2)
-            historyList.historyList.clear();
+            historyList.onPause();
     }
 }

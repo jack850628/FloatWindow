@@ -5,8 +5,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class WindowManager {
+    static final int NON_FOCUSED_WINDOW = -1;
     static final HashMap<Integer,WindowStruct> windowList = new HashMap<>();
-    static int focusedWindowNumber = -1;//現在焦點視窗
+    static int focusedWindowNumber = NON_FOCUSED_WINDOW;//現在焦點視窗
 
     public static WindowStruct getWindowStruct(int number){
         return windowList.get(number);

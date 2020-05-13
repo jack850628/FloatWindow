@@ -101,18 +101,78 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                 removeNode.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        SharedPreferences noteSpf = context.getSharedPreferences(NotePage.NOTE,0);
-                        try {
-                            JSONObject notes = new JSONObject(noteSpf.getString(NOTES,"{}"));
-                            notes.remove(noteList.get(position)[0]);
-                            SharedPreferences.Editor spfe=noteSpf.edit();
-                            spfe.putString(NOTES,notes.toString());
-                            spfe.apply();
-                            noteList.remove(position);
-                            OtherNodeListAdapter.this.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                        ((TextView)messageView.findViewById(R.id.message)).setText(R.string.delete_msg);
+                        messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
+                        messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                        new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                .parentWindow(otherNoteList)
+                                .windowPageTitles(new String[]{context.getString(R.string.delete_note)})
+                                .windowPages(new View[]{messageView})
+                                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                                .left(otherNoteList.getRealWidth() / 2 + otherNoteList.getRealPositionX() - messageView.getMeasuredWidth() / 2)
+                                .top(otherNoteList.getRealHeight() / 2 + otherNoteList.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))) / 2)
+                                .width(messageView.getMeasuredWidth())
+                                .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))))
+                                .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                    @Override
+                                    public void Construction(final Context context, View pageView, int _, Object[] args, final WindowStruct ws) {
+                                        pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                SharedPreferences noteSpf = context.getSharedPreferences(NotePage.NOTE,0);
+                                                try {
+                                                    JSONObject notes = new JSONObject(noteSpf.getString(NOTES,"{}"));
+                                                    notes.remove(noteList.get(position)[0]);
+                                                    SharedPreferences.Editor spfe=noteSpf.edit();
+                                                    spfe.putString(NOTES,notes.toString());
+                                                    spfe.apply();
+                                                    noteList.remove(position);
+                                                    OtherNodeListAdapter.this.notifyDataSetChanged();
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                ws.close();
+                                            }
+                                        });
+                                        pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ws.close();
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                                    }
+
+                                    @Override
+                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                    }
+
+                                    @Override
+                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                    }
+                                })
+                                .windowAction(new WindowStruct.WindowAction() {
+                                    @Override
+                                    public void goHide(WindowStruct windowStruct) {
+
+                                    }
+                                    @Override
+                                    public void goClose(WindowStruct windowStruct) {
+
+                                    }
+                                })
+                                .show();
                     }
                 });
             }else {

@@ -1,10 +1,10 @@
 package com.example.jack8.floatwindow;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,10 +33,8 @@ public class HistoryList {
 
     class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder>{
 
-        ArrayList<DataBaseForBrowser.History> historyList;
-        Context context;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         WindowStruct windowStruct;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
         @NonNull
         @Override
@@ -45,14 +43,14 @@ public class HistoryList {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
-            viewHolder.title.setText(historyList.get(viewHolder.getAdapterPosition()).title);
-            viewHolder.url.setText(historyList.get(viewHolder.getAdapterPosition()).url);
-            viewHolder.date.setText(formatter.format(historyList.get(viewHolder.getAdapterPosition()).browserDate));
+        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int index) {
+            viewHolder.title.setText(historyList.get(index).title);
+            viewHolder.url.setText(historyList.get(index).url);
+            viewHolder.date.setText(formatter.format(historyList.get(index).browserDate));
             viewHolder.v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    iw.loadUrl(historyList.get(viewHolder.getAdapterPosition()).url);
+                    iw.loadUrl(historyList.get(index).url);
                     windowStruct.showPage(0);
                 }
             });
@@ -67,7 +65,7 @@ public class HistoryList {
 //                        public boolean onMenuItemClick(MenuItem menuItem) {
 //                            switch (menuItem.getItemId()){
 //                                case 0:
-//                                    HistoryList.this.removeHistory(viewHolder.getAdapterPosition());
+//                                    HistoryList.this.removeHistory(i);
 //                            }
 //                            popupMenu.dismiss();
 //                            return true;
@@ -95,7 +93,7 @@ public class HistoryList {
                                     new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                             .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                                             .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
-                                            .windowInitArgs(new Object[][]{new String[]{historyList.get(viewHolder.getAdapterPosition()).url}})
+                                            .windowInitArgs(new Object[][]{new String[]{historyList.get(index).url}})
                                             .windowAction(((FloatServer)context).windowAction)
                                             .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
                                             .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
@@ -106,7 +104,7 @@ public class HistoryList {
                                     break;
                                 }
                                 case 1:
-                                    HistoryList.this.removeHistory(viewHolder.getAdapterPosition());
+                                    HistoryList.this.removeHistory(index);
                                     break;
                             }
                             popupWindow.dismiss();
@@ -134,9 +132,7 @@ public class HistoryList {
             }
         }
 
-        public HistoryListAdapter(Context context, ArrayList<DataBaseForBrowser.History> historyList, WindowStruct windowStruct){
-            this.context = context;
-            this.historyList = historyList;
+        public HistoryListAdapter(WindowStruct windowStruct){
             this.windowStruct = windowStruct;
         }
 
@@ -149,25 +145,16 @@ public class HistoryList {
 //            ((TextView) convertView.findViewById(R.id.date)).setText(formatter.format(historyList.get(position).browserDate));
 //            return convertView;
 //        }
-
-        void Deconstruction(){
-            historyList.clear();
-            historyList = null;
-            context = null;
-            formatter = null;
-            windowStruct = null;
-        }
     }
 
     public HistoryList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.HistoryDao historyDao, WindowStruct windowStruct){
         this.context = context;
         this.iw = iw;
-        this.historyList = historyList;
         this.historyDao = historyDao;
 
 
         recyclerView = (RecyclerView) pageView.findViewById(R.id.history_list);
-        historyListAdapter = new HistoryListAdapter(context, historyList, windowStruct);
+        historyListAdapter = new HistoryListAdapter(windowStruct);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setAdapter(historyListAdapter);
@@ -180,7 +167,7 @@ public class HistoryList {
             }
 
             @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 removeHistory(viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(recyclerView);
@@ -206,6 +193,10 @@ public class HistoryList {
         }).start();
     }
 
+    public void onPause(){
+        historyList.clear();
+    }
+
     void removeHistory(final int index){
         new Thread(new Runnable() {
             @Override
@@ -216,6 +207,7 @@ public class HistoryList {
                     public void run() {
                         historyList.remove(index);
                         historyListAdapter.notifyItemRemoved(index);
+                        historyListAdapter.notifyItemRangeChanged(index, historyList.size() - index);
                         if(historyList.size() == 0)
                             HistoryList.this.recyclerView.setVisibility(View.GONE);
                     }
@@ -226,11 +218,10 @@ public class HistoryList {
 
     public void Deconstruction(){
         historyDao = null;
-        historyList = null;
-        context = null;
+//        historyList = null;
+//        context = null;
         iw = null;
         recyclerView = null;
-        historyListAdapter.Deconstruction();
         historyListAdapter = null;
     }
 }
