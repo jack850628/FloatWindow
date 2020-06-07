@@ -683,7 +683,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 windowAction.goClose(WindowStruct.this);
                 wm.removeView(winform);
                 WindowManager.removeWindowStruct(WindowStruct.this);
-                WindowManager.focusedWindowNumber = WindowManager.NON_FOCUSED_WINDOW;
+                if(WindowManager.focusedWindowNumber == Number)
+                    WindowManager.focusedWindowNumber = WindowManager.NON_FOCUSED_WINDOW;
             }
         }
     }
