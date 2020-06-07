@@ -8,8 +8,8 @@ android {
         applicationId "com.jack850628.floatwindow"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 40
-        versionName "1.2.4.0413"
+        versionCode 41
+        versionName "1.2.4.0607"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
             annotationProcessorOptions {
