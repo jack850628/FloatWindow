@@ -36,7 +36,7 @@ public class HelpMeAd extends AppCompatActivity {
                     @Override
                     public void onUserEarnedReward(@NonNull RewardItem reward) {
                         Intent i = new Intent(HelpMeAd.this, FloatServer.class);
-                        i.putExtra(FloatServer.INTENT,FloatServer.SHOW_WATCHED_AD);
+                        i.putExtra(FloatServer.INTENT,FloatServer.OPEN_WATCHED_AD);
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                             HelpMeAd.this.startService(i);
                         else

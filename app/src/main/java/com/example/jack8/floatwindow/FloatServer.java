@@ -43,20 +43,20 @@ import java.lang.reflect.Method;
  */
 public class FloatServer extends Service {
     public static final int OPEN_NONE = 0x0000;
-    public static final int OPEN_FLOAT_WINDOW = 0x0001;
+    //public static final int OPEN_FLOAT_WINDOW = 0x0001;
     public static final int OPEN_EXTRA_URL = 0x0002;
-    public static final int SHOW_WINDOW_MANAGER = 0x0004;
-    public static final int SHOW_FLOAT_WINDOW_MENU = 0x0008;
+    public static final int OPEN_WINDOW_MANAGER = 0x0004;
+    //public static final int SHOW_FLOAT_WINDOW_MENU = 0x0008;
     public static final int OPEN_WEB_BROWSER = 0x0010;
     public static final int OPEN_NOTE_PAGE = 0x0020;
     public static final int OPEN_CALCULATOR = 0x0040;
     public static final int OPEN_MAIN_MENU = 0x0080;
     public static final int OPEN_SETTING = 0x0100;
-    public static final int SHOW_CLOSE_FLOAT_WINDOW = 0x0200;
-    public static final int SHOW_WATCHED_AD = 0x0400;
+    public static final int CLOSE_FLOAT_WINDOW = 0x0200;
+    public static final int OPEN_WATCHED_AD = 0x0400;
     public static final String LAUNCHER = "launcher";
     public static final String INTENT = "intent";
-    public static final String EXYRA_URL = "extra_url";
+    public static final String EXTRA_URL = "extra_url";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -140,14 +140,14 @@ public class FloatServer extends Service {
         remoteViews.setOnClickPendingIntent(R.id.window_list,
                 PendingIntent.getService(this,
                         4,
-                        new Intent(this,FloatServer.class).putExtra(INTENT,SHOW_WINDOW_MANAGER),
+                        new Intent(this,FloatServer.class).putExtra(INTENT,OPEN_WINDOW_MANAGER),
                         PendingIntent.FLAG_UPDATE_CURRENT
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.close,
                 PendingIntent.getService(this,
                         5,
-                        new Intent(this,FloatServer.class).putExtra(INTENT,SHOW_CLOSE_FLOAT_WINDOW),
+                        new Intent(this,FloatServer.class).putExtra(INTENT,CLOSE_FLOAT_WINDOW),
                         PendingIntent.FLAG_UPDATE_CURRENT
                 )
         );
@@ -406,7 +406,7 @@ public class FloatServer extends Service {
                         .constructionAndDeconstructionWindow(new WebBrowser())
                         .show();
             else{
-                String extra_url = intent.getStringExtra(EXYRA_URL);
+                String extra_url = intent.getStringExtra(EXTRA_URL);
                 new WindowStruct.Builder(this,wm)
                         .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
@@ -434,7 +434,7 @@ public class FloatServer extends Service {
                         .constructionAndDeconstructionWindow(new NotePage())
                         .show();
             else{
-                String extra_url = intent.getStringExtra(EXYRA_URL);
+                String extra_url = intent.getStringExtra(EXTRA_URL);
                 new WindowStruct.Builder(this,wm)
                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
@@ -462,7 +462,7 @@ public class FloatServer extends Service {
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
                     .show();
-        }else if((initCode & SHOW_WATCHED_AD) == SHOW_WATCHED_AD) {
+        }else if((initCode & OPEN_WATCHED_AD) == OPEN_WATCHED_AD) {
             View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
             ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.watched_ad));
             messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -523,75 +523,9 @@ public class FloatServer extends Service {
                 localException.printStackTrace();
             }
             //-----------------------------------------------------------------------
-            if((initCode & SHOW_FLOAT_WINDOW_MENU) == SHOW_FLOAT_WINDOW_MENU){
-                ListView menuView = new ListView(this);
-                menuView.setAdapter(new ArrayAdapter<String>(FloatServer.this,R.layout.hide_menu_item,R.id.item_text,new String[]{getString(R.string.setting),getString(R.string.windows_list)}));
-                if(menu != null)
-                    menu.focusAndShowWindow();
-                else {
-                    wm_count++;
-                    menu = new WindowStruct.Builder(this, wm)
-                            .windowPages(new View[]{menuView})
-                            .windowPageTitles(new String[]{getString(R.string.app_name)})
-                            .height((int) ((110 + WindowParameter.getWindowButtonsHeight(this)) * this.getResources().getDisplayMetrics().density))
-                            .width((int) (200 * this.getResources().getDisplayMetrics().density))
-                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
-                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
-                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
-                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
-                            .windowAction(new WindowStruct.WindowAction() {
-                                @Override
-                                public void goHide(WindowStruct windowStruct) {
-
-                                }
-
-                                @Override
-                                public void goClose(WindowStruct windowStruct) {
-                                    menu = null;
-                                    windowAction.goClose(windowStruct);
-                                }
-                            })
-                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                                @Override
-                                public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
-
-                                }
-
-                                @Override
-                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                }
-
-                                @Override
-                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                }
-
-                                @Override
-                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                }
-                            }).show();
-                    menuView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            menu.close();
-                            switch (position) {
-                                case 0:
-                                    Intent intent = new Intent(FloatServer.this, Setting.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                    break;
-                                case 1:
-                                    showUnWindowMenu();
-                            }
-                        }
-                    });
-                }
-            }else if((initCode & SHOW_WINDOW_MANAGER) == SHOW_WINDOW_MANAGER) {
-                showUnWindowMenu();
-            }else if((initCode & SHOW_CLOSE_FLOAT_WINDOW) == SHOW_CLOSE_FLOAT_WINDOW) {
+            if((initCode & OPEN_WINDOW_MANAGER) == OPEN_WINDOW_MANAGER) {
+                shohWindowManager();
+            }else if((initCode & CLOSE_FLOAT_WINDOW) == CLOSE_FLOAT_WINDOW) {
                 if(com.jack8.floatwindow.Window.WindowManager.count() == 0)
                     closeFloatWindow();
                 else{
@@ -645,7 +579,7 @@ public class FloatServer extends Service {
 
         return START_STICKY;//START_REDELIVER_INTENT;
     }
-    void showUnWindowMenu(){
+    void shohWindowManager(){
         final ListView hideMenu=new ListView(this);
         final hideMenuAdapter hma = new hideMenuAdapter();
         hideMenu.setAdapter(hma);

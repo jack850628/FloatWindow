@@ -34,7 +34,7 @@ public class NotePageLauncher extends AppCompatActivity {
             intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE);
         }else{
             intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE | FloatServer.OPEN_EXTRA_URL);
-            intent.putExtra(FloatServer.EXYRA_URL,url);
+            intent.putExtra(FloatServer.EXTRA_URL,url);
         }
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
