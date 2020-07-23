@@ -1,6 +1,6 @@
 <img src="app/src/main/res/drawable/icon.png" width="100"></img>
 # FloatWindow 浮動視窗
-Float Window app for Android\
+Floating Window app for Android\
 ![Alt text](Demonstration.png)
 \
 [<img src="google-play-badge.png" width="200"></img>](https://play.google.com/store/apps/details?id=com.jack850628.floatwindow)
