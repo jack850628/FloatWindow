@@ -46,3 +46,7 @@ captures/
 
 #Firebase api key
 app/google-services.json
+
+#Build file
+app/build/
+app/release/

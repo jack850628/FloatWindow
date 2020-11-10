@@ -37,7 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
 
@@ -59,6 +59,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     HistoryList historyList;
     DataBaseForBrowser dataBaseForBrowser = null;
 
+    private final FirebaseCrashlytics crashlytics;
+
+    public WebBrowser(){
+        crashlytics = FirebaseCrashlytics.getInstance();
+    }
+
     public void loadUrl(String url){
         PB.setVisibility(View.VISIBLE);
         PB.setProgress(0);
@@ -71,7 +77,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
         switch (position) {
             case 0:
                 JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
-                Crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
+                crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
                 windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
                     @Override
                     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -137,12 +143,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                     return super.shouldInterceptRequest(webView, url);
                 }catch (Exception e){
                     JackLog.writeLog(context, String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
-                    Crashlytics.log(String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
+                    crashlytics.log(String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
                     JackLog.writeLog(context, String.format("異常發生時WebBrowser請求網頁: %s\n",url));
-                    Crashlytics.log(String.format("異常發生時WebBrowser請求網頁: %s\n",url));
+                    crashlytics.log(String.format("異常發生時WebBrowser請求網頁: %s\n",url));
                     JackLog.writeLog(context, String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
-                    Crashlytics.log(String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
-                    Crashlytics.logException(e);
+                    crashlytics.log(String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
+                    crashlytics.recordException(e);
                     return new WebResourceResponse(null, null, null);
                 }
             }
@@ -159,12 +165,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                     return super.shouldInterceptRequest(webView, request);
                 }catch (Exception e){
                     JackLog.writeLog(context, String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
-                    Crashlytics.log(String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
+                    crashlytics.log(String.format("異常發生 WebBrowserID: %d\n", windowStruct.getNumber()));
                     JackLog.writeLog(context, String.format("異常發生時WebBrowser請求網頁: %s\n",request.getUrl().toString()));
-                    Crashlytics.log(String.format("異常發生時WebBrowser請求網頁: %s\n",request.getUrl().toString()));
+                    crashlytics.log(String.format("異常發生時WebBrowser請求網頁: %s\n",request.getUrl().toString()));
                     JackLog.writeLog(context, String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
-                    Crashlytics.log(String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
-                    Crashlytics.logException(e);
+                    crashlytics.log(String.format("還有運行中的WebBrowser? %b\n",WebBrowserSetting.haveRuningBrowser()));
+                    crashlytics.recordException(e);
                     return new WebResourceResponse(null, null, null);
                 }
             }
@@ -768,7 +774,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
         if(position == 0) {
             JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Close\n", windowStruct.getNumber()));
-            Crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Close\n", windowStruct.getNumber()));
+            crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Close\n", windowStruct.getNumber()));
             web.loadUrl("about:blank");
             web.onPause();
             web.removeAllViews();

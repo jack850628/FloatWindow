@@ -30,10 +30,9 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Method;
@@ -85,17 +84,19 @@ public class FloatServer extends Service {
         }
     };
 
+    private FirebaseCrashlytics crashlytics;
+
     private void closeFloatWindow(){
         this.stopForeground(true);
         try {
             unregisterReceiver(ScreenChangeListener.getInstance(this));
         }catch (IllegalArgumentException e){
-            Crashlytics.logException(e);
+            crashlytics.recordException(e);
         }
         try {
             unregisterReceiver(HomeKeyListener.getInstance(this));
         }catch (IllegalArgumentException e){
-            Crashlytics.logException(e);
+            crashlytics.recordException(e);
         }
         stopSelf();
     }
@@ -103,6 +104,7 @@ public class FloatServer extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        crashlytics = FirebaseCrashlytics.getInstance();
         JackLog.setWriteLogDrive(this,
                 "d936f0197b7e6c67"
         );

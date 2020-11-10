@@ -11,7 +11,7 @@ import android.webkit.WebSettings;
 import android.widget.EditText;
 import android.widget.Switch;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -306,7 +306,7 @@ public class WebBrowserSetting {
     void closeWebWindow(int windowId){
         webBrowserWindowList.remove(windowId);
         if(webBrowserWindowList.isEmpty()) {
-            Crashlytics.log(String.format("Close WebBrowser %d and WebBrowserSetting onDestroy", windowId));
+            FirebaseCrashlytics.getInstance().log(String.format("Close WebBrowser %d and WebBrowserSetting onDestroy", windowId));
             onDestroy();
         }
     }
