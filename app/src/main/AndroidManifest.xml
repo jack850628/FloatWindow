@@ -14,7 +14,6 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity android:name=".LogView"></activity>
-        <!-- =======================廣告ID============================ -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -27,7 +26,7 @@
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
-        </activity> <!-- ========================================================= -->
+        </activity>
         <activity
             android:name=".WebBrowserLauncher"
             android:icon="@drawable/browser"

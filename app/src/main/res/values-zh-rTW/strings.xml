@@ -98,4 +98,6 @@
     <string name="what_is_new_string3">瀏覽器可以下載檔案</string>
     <string name="delete_msg">確定要刪除?</string>
     <string name="delete_note">刪除便條紙</string>
+    <string name="desktop_mode">桌面模式</string>
+    <string name="shortcut_title">捷徑標題</string>
 </resources>

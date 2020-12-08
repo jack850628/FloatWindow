@@ -97,4 +97,6 @@
     <string name="what_is_new_string3">Browser can download files</string>
     <string name="delete_msg">are you sure delete?</string>
     <string name="delete_note">delete note</string>
+    <string name="desktop_mode">desktop mode</string>
+    <string name="shortcut_title">shortcut title</string>
 </resources>

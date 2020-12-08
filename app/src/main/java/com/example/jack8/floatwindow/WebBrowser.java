@@ -5,13 +5,19 @@ import android.app.AlertDialog;
 import androidx.room.Room;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.database.sqlite.SQLiteConstraintException;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.RequiresApi;
+
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +35,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -41,8 +49,10 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +68,9 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     BookmarkList bookmarkList;
     HistoryList historyList;
     DataBaseForBrowser dataBaseForBrowser = null;
+    boolean desktopMode = false;
+    String defaultUserAgentString;
+    String desktopModeUserAgentString;
 
     private final FirebaseCrashlytics crashlytics;
 
@@ -605,11 +618,18 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 web.getSettings().setUseWideViewPort(true);
                 web.getSettings().setDomStorageEnabled(true);
                 web.getSettings().setDatabaseEnabled(true);
+                defaultUserAgentString = web.getSettings().getUserAgentString();
+                desktopModeUserAgentString = Pattern.compile("^(.*?)Linux; Android (?:\\d.?)+;.*?( Build\\/.*?)Mobile (.*$)").matcher(defaultUserAgentString).replaceAll("$1X11; U; Linux i686;$2$3");
+                /*
+                以U12+為例
+                Mozilla/5.0 (Linux; Android 9; HTC 2Q55100 Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Mobile Safari/537.36
+                將會取代成
+                Mozilla/5.0 (X11; U; Linux i686; Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Safari/537.36
+                 */
                 String url = webBrowserSetting.getSetting().homeLink;
                 if(args != null && args.length != 0 && args[0] instanceof String) {
                     url = (String) args[0];
-                    Pattern pattern = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)");
-                    Matcher matcher = pattern.matcher(url);
+                    Matcher matcher = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)").matcher(url);
                     if(matcher.find())
                         url = matcher.group();
                 }
@@ -639,7 +659,16 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onClick(View v) {
                 ListView menu_list = new ListView(context);
-                menu_list.setAdapter(new ArrayAdapter<String>(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.home_page), context.getString(R.string.add_to_bookmarks), context.getString(R.string.share_the_website),context.getString(R.string.open_to_other_browser), context.getString(R.string.web_browser_setting)}));
+                MenuAdapter.Item[] items = new MenuAdapter.Item[]{
+                        new MenuAdapter.Item(context.getString(R.string.home_page)),
+                        new MenuAdapter.Item(context.getString(R.string.add_to_bookmarks)),
+                        new MenuAdapter.Item(context.getString(R.string.share_the_website)),
+                        new MenuAdapter.Item(context.getString(R.string.desktop_mode), desktopMode? 1 : 0),
+                        new MenuAdapter.Item(context.getString(R.string.add_to_home_screen)),
+                        new MenuAdapter.Item(context.getString(R.string.open_to_other_browser)),
+                        new MenuAdapter.Item(context.getString(R.string.web_browser_setting)),
+                };
+                menu_list.setAdapter(new MenuAdapter(context, items));
                 final PopupWindow popupWindow = new PopupWindow(context);
                 popupWindow.setWidth(((View)v.getParent()).getWidth());//好像是因為menu_list內部item文字的關西，在這使用menu_list.measure取到寬度很窄
                 popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -752,6 +781,103 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                 break;
                             }
                             case 3: {
+                                desktopMode = !desktopMode;
+                                web.getSettings().setUserAgentString(
+                                        desktopMode ? desktopModeUserAgentString : defaultUserAgentString
+                                );
+                                web.reload();
+                                break;
+                            }
+                            case 4: {
+                                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
+                                ((TextView)messageView.findViewById(R.id.message)).setText(context.getString(R.string.shortcut_title));
+                                ((TextView)messageView.findViewById(R.id.input_text)).setText(web.getTitle());
+                                messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
+                                messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
+                                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                        .parentWindow(windowStruct)
+                                        .windowPageTitles(new String[]{context.getString(R.string.add_to_home_screen)})
+                                        .windowPages(new View[]{messageView})
+                                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                                        .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - messageView.getMeasuredWidth() / 2)
+                                        .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))) / 2)
+                                        .width(messageView.getMeasuredWidth())
+                                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))))
+                                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                        .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                        .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                        .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                                            @Override
+                                            public void Construction(final Context context, final View pageView, int position, Object[] args, final WindowStruct ws) {
+                                                pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        String title =  ((TextView)pageView.findViewById(R.id.input_text)).getText().toString();
+                                                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                                            Intent shortcutIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT"),
+                                                                    launcher = new Intent(context , WebBrowserLauncher.class);
+                                                            launcher.putExtra(Intent.EXTRA_TEXT, web.getUrl());
+                                                            shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
+                                                            Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser);
+                                                            shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
+                                                            shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
+                                                            shortcutIntent.putExtra("duplicate", true);//是否可以重複建立
+                                                            context.sendBroadcast(shortcutIntent);
+                                                        }else{
+                                                            Intent shortcutIntent = new Intent(context, WebBrowserLauncher.class);
+                                                            shortcutIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
+                                                            shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
+                                                            ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
+                                                            ShortcutInfo shortcut = new ShortcutInfo.Builder(context, UUID.randomUUID().toString())
+                                                                    .setShortLabel(title)
+                                                                    .setLongLabel(title)
+                                                                    .setIcon(Icon.createWithBitmap(web.getFavicon()))
+                                                                    .setIntent(shortcutIntent)
+                                                                    .build();
+                                                            shortcutManager.requestPinShortcut(shortcut, null);
+                                                        }
+                                                        Toast.makeText(context, context.getString(R.string.added_to_the_home_screen),Toast.LENGTH_SHORT).show();
+                                                        ws.close();
+                                                    }
+                                                });
+                                                pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        ws.close();
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+
+                                            }
+
+                                            @Override
+                                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                            }
+
+                                            @Override
+                                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+
+                                            }
+                                        })
+                                        .windowAction(new WindowStruct.WindowAction() {
+                                            @Override
+                                            public void goHide(WindowStruct windowStruct) {
+
+                                            }
+                                            @Override
+                                            public void goClose(WindowStruct windowStruct) {
+                                            }
+                                        })
+                                        .show();
+                                break;
+                            }
+                            case 5: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -759,7 +885,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 4:
+                            case 6:
                                 WebBrowserSetting.getInit().showSettingWindow(context, null);
                                 break;
                         }
@@ -814,5 +940,55 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             bookmarkList.onPause();
         else if (position == 2)
             historyList.onPause();
+    }
+
+    static class MenuAdapter extends BaseAdapter{
+        public static class Item{
+            public String text;
+            public int checkState;
+
+            public Item(String text, int checkState){
+                this.text = text;
+                this.checkState = checkState;
+            }
+
+            public Item(String text){
+                this(text, -1);
+            }
+        }
+        Item[] items;
+        Context context;
+
+        public MenuAdapter(Context context, Item[] items){
+            this.context = context;
+            this.items = items;
+        }
+
+        @Override
+        public int getCount() {
+            return items.length;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return items[i];
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            if(items[i].checkState == -1){
+                view = LayoutInflater.from(context).inflate(R.layout.list_item, null);
+            }else{
+                view = LayoutInflater.from(context).inflate(R.layout.list_checkbox_item, null);
+                ((CheckBox)view.findViewById(R.id.item_checkBox)).setChecked(items[i].checkState == 1);
+            }
+            ((TextView)view.findViewById(R.id.item_text)).setText(items[i].text);
+            return view;
+        }
     }
 }
