@@ -619,7 +619,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 web.getSettings().setDomStorageEnabled(true);
                 web.getSettings().setDatabaseEnabled(true);
                 defaultUserAgentString = web.getSettings().getUserAgentString();
-                desktopModeUserAgentString = Pattern.compile("^(.*?)Linux; Android (?:\\d.?)+;.*?( Build\\/.*?)Mobile (.*$)").matcher(defaultUserAgentString).replaceAll("$1X11; U; Linux i686;$2$3");
+                desktopModeUserAgentString = Pattern.compile("^(.*?)Linux; Android (?:[0-9.]+);.+?( Build\\/.+?\\))(.+?)(?:Mobile )?(Safari.*)$").matcher(defaultUserAgentString).replaceAll("$1X11; U; Linux i686;$2$3$4");
                 /*
                 以U12+為例
                 Mozilla/5.0 (Linux; Android 9; HTC 2Q55100 Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Mobile Safari/537.36
