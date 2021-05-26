@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.database.sqlite.SQLiteConstraintException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,7 +19,6 @@ import android.os.Looper;
 import androidx.annotation.RequiresApi;
 
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -64,6 +64,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     Button goBack;
     Button menu;
     WebView web;
+    Button windowFormMenu;
     ProgressBar PB;
     BookmarkList bookmarkList;
     HistoryList historyList;
@@ -71,6 +72,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     boolean desktopMode = false;
     String defaultUserAgentString;
     String desktopModeUserAgentString;
+    boolean thisPageHaveIcon;
 
     private final FirebaseCrashlytics crashlytics;
 
@@ -125,6 +127,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
         menu = (Button) pageView.findViewById(R.id.menu);
         web = (WebView)pageView.findViewById(R.id.web);
         PB = (ProgressBar) pageView.findViewById(R.id.progressBar);
+        windowFormMenu = (Button)windowStruct.getWindowFrom().findViewById(R.id.menu);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
         final Clipboard clipboard = new Clipboard(context);
         dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
@@ -187,6 +190,15 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                     return new WebResourceResponse(null, null, null);
                 }
             }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                thisPageHaveIcon = false;
+                windowFormMenu.setBackgroundResource(R.drawable.menu_icom);
+//                windowFormMenu.setPadding(0, 0, 0, 0);
+            }
+
             @Override
             public void onPageFinished(WebView webView, final String url) {
                 final String title = webView.getTitle();
@@ -463,6 +475,14 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 if(newProgress==100)
                     PB.setVisibility(View.GONE);
                 super.onProgressChanged(webView,newProgress);
+            }
+
+            @Override
+            public void onReceivedIcon(WebView view, Bitmap icon) {
+                super.onReceivedIcon(view, icon);
+                thisPageHaveIcon = true;
+                windowFormMenu.setBackground(new BitmapDrawable(context.getResources(), icon));
+//                windowFormMenu.setPadding(5, 5, 5, 5);
             }
 
             /*------------全螢幕播放--------------
@@ -820,7 +840,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                                     launcher = new Intent(context , WebBrowserLauncher.class);
                                                             launcher.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
-                                                            Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser);
+                                                            Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser_icon);
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
                                                             shortcutIntent.putExtra("duplicate", true);//是否可以重複建立
@@ -833,7 +853,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                             ShortcutInfo shortcut = new ShortcutInfo.Builder(context, UUID.randomUUID().toString())
                                                                     .setShortLabel(title)
                                                                     .setLongLabel(title)
-                                                                    .setIcon(Icon.createWithBitmap(web.getFavicon()))
+                                                                    .setIcon(thisPageHaveIcon? Icon.createWithBitmap(web.getFavicon()): Icon.createWithResource(context, R.drawable.browser_icon))
                                                                     .setIntent(shortcutIntent)
                                                                     .build();
                                                             shortcutManager.requestPinShortcut(shortcut, null);

@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FloatWindow.iml" filepath="$PROJECT_DIR$/FloatWindow.iml" group="FloatWindow" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="FloatWindow/app" />
-      <module fileurl="file://$PROJECT_DIR$/floatwindow/floatwindow.iml" filepath="$PROJECT_DIR$/floatwindow/floatwindow.iml" group="FloatWindow/floatwindow" />
+      <module fileurl="file://$PROJECT_DIR$/FloatWindow.iml" filepath="$PROJECT_DIR$/FloatWindow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/FloatWindow.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/FloatWindow.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/floatwindow/FloatWindow.floatwindow.iml" filepath="$PROJECT_DIR$/.idea/modules/floatwindow/FloatWindow.floatwindow.iml" />
     </modules>
   </component>
 </project>
