@@ -150,6 +150,9 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {//廣告過濾
                 Uri uri = Uri.parse(url);
                 try {
+                    if(WebBrowserSetting.getStatus() == WebBrowserSetting.WebBrowserStatus.CLOSE){
+                        return new WebResourceResponse(null, null, null);
+                    }
                     if(WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
                         for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
                             if (uri.getHost().contains(adServerData.adServer))
@@ -172,6 +175,9 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {//廣告過濾
                 try {
+                    if(WebBrowserSetting.getStatus() == WebBrowserSetting.WebBrowserStatus.CLOSE){
+                        return new WebResourceResponse(null, null, null);
+                    }
                     if (WebBrowserSetting.getInit().getSetting().adsBlock && WebBrowserSetting.getInit().adServerListStatus == WebBrowserSetting.AdServerListStatus.COMPLETE) {
                         for (DataBaseForBrowser.AdServerData adServerData : WebBrowserSetting.getInit().adServerDatas) {
                             if (request.getUrl().getHost().contains(adServerData.adServer))

@@ -35,7 +35,10 @@ public class WebBrowserSetting {
         COMPLETE,
         CLOSE
     }
-    public static WebBrowserStatus webBrowserStatus = WebBrowserStatus.CLOSE;
+    private static WebBrowserStatus webBrowserStatus = WebBrowserStatus.CLOSE;
+    public static WebBrowserStatus getStatus(){
+        return webBrowserStatus;
+    }
     private static Stack<Operated> operatedStack = new Stack<>();
 
     public enum AdServerListStatus{
