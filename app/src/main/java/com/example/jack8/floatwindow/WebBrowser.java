@@ -989,7 +989,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
         switch (position){
             case 0:
-                showControlsBar.setVisibility(View.VISIBLE);
+                if(hiddenControlsBar)
+                    showControlsBar.setVisibility(View.VISIBLE);
                 break;
             case 1:
                 bookmarkList.onResume();
