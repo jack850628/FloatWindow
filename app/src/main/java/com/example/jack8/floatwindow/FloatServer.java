@@ -32,10 +32,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * 浮動視窗服務
@@ -109,6 +112,15 @@ public class FloatServer extends Service {
                 "d936f0197b7e6c67"
         );
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(
+                Arrays.asList(
+                        "6B58CCD0570D93BA1317A64BEB8BA677",
+                        "1E461A352AC1E22612B2470A43ADADBA",
+                        "F4734F4691C588DB93799277888EA573"
+                )
+        ).build());
+        MobileAds.initialize(this);
 
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_view);
         remoteViews.setOnClickPendingIntent(R.id.web_browser,
@@ -333,12 +345,7 @@ public class FloatServer extends Service {
                                 pageView.findViewById(R.id.setting).setOnLongClickListener(onLongClickListener);
                             }
                             adView = pageView.findViewById(R.id.adView);
-                            AdRequest adRequest = new AdRequest.Builder()
-                                    .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
-                                    .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
-                                    .addTestDevice("F4734F4691C588DB93799277888EA573")
-                                    .build();
-                            adView.loadAd(adRequest);
+                            adView.loadAd(new AdRequest.Builder().build());
 
                             Button helpButton = new Button(context);
                             helpButton.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(), windowStruct.getWindowButtonsHeight()));

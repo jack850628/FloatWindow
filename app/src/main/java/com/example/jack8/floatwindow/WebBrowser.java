@@ -63,6 +63,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     Button go;
     Button goBack;
     Button menu;
+    Button showControlsBar;
     WebView web;
     Button windowFormMenu;
     ProgressBar PB;
@@ -73,8 +74,11 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     String defaultUserAgentString;
     String desktopModeUserAgentString;
     boolean thisPageHaveIcon;
+    boolean hiddenControlsBar = false;
 
     private final FirebaseCrashlytics crashlytics;
+    private View customView;
+    private WebChromeClient.CustomViewCallback customViewCallback;
 
     public WebBrowser(){
         crashlytics = FirebaseCrashlytics.getInstance();
@@ -130,6 +134,28 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
         windowFormMenu = (Button)windowStruct.getWindowFrom().findViewById(R.id.menu);
         final ViewGroup controlsBar = (ViewGroup)pageView.findViewById(R.id.controls_bar);
         final Clipboard clipboard = new Clipboard(context);
+
+        showControlsBar = new Button(context);
+        showControlsBar.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(),windowStruct.getWindowButtonsHeight()));
+        showControlsBar.setPadding(0,0,0,0);
+        showControlsBar.setBackground(context.getResources().getDrawable(R.drawable.out_to_full_screen));
+        new Handler(Looper.getMainLooper()).post(new Runnable() {//在下一幀畫面時動作
+            @Override
+            public void run() {
+                showControlsBar.setVisibility(View.GONE);
+            }
+        });
+        showControlsBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hiddenControlsBar = false;
+                if (customView == null)
+                    controlsBar.setVisibility(View.VISIBLE);
+                v.setVisibility(View.GONE);
+            }
+        });
+        ((ViewGroup)pageView.getRootView().findViewById(R.id.micro_max_button_background)).addView(showControlsBar, 0);
+
         dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
                 .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
                 .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
@@ -494,8 +520,6 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             /*------------全螢幕播放--------------
              * 參考:https://www.jianshu.com/p/8b4df0f902db
              */
-            private View customView;
-            private CustomViewCallback customViewCallback;
             @Override
             public void onShowCustomView(View view/*全螢幕撥放器的view*/, CustomViewCallback callback) {
                 super.onShowCustomView(view, callback);
@@ -503,6 +527,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                     callback.onCustomViewHidden();
                     return;
                 }
+                view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup .LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 customView = view;
                 ((ViewGroup)pageView).addView(customView);
                 customViewCallback = callback;
@@ -513,7 +538,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
             @Override
             public void onHideCustomView() {
                 web.setVisibility(View.VISIBLE);
-                controlsBar.setVisibility(View.VISIBLE);
+                if(!hiddenControlsBar)
+                    controlsBar.setVisibility(View.VISIBLE);
                 if (customView == null)
                     return;
                 customView.setVisibility(View.GONE);
@@ -688,6 +714,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 MenuAdapter.Item[] items = new MenuAdapter.Item[]{
                         new MenuAdapter.Item(context.getString(R.string.home_page)),
                         new MenuAdapter.Item(context.getString(R.string.add_to_bookmarks)),
+                        new MenuAdapter.Item(context.getString(R.string.hidden_controls_bar)),
                         new MenuAdapter.Item(context.getString(R.string.share_the_website)),
                         new MenuAdapter.Item(context.getString(R.string.desktop_mode), desktopMode? 1 : 0),
                         new MenuAdapter.Item(context.getString(R.string.add_to_home_screen)),
@@ -796,7 +823,13 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                 }.execute(new DataBaseForBrowser.Bookmark(title,url));
                                 break;
                             }
-                            case 2: {
+                            case 2:{
+                                hiddenControlsBar = true;
+                                controlsBar.setVisibility(View.GONE);
+                                showControlsBar.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case 3: {
                                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                                 sendIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                 sendIntent.setType("text/plain");
@@ -806,7 +839,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 3: {
+                            case 4: {
                                 desktopMode = !desktopMode;
                                 web.getSettings().setUserAgentString(
                                         desktopMode ? desktopModeUserAgentString : defaultUserAgentString
@@ -814,7 +847,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                 web.reload();
                                 break;
                             }
-                            case 4: {
+                            case 5: {
                                 View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
                                 ((TextView)messageView.findViewById(R.id.message)).setText(context.getString(R.string.shortcut_title));
                                 ((TextView)messageView.findViewById(R.id.input_text)).setText(web.getTitle());
@@ -903,7 +936,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                         .show();
                                 break;
                             }
-                            case 5: {
+                            case 6: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -911,7 +944,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 6:
+                            case 7:
                                 WebBrowserSetting.getInit().showSettingWindow(context, null);
                                 break;
                         }
@@ -954,18 +987,32 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
 
     @Override
     public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-        if(position == 1)
-            bookmarkList.onResume();
-        else if (position == 2)
-            historyList.onResume();
+        switch (position){
+            case 0:
+                showControlsBar.setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                bookmarkList.onResume();
+                break;
+            case 2:
+                historyList.onResume();
+                break;
+        }
     }
 
     @Override
     public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-        if(position == 1)
-            bookmarkList.onPause();
-        else if (position == 2)
-            historyList.onPause();
+        switch (position){
+            case 0:
+                showControlsBar.setVisibility(View.GONE);
+                break;
+            case 1:
+                bookmarkList.onPause();
+                break;
+            case 2:
+                historyList.onPause();
+                break;
+        }
     }
 
     static class MenuAdapter extends BaseAdapter{

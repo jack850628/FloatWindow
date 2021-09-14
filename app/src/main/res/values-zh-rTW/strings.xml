@@ -85,11 +85,10 @@
     <string name="close_notification">關閉通知</string>
     <string name="auto_execute_in_boot_after">開機後自動執行</string>
     <string name="resident_at_the_notification_center">常駐於通知中心</string>
-    <string name="what_is_new_string1">網頁瀏覽器中加入桌面模式。</string>
+    <string name="what_is_new_string1">你可以把網頁瀏覽器的網址列隱藏起來。</string>
     <string name="help_string2">從通知中心可以快速開啟浮動視窗的任意功能</string>
     <string name="watch_ad">這是廣告</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
-    <string name="what_is_new_string2">可以網頁捷徑加入到主畫面。</string>
     <string name="download_method">下載方式</string>
     <string name="call_other_browsers_download">這將會調用其他瀏覽器進行下載</string>
     <string name="are_you_sure_download">您確定要下載嗎？</string>
@@ -99,4 +98,5 @@
     <string name="delete_note">刪除便條紙</string>
     <string name="desktop_mode">桌面模式</string>
     <string name="shortcut_title">捷徑標題</string>
+    <string name="hidden_controls_bar">隱藏網址列</string>
 </resources>

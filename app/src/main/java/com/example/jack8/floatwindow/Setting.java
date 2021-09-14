@@ -44,14 +44,8 @@ public class Setting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting);
 
-        MobileAds.initialize(this, getString(R.string.AD_ID));
         mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
-                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
-                .addTestDevice("F4734F4691C588DB93799277888EA573")
-                .build();
-        mAdView.loadAd(adRequest);
+        mAdView.loadAd(new AdRequest.Builder().build());
 
         wColor=new WindowColor(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

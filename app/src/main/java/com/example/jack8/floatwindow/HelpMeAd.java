@@ -8,33 +8,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class HelpMeAd extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final RewardedAd rewardedAd = new RewardedAd(this, "ca-app-pub-4604853118314154/2603122586");
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
-                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
-                .addTestDevice("F4734F4691C588DB93799277888EA573")
-                .build();
-        rewardedAd.loadAd(adRequest, new RewardedAdLoadCallback(){
+        RewardedAd.load(this, "ca-app-pub-4604853118314154/2603122586", new AdRequest.Builder().build(), new RewardedAdLoadCallback() {
             @Override
-            public void onRewardedAdLoaded() {
-                rewardedAd.show(HelpMeAd.this, new RewardedAdCallback(){
+            public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                super.onAdLoaded(rewardedAd);
+                rewardedAd.show(HelpMeAd.this, new OnUserEarnedRewardListener() {
                     @Override
-                    public void onRewardedAdClosed() {
-                        finish();
-                    }
-
-                    @Override
-                    public void onUserEarnedReward(@NonNull RewardItem reward) {
+                    public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
                         Intent i = new Intent(HelpMeAd.this, FloatServer.class);
                         i.putExtra(FloatServer.INTENT,FloatServer.OPEN_WATCHED_AD);
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -43,10 +39,18 @@ public class HelpMeAd extends AppCompatActivity {
                             HelpMeAd.this.startForegroundService(i);
                     }
                 });
+                rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        super.onAdDismissedFullScreenContent();
+                        finish();
+                    }
+                });
             }
 
             @Override
-            public void onRewardedAdFailedToLoad(int errorCode) {
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
                 finish();
                 Log.i("獎勵廣告", "載入失敗");
             }

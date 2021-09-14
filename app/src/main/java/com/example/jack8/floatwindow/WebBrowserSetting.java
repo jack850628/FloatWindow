@@ -218,14 +218,8 @@ public class WebBrowserSetting {
 
                         @Override
                         public void Construction(final Context context, final View pageView, int position, Object[] args, final WindowStruct windowStruct) {
-                            MobileAds.initialize(context, context.getString(R.string.AD_ID));
                             mAdView = pageView.findViewById(R.id.adView);
-                            AdRequest adRequest = new AdRequest.Builder()
-                                    .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
-                                    .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
-                                    .addTestDevice("F4734F4691C588DB93799277888EA573")
-                                    .build();
-                            mAdView.loadAd(adRequest);
+                            mAdView.loadAd(new AdRequest.Builder().build());
                             ((EditText)pageView.findViewById(R.id.home_link)).setText(setting.homeLink);
                             ((Switch)pageView.findViewById(R.id.enable_js)).setChecked(setting.javaScriptEnabled);
                             ((Switch)pageView.findViewById(R.id.enable_zoom)).setChecked(setting.supportZoom);

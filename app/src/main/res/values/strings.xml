@@ -84,11 +84,10 @@
     <string name="close_notification">Close Notification</string>
     <string name="auto_execute_in_boot_after">auto execute in boot after</string>
     <string name="resident_at_the_notification_center">resident at the notification center</string>
-    <string name="what_is_new_string1">Added desktop mode in web browser.</string>
+    <string name="what_is_new_string1">You can hidden address bar in web browser.</string>
     <string name="help_string2">From the notification center, you can quickly open any function of the FloatWindow.</string>
     <string name="watch_ad">Be careful! This is advertising</string>
     <string name="watched_ad">Thank you for your interest in advertising! Thank you!</string>
-    <string name="what_is_new_string2">You can add web shortcuts to the main screen.</string>
     <string name="download_method">Download method</string>
     <string name="call_other_browsers_download">This will call other browsers to download</string>
     <string name="are_you_sure_download">Are you sure to download?</string>
@@ -98,4 +97,5 @@
     <string name="delete_note">delete note</string>
     <string name="desktop_mode">desktop mode</string>
     <string name="shortcut_title">shortcut title</string>
+    <string name="hidden_controls_bar">hidden address bar</string>
 </resources>

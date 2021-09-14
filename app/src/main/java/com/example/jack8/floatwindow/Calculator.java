@@ -19,12 +19,16 @@ import com.example.jack8.floatwindow.AShCalculator.AShCalculator;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.jack8.floatwindow.Window.WindowStruct;
+
+import java.util.Arrays;
 
 /**
  * 初始化視窗內容
  */
 public class Calculator implements WindowStruct.constructionAndDeconstructionWindow {
+    private AdRequest adRequest = new AdRequest.Builder().build();
 
     /**
      * 初始化視窗子頁面內容
@@ -178,13 +182,7 @@ public class Calculator implements WindowStruct.constructionAndDeconstructionWin
         };
         ((Button)pageView.findViewById(R.id.toC)).setOnClickListener(oc);
         ((Button)pageView.findViewById(R.id.toF)).setOnClickListener(oc);
-        MobileAds.initialize(context, context.getString(R.string.AD_ID));
         adView1 = pageView.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
-                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
-                .addTestDevice("F4734F4691C588DB93799277888EA573")
-                .build();
         adView1.loadAd(adRequest);
         adView1.pause();
     }
@@ -203,11 +201,6 @@ public class Calculator implements WindowStruct.constructionAndDeconstructionWin
             }
         });
         adView2 = pageView.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("6B58CCD0570D93BA1317A64BEB8BA677")
-                .addTestDevice("1E461A352AC1E22612B2470A43ADADBA")
-                .addTestDevice("F4734F4691C588DB93799277888EA573")
-                .build();
         adView2.loadAd(adRequest);
         adView2.pause();
     }
