@@ -239,9 +239,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         }
         public Builder windowPages(int[] windowPagesForLayoutResources){
             this.windowPages = new View[windowPagesForLayoutResources.length];
-            View winform= LayoutInflater.from(context).inflate(R.layout.window,null);
+            View wincon = LayoutInflater.from(context).inflate(R.layout.window,null).findViewById(R.id.wincon);
             for(int i = 0;i<windowPages.length;i++) {
-                this.windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) winform, false);
+                this.windowPages[i] = LayoutInflater.from(context).inflate(windowPagesForLayoutResources[i], (ViewGroup) wincon, false);
                 //windowPages[i].setTag(windowPageTitles[i]);
             }
             return this;
