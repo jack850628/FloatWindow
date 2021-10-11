@@ -34,7 +34,8 @@ public class WebBrowserLauncher extends AppCompatActivity {
             intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_WEB_BROWSER);
         }else{
             intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_WEB_BROWSER | FloatServer.OPEN_EXTRA_URL);
-            intent.putExtra(FloatServer.EXTRA_URL,url);
+            intent.putExtra(FloatServer.EXTRA_URL, url);
+            intent.putExtra(FloatServer.BROWSER_MODE, extra_intent.getIntExtra(FloatServer.BROWSER_MODE, -1));
         }
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
@@ -46,6 +47,7 @@ public class WebBrowserLauncher extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (Settings.canDrawOverlays(this))
                 startFloatWindow();

@@ -85,7 +85,7 @@
     <string name="close_notification">关闭通知</string>
     <string name="auto_execute_in_boot_after">开机后自动运行</string>
     <string name="resident_at_the_notification_center">常驻于通知中心</string>
-    <string name="what_is_new_string1">你可以把网页浏览器的地址列隐藏起来。</string>
+    <string name="what_is_new_string1">你可以在浏览器设定中更改预设的浏览器显示模式。</string>
     <string name="help_string2">从通知中心可以快速开启浮动视窗的任意功能</string>
     <string name="watch_ad">这是广告</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
@@ -99,4 +99,11 @@
     <string name="desktop_mode">桌机模式</string>
     <string name="shortcut_title">捷径标题</string>
     <string name="hidden_controls_bar">隐藏地址列</string>
+
+    <string-array name="browser_mode">
+        <item>预设模式</item>
+        <item>桌面模式</item>
+    </string-array>
+    <string name="what_is_new_string2">加入至主画面的捷径，会记住浏览该网页所使用的显示模式。</string>
+    <string name="default_browser_mode">预设浏览模式</string>
 </resources>

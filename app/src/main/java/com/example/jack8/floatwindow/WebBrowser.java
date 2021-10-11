@@ -58,23 +58,24 @@ import java.util.regex.Pattern;
 
 public class WebBrowser implements WindowStruct.constructionAndDeconstructionWindow {
     public Handler handler = new Handler(Looper.getMainLooper());
-
-    EditText path;
-    Button go;
-    Button goBack;
-    Button menu;
-    Button showControlsBar;
     WebView web;
-    Button windowFormMenu;
-    ProgressBar PB;
-    BookmarkList bookmarkList;
-    HistoryList historyList;
-    DataBaseForBrowser dataBaseForBrowser = null;
-    boolean desktopMode = false;
-    String defaultUserAgentString;
-    String desktopModeUserAgentString;
-    boolean thisPageHaveIcon;
-    boolean hiddenControlsBar = false;
+
+    private EditText path;
+    private Button go;
+    private Button goBack;
+    private Button menu;
+    private Button showControlsBar;
+    private Button windowFormMenu;
+    private ProgressBar PB;
+    private BookmarkList bookmarkList;
+    private HistoryList historyList;
+    private DataBaseForBrowser dataBaseForBrowser = null;
+    private boolean desktopMode = false;
+    private int browserModeForOpen = -1;
+    private String defaultUserAgentString;
+    private String desktopModeUserAgentString;
+    private boolean thisPageHaveIcon;
+    private boolean hiddenControlsBar = false;
 
     private final FirebaseCrashlytics crashlytics;
     private View customView;
@@ -159,7 +160,13 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
         dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
                 .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
                 .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
+                .addMigrations(DataBaseForBrowser.MIGRATION_3_4)
                 .build();
+
+        if(args.length >= 2){
+            browserModeForOpen = (int)args[1];
+        }
+
         web.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url){//當點擊WebView內的連結時處理，參考:https://dotblogs.com.tw/newmonkey48/2013/12/26/136486
@@ -678,6 +685,14 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 將會取代成
                 Mozilla/5.0 (X11; U; Linux i686; Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Safari/537.36
                  */
+                if(
+                        browserModeForOpen == WebBrowserSetting.BrowserMode.DESKTOP.getId()
+                        ||
+                        (browserModeForOpen == -1 && webBrowserSetting.getSetting().browserMode == WebBrowserSetting.BrowserMode.DESKTOP.getId())
+                ){
+                    desktopMode = true;
+                    web.getSettings().setUserAgentString(desktopModeUserAgentString);
+                }
                 String url = webBrowserSetting.getSetting().homeLink;
                 if(args != null && args.length != 0 && args[0] instanceof String) {
                     url = (String) args[0];
@@ -848,9 +863,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                 break;
                             }
                             case 5: {
+                                String title = web.getTitle();
+                                if(desktopMode)
+                                    title += String.format("(%s)", context.getString(R.string.desktop_mode));
                                 View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
                                 ((TextView)messageView.findViewById(R.id.message)).setText(context.getString(R.string.shortcut_title));
-                                ((TextView)messageView.findViewById(R.id.input_text)).setText(web.getTitle());
+                                ((TextView)messageView.findViewById(R.id.input_text)).setText(title);
                                 messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
                                 messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
                                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -873,11 +891,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
-                                                        String title =  ((TextView)pageView.findViewById(R.id.input_text)).getText().toString();
+                                                        String title = ((TextView)pageView.findViewById(R.id.input_text)).getText().toString();
                                                         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                                                             Intent shortcutIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT"),
                                                                     launcher = new Intent(context , WebBrowserLauncher.class);
                                                             launcher.putExtra(Intent.EXTRA_TEXT, web.getUrl());
+                                                            launcher.putExtra(FloatServer.BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
                                                             Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser_icon);
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
@@ -887,6 +906,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                         }else{
                                                             Intent shortcutIntent = new Intent(context, WebBrowserLauncher.class);
                                                             shortcutIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
+                                                            shortcutIntent.putExtra(FloatServer.BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
                                                             shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                                                             ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
                                                             ShortcutInfo shortcut = new ShortcutInfo.Builder(context, UUID.randomUUID().toString())

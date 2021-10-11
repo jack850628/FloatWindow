@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "21ffe42ac15b7efb46b401b1e4fc30fa",
+    "identityHash": "d2ca0958dc9a63b4df06db0ed64994dd",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -94,7 +94,7 @@
       },
       {
         "tableName": "Setting",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `home_link` TEXT, `javascript_enabled` INTEGER NOT NULL, `support_zoom` INTEGER NOT NULL, `display_zoom_controls` INTEGER NOT NULL, `ads_block` INTEGER NOT NULL, `ad_server_data_version` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `home_link` TEXT, `javascript_enabled` INTEGER NOT NULL, `support_zoom` INTEGER NOT NULL, `display_zoom_controls` INTEGER NOT NULL, `ads_block` INTEGER NOT NULL, `ad_server_data_version` INTEGER NOT NULL, `browser_mode` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -135,6 +135,12 @@
           {
             "fieldPath": "adServerDataVersion",
             "columnName": "ad_server_data_version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "browserMode",
+            "columnName": "browser_mode",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -178,7 +184,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '21ffe42ac15b7efb46b401b1e4fc30fa')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd2ca0958dc9a63b4df06db0ed64994dd')"
     ]
   }
 }

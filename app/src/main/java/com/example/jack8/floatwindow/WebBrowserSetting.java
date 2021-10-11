@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
@@ -49,6 +51,20 @@ public class WebBrowserSetting {
     }
     public AdServerListStatus adServerListStatus = AdServerListStatus.NOT_USE;
     public ArrayList<DataBaseForBrowser.AdServerData> adServerDatas = new ArrayList<>();
+
+    public enum BrowserMode{
+        DEFAULT(0),
+        DESKTOP(1);
+
+        private int id;
+        BrowserMode(int id){
+            this.id = id;
+        }
+
+        public int getId(){
+            return id;
+        }
+    }
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -168,7 +184,7 @@ public class WebBrowserSetting {
             public void run() {
                 List<DataBaseForBrowser.Setting> list = dataBaseForBrowser.settingDao().getSetting();
                 if (list.size() == 0) {
-                    setting = new DataBaseForBrowser.Setting("https://www.google.com", true, true, false, false, 0);
+                    setting = new DataBaseForBrowser.Setting("https://www.google.com", true, true, false, false, 0, BrowserMode.DEFAULT.getId());
                     setting.id = dataBaseForBrowser.settingDao().setSetting(setting);
                 } else
                     setting = dataBaseForBrowser.settingDao().getSetting().get(0);
@@ -225,6 +241,9 @@ public class WebBrowserSetting {
                             ((Switch)pageView.findViewById(R.id.enable_zoom)).setChecked(setting.supportZoom);
 //                            ((Switch)pageView.findViewById(R.id.enable_ads_block)).setChecked(setting.adsBlock);
 //                            ((Switch)pageView.findViewById(R.id.display_zoom_buttom)).setChecked(setting.displayZoomControls);//無法提供顯示縮放按鈕，因為切換視窗時WebView會出現嚴重錯誤signal 4 (SIGILL), code 2 (ILL_ILLOPC), fault addr 0xd878e0d0
+                            final Spinner browserMode = (Spinner) pageView.findViewById(R.id.browser_mode);
+                            browserMode.setAdapter(ArrayAdapter.createFromResource(context, R.array.browser_mode, android.R.layout.simple_list_item_1));
+                            browserMode.setSelection(setting.browserMode);
                             pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -239,6 +258,7 @@ public class WebBrowserSetting {
                                     setting.supportZoom = ((Switch)pageView.findViewById(R.id.enable_zoom)).isChecked();
 //                                    setting.displayZoomControls = ((Switch)pageView.findViewById(R.id.display_zoom_buttom)).isChecked();//無法提供顯示縮放按鈕，因為切換視窗時WebView會出現嚴重錯誤signal 4 (SIGILL), code 2 (ILL_ILLOPC), fault addr 0xd878e0d0
 //                                    setting.adsBlock = ((Switch)pageView.findViewById(R.id.enable_ads_block)).isChecked();
+                                    setting.browserMode = browserMode.getSelectedItemPosition();
                                     saveSetting(operated);
                                     windowStruct.close();
                                 }

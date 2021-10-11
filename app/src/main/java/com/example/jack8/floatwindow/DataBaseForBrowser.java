@@ -22,7 +22,7 @@ import androidx.annotation.NonNull;
 import java.util.Date;
 import java.util.List;
 
-@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class, DataBaseForBrowser.AdServerData.class}, version = 3)
+@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class, DataBaseForBrowser.AdServerData.class}, version = 4)
 @TypeConverters({DataBaseForBrowser.Converters.class})
 public abstract class DataBaseForBrowser extends RoomDatabase {
     public static String DATABASE_NAME = "browser_data";
@@ -44,6 +44,13 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
             database.execSQL("ALTER TABLE "+Setting.TABLE_NAME+" ADD COLUMN ads_block INTEGER DEFAULT 0  NOT NULL");
             database.execSQL("ALTER TABLE "+Setting.TABLE_NAME+" ADD COLUMN ad_server_data_version INTEGER DEFAULT 0  NOT NULL");
             database.execSQL("CREATE TABLE "+AdServerData.TABLE_NAME+" (id INTEGER NOT NULL, ad_server TEXT NOT NULL, PRIMARY KEY(id))");
+        }
+    };
+
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE "+Setting.TABLE_NAME+" ADD COLUMN browser_mode INTEGER DEFAULT 0  NOT NULL");
         }
     };
 
@@ -157,14 +164,17 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         public boolean adsBlock;
         @ColumnInfo(name = "ad_server_data_version")
         public int adServerDataVersion;
+        @ColumnInfo(name = "browser_mode")
+        public int browserMode;
 
-        public Setting(String homeLink, boolean javaScriptEnabled, boolean supportZoom, boolean displayZoomControls, boolean adsBlock, int adServerDataVersion){
+        public Setting(String homeLink, boolean javaScriptEnabled, boolean supportZoom, boolean displayZoomControls, boolean adsBlock, int adServerDataVersion, int browserMode){
             this.homeLink = homeLink;
             this.javaScriptEnabled = javaScriptEnabled;
             this.supportZoom = supportZoom;
             this.displayZoomControls = displayZoomControls;
             this.adsBlock = adsBlock;
             this.adServerDataVersion = adServerDataVersion;
+            this.browserMode = browserMode;
         }
     }
     @Dao

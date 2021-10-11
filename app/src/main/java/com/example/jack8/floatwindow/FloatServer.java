@@ -59,6 +59,7 @@ public class FloatServer extends Service {
     public static final String LAUNCHER = "launcher";
     public static final String INTENT = "intent";
     public static final String EXTRA_URL = "extra_url";
+    public static final String BROWSER_MODE = "browser_mode";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
 
@@ -403,31 +404,22 @@ public class FloatServer extends Service {
                     .show();
         }else if((initCode & OPEN_WEB_BROWSER) == OPEN_WEB_BROWSER) {
             wm_count++;
-            if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
-                new WindowStruct.Builder(this,wm)
-                        .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
-                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
-                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
-                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
-                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
-                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
-                        .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new WebBrowser())
-                        .show();
-            else{
-                String extra_url = intent.getStringExtra(EXTRA_URL);
-                new WindowStruct.Builder(this,wm)
-                        .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
-                        .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
-                        .windowInitArgs(new Object[][]{new Object[]{extra_url}})
-                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
-                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
-                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
-                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
-                        .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new WebBrowser())
-                        .show();
+            WindowStruct.Builder window = new WindowStruct.Builder(this,wm)
+                    .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .windowAction(windowAction)
+                    .constructionAndDeconstructionWindow(new WebBrowser());
+            if((initCode & OPEN_EXTRA_URL) == OPEN_EXTRA_URL){
+                window.windowInitArgs(new Object[][]{new Object[]{
+                        intent.getStringExtra(EXTRA_URL),
+                        intent.getIntExtra(BROWSER_MODE, -1)
+                }});
             }
+            window.show();
         }else if((initCode & OPEN_NOTE_PAGE) == OPEN_NOTE_PAGE) {
             wm_count++;
             if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)

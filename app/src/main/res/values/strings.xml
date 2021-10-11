@@ -84,7 +84,7 @@
     <string name="close_notification">Close Notification</string>
     <string name="auto_execute_in_boot_after">auto execute in boot after</string>
     <string name="resident_at_the_notification_center">resident at the notification center</string>
-    <string name="what_is_new_string1">You can hidden address bar in web browser.</string>
+    <string name="what_is_new_string1">You can change the default browser display mode in the browser settings.</string>
     <string name="help_string2">From the notification center, you can quickly open any function of the FloatWindow.</string>
     <string name="watch_ad">Be careful! This is advertising</string>
     <string name="watched_ad">Thank you for your interest in advertising! Thank you!</string>
@@ -98,4 +98,11 @@
     <string name="desktop_mode">desktop mode</string>
     <string name="shortcut_title">shortcut title</string>
     <string name="hidden_controls_bar">hidden address bar</string>
+    
+    <string-array name="browser_mode">
+        <item>defailt mode</item>
+        <item>desktop mode</item>
+    </string-array>
+    <string name="what_is_new_string2">Shortcut added to the home screen will remember the display mode used to browse the page.</string>
+    <string name="default_browser_mode">default browser mode</string>
 </resources>
