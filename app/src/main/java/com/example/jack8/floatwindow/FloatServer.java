@@ -581,7 +581,7 @@ public class FloatServer extends Service {
         return START_STICKY;//START_REDELIVER_INTENT;
     }
     void shohWindowManager(){
-        final ListView hideMenu=new ListView(this);
+        final ListView hideMenu = new ListView(this);
         final hideMenuAdapter hma = new hideMenuAdapter();
         hideMenu.setAdapter(hma);
         /*menu=new AlertDialog.Builder(this).setTitle("所有視窗清單").setView(hideMenu).create();
@@ -639,7 +639,7 @@ public class FloatServer extends Service {
 
                         }
                     }).show();
-            new Thread(new Runnable() {
+            JTools.threadPool.execute(new Runnable() {
                 @Override
                 public void run() {
                     int windowListLength = 0;
@@ -660,7 +660,7 @@ public class FloatServer extends Service {
                         }
                     }
                 }
-            }).start();
+            });
         }else
             windowManager.focusAndShowWindow();
     }

@@ -243,12 +243,12 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 final String title = webView.getTitle();
                 //pageView.setTag(title);
                 windowStruct.setWindowTitle(position, title);
-                new Thread(new Runnable() {
+                JTools.threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
                         dataBaseForBrowser.historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
                     }
-                }).start();
+                });
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
@@ -790,7 +790,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                         pageView.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View v) {
-                                                                new Thread(new Runnable() {
+                                                                JTools.threadPool.execute(new Runnable() {
                                                                     @Override
                                                                     public void run() {
                                                                         try {
@@ -800,19 +800,19 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                                                                             dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }
                                                                     }
-                                                                }).start();
+                                                                });
                                                                 windowStruct.close();
                                                             }
                                                         });
                                                         pageView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View v) {
-                                                                new Thread(new Runnable() {
+                                                                JTools.threadPool.execute(new Runnable() {
                                                                     @Override
                                                                     public void run() {
                                                                         dataBaseForBrowser.bookmarksDao().deleteBookmark(result);
                                                                     }
-                                                                }).start();
+                                                                });
                                                                 windowStruct.close();
                                                             }
                                                         });

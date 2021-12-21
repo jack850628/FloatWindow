@@ -43,7 +43,8 @@ public class HistoryList {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int index) {
+        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int _) {
+            final int index = viewHolder.getBindingAdapterPosition();
             viewHolder.title.setText(historyList.get(index).title);
             viewHolder.url.setText(historyList.get(index).url);
             viewHolder.date.setText(formatter.format(historyList.get(index).browserDate));
@@ -175,7 +176,7 @@ public class HistoryList {
 
 
     public void onResume() {
-        new Thread(new Runnable() {
+        JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 historyList.addAll(historyDao.getAllHistory());
@@ -190,7 +191,7 @@ public class HistoryList {
                     }
                 });
             }
-        }).start();
+        });
     }
 
     public void onPause(){
@@ -198,7 +199,7 @@ public class HistoryList {
     }
 
     void removeHistory(final int index){
-        new Thread(new Runnable() {
+        JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 historyDao.deleteHistory(historyList.get(index));
@@ -213,7 +214,7 @@ public class HistoryList {
                     }
                 });
             }
-        }).start();
+        });
     }
 
     public void Deconstruction(){

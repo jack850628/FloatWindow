@@ -95,19 +95,19 @@ public class WebBrowserSetting {
                     databaseReference.onDisconnect();
                     databaseReference = firebaseDatabase.getReference(DataBaseForBrowser.AdServerData.TABLE_NAME+"/list");
                     databaseReference.addValueEventListener(valueEventListener);
-                    new Thread(new Runnable() {
+                    JTools.threadPool.execute(new Runnable() {
                         @Override
                         public void run() {
                             dataBaseForBrowser.settingDao().updateSetting(setting);
                         }
-                    }).start();
+                    });
                 }else{
                     Log.i("adsBlock", "沒新資料");
                     databaseReference.removeEventListener(valueEventListener);
                     databaseReference.onDisconnect();
                     firebaseDatabase.goOffline();
                     databaseReference = null;
-                    new Thread(new Runnable() {
+                    JTools.threadPool.execute(new Runnable() {
                         @Override
                         public void run() {
                             if(!adServerDatas.isEmpty())
@@ -117,11 +117,11 @@ public class WebBrowserSetting {
                                 Log.i("adsBlock", adServerData.adServer);
                             adServerListStatus = AdServerListStatus.COMPLETE;
                         }
-                    }).start();
+                    });
                 }
             }else if(adServerListStatus == AdServerListStatus.UPDATE) {//更新資料
                 Log.i("adsBlock", "更新資料中");
-                new Thread(new Runnable() {
+                JTools.threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
                         if(!adServerDatas.isEmpty())
@@ -138,7 +138,7 @@ public class WebBrowserSetting {
                         databaseReference = null;
                         adServerListStatus = AdServerListStatus.COMPLETE;
                     }
-                }).start();
+                });
             }
         }
 
@@ -179,7 +179,7 @@ public class WebBrowserSetting {
 
     private WebBrowserSetting(final DataBaseForBrowser dataBaseForBrowser, final Operated operated){
         this.dataBaseForBrowser = dataBaseForBrowser;
-        new Thread(new Runnable() {
+        JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 List<DataBaseForBrowser.Setting> list = dataBaseForBrowser.settingDao().getSetting();
@@ -204,7 +204,7 @@ public class WebBrowserSetting {
                     }
                 });
             }
-        }).start();
+        });
     }
 
     private void loadAdServerList(){//啟動adsBlock
@@ -293,14 +293,14 @@ public class WebBrowserSetting {
     void saveSetting(final Runnable operated){
         if(setting.adsBlock)
             loadAdServerList();
-        new Thread(new Runnable() {
+        JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 dataBaseForBrowser.settingDao().updateSetting(setting);
                 if(operated != null)
                     new Handler(Looper.getMainLooper()).post(operated);
             }
-        }).start();
+        });
         for(int id : webBrowserWindowList){
             WebSettings webSettings = ((WebBrowser) com.jack8.floatwindow.Window.WindowManager.getWindowStruct(id).getConstructionAndDeconstructionWindow()).web.getSettings();
             webSettings.setJavaScriptEnabled(setting.javaScriptEnabled);

@@ -41,7 +41,8 @@ public class BookmarkList {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final BookmarkList.BookmarkListAdapter.ViewHolder viewHolder, final int index) {
+        public void onBindViewHolder(@NonNull final BookmarkList.BookmarkListAdapter.ViewHolder viewHolder, int _) {
+            final int index = viewHolder.getBindingAdapterPosition();
             viewHolder.title.setText(bookmarkList.get(index).title);
             viewHolder.url.setText(bookmarkList.get(index).url);
             viewHolder.v.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +122,7 @@ public class BookmarkList {
                                                         public void onClick(View v) {
                                                             bookmarkList.get(index).title = title_box.getText().toString();
                                                             bookmarkList.get(index).url = url_box.getText().toString();
-                                                            new Thread(new Runnable() {
+                                                            JTools.threadPool.execute(new Runnable() {
                                                                 @Override
                                                                 public void run() {
                                                                     try {
@@ -139,7 +140,7 @@ public class BookmarkList {
                                                                         });
                                                                     }
                                                                 }
-                                                            }).start();
+                                                            });
                                                             BookmarkListAdapter.this.notifyDataSetChanged();
                                                             windowStruct.close();
                                                         }
@@ -229,7 +230,7 @@ public class BookmarkList {
     }
 
     public void onResume() {
-        new Thread(new Runnable() {
+        JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 bookmarkList.addAll(bookmarksDao.getBookmarks());
@@ -244,7 +245,7 @@ public class BookmarkList {
                     }
                 });
             }
-        }).start();
+        });
     }
 
     public void onPause(){
@@ -252,7 +253,7 @@ public class BookmarkList {
     }
 
     void removeBookmark(final int index){
-        new Thread(new Runnable() {
+        JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 bookmarksDao.deleteBookmark(bookmarkList.get(index));
@@ -267,7 +268,7 @@ public class BookmarkList {
                     }
                 });
             }
-        }).start();
+        });
     }
 
     public void Deconstruction(){
