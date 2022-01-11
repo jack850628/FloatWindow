@@ -424,7 +424,6 @@ public class FloatServer extends Service {
             wm_count++;
             if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
                 new WindowStruct.Builder(this,wm)
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
@@ -437,7 +436,6 @@ public class FloatServer extends Service {
             else{
                 String extra_url = intent.getStringExtra(EXTRA_URL);
                 new WindowStruct.Builder(this,wm)
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})

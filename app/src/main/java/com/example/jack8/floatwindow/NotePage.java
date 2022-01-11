@@ -21,6 +21,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import org.json.JSONException;
@@ -240,7 +243,33 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
             public void onClick(View v) {
                 final PopupWindow popupWindow =new PopupWindow(context);
                 ListView listView = new ListView(context);
-                listView.setAdapter(new ArrayAdapter(context, R.layout.list_item, R.id.item_text, new String[]{context.getString(R.string.other_notes),context.getString(R.string.share),context.getString(R.string.hide_frame)}));
+                listView.setAdapter(new BaseAdapter(){
+                    String[] items = new String[]{context.getString(R.string.other_notes),context.getString(R.string.share),context.getString(R.string.hide_frame)};
+                    @Override
+                    public int getCount() {
+                        return items.length - (windowStruct.nowState == WindowStruct.State.FULLSCREEN? 1: 0);
+                    }
+
+                    @Override
+                    public Object getItem(int position) {
+                        return items[position];
+                    }
+
+                    @Override
+                    public long getItemId(int position) {
+                        return position;
+                    }
+
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        if(convertView == null){
+                            convertView = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
+                        }
+                        ((TextView)convertView.findViewById(R.id.item_text)).setText(items[position]);
+                        return convertView;
+                    }
+                });
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -254,7 +283,6 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                             FloatServer.wm_count++;
                                             new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.HIDE_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                                                     .windowPageTitles(new String[]{context.getString(R.string.note)})
                                                     .windowPages(new int[]{R.layout.note_page})
                                                     .windowInitArgs(
@@ -275,7 +303,7 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
                                     otherNoteList = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                             .windowPages(new View[]{nodeList})
                                             .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
-                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.FULLSCREEN_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                                             .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
                                             .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                                             .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
@@ -329,8 +357,11 @@ public class NotePage implements WindowStruct.constructionAndDeconstructionWindo
         note.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                toolsBar.setVisibility(View.VISIBLE);
-                return true;
+                if(windowStruct.nowState != WindowStruct.State.FULLSCREEN) {
+                    toolsBar.setVisibility(View.VISIBLE);
+                    return true;
+                }
+                return false;
             }
         });
         View.OnClickListener copy_paste = new View.OnClickListener() {
