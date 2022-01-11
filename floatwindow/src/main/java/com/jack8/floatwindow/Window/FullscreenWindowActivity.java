@@ -21,6 +21,8 @@ public class FullscreenWindowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_fullscreen_window);
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN, android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         windowNumber = getIntent().getIntExtra(WINDOW_NUMBER_EXTRA_NAME, -1);
         WindowStruct ws = WindowManager.getWindowStruct(windowNumber);
         if(ws == null){
@@ -45,6 +47,7 @@ public class FullscreenWindowActivity extends AppCompatActivity {
 
     void exitFullscreen(){
         ((ViewGroup)winform.getParent()).removeView(winform);
+        WindowManager.getWindowStruct(windowNumber).setFullscreenActivity(null);
         finish();
     }
 
