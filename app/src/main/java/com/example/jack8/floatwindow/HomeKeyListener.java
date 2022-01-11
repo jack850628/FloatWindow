@@ -44,7 +44,7 @@ public class HomeKeyListener extends BroadcastReceiver {
             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
             if(reason != null && reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)){
                 for(Map.Entry<Integer, WindowStruct> entry : WindowManager.entrySet()){
-                    if(entry.getValue().nowState != WindowStruct.State.HIDE)
+                    if(entry.getValue().nowState != WindowStruct.State.HIDE && entry.getValue().nowState != WindowStruct.State.FULLSCREEN)
                         entry.getValue().mini();
                 }
             }

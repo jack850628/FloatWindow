@@ -1,6 +1,7 @@
 package com.jack8.floatwindow.Window;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
@@ -59,7 +60,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private int transitionsDuration;//動畫持續時間
     private int currentWindowPagePosition = 0;
     private Scroller topMini,heightMini;
-    private Button menu,close_button,mini,max,hide;
+    private Button menu,close_button,mini,max,hide,fullscreen;
     private LinearLayout sizeBar,titleBarAndButtons,microMaxButtonBackground;
     private TextView title;
     private String[] windowTitle;
@@ -74,6 +75,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
     private constructionAndDeconstructionWindow CDAW;
 
+    private FullscreenWindowActivity fullscreenWindowActivity;
+
     //------------可隱藏或顯示的控制項物件------------------
     private int display_object;
     public static final int ALL_NOT_DISPLAY = 0x00;
@@ -84,9 +87,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public static final int CLOSE_BUTTON = 0x10;
     public static final int SIZE_BAR = 0x20;
     public static final int TITLE_BAR_AND_BUTTONS = 0x40;
+    public static final int FULLSCREEN_BUTTON = 0x80;
 //-------------------------------------------------------
 
-    public enum State{MAX,MINI,HIDE,GENERAL,CLOSE}
+    public enum State{FULLSCREEN,MAX,MINI,HIDE,GENERAL,CLOSE}
     public State nowState = State.GENERAL;//當前狀態
     public State previousState = null;//前一次的狀態
 
@@ -103,7 +107,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private int left;
         private int height;
         private int width;
-        private int displayObject = TITLE_BAR_AND_BUTTONS | MENU_BUTTON | HIDE_BUTTON | MINI_BUTTON | MAX_BUTTON | CLOSE_BUTTON | SIZE_BAR;
+        private int displayObject = TITLE_BAR_AND_BUTTONS | MENU_BUTTON | HIDE_BUTTON | MINI_BUTTON | MAX_BUTTON | CLOSE_BUTTON | SIZE_BAR | FULLSCREEN_BUTTON;
         private int transitionsDuration = 500;
         private int parentWindowNumber = -1;
         private int buttonsHeight;
@@ -365,6 +369,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         mini = winform.findViewById(R.id.mini);
         max = winform.findViewById(R.id.max);
         hide = winform.findViewById(R.id.hide);
+        fullscreen = winform.findViewById(R.id.fullscreen);
         title = winform.findViewById(R.id.title);
         sizeBar = winform.findViewById(R.id.size);
         titleBarAndButtons = winform.findViewById(R.id.title_bar_and_buttons);
@@ -433,6 +438,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         hide.setOnClickListener(this);
         mini.setOnClickListener(this);
         max.setOnClickListener(this);
+        fullscreen.setOnClickListener(this);
         //------------------------------------------------------------------
         //---------------------------初始化視窗內容-------------------------------
         for(int i = 0;i<winconPage.length;i++)
@@ -625,6 +631,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         } else if (i == R.id.max) {//最大化或一般大小
             switch (nowState) {
                 case MAX:
+                case FULLSCREEN:
                     general();
                     break;
                 default:
@@ -632,8 +639,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
         } else if (i == R.id.title) {//還原視窗大小
             if (nowState == State.MINI) {
-                if (previousState != null && previousState == State.MAX)
+                if (previousState == State.MAX)
                     max();
+                else if (previousState == State.FULLSCREEN)
+                    fullscreen();
                 else
                     general();
             }
@@ -641,6 +650,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             close();
         } else if (i == R.id.hide) {//隱藏視窗
             hide();
+        } else if (i == R.id.fullscreen){//全螢幕
+            fullscreen();
         }
     }
 
@@ -700,9 +711,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
-            wmlp.alpha = 1.0f;
-            wm.updateViewLayout(winform, wmlp);
             if (previousState == State.MAX) {
                 int dy;
                 topMini.startScroll(0, 0, (screenSize.getWidth() - buttonsWidth), 0, transitionsDuration);
@@ -716,7 +724,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2,
                         screenSize.getWidth() / 2 - buttonsWidth, -(screenSize.getHeight() / 2), transitionsDuration);
                 heightMini.startScroll(0, 0, buttonsWidth, buttonsHeight, transitionsDuration);
+            }else if(previousState == State.FULLSCREEN){
+                fullscreenWindowActivity.exitFullscreen();
+                wm.addView(winform, wmlp);
+                int dy;
+                topMini.startScroll(0, 0, (screenSize.getWidth() - buttonsWidth), 0, transitionsDuration);
+                heightMini.startScroll(screenSize.getWidth(),
+                        dy = screenSize.getHeight(),
+                        buttonsWidth - screenSize.getWidth(), -(dy - buttonsHeight), transitionsDuration);
             }
+            wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
+            wmlp.alpha = 1.0f;
+            wm.updateViewLayout(winform, wmlp);
             hideButtons();
             runUi.post(new runTransitions(nowState));
         }
@@ -733,9 +752,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            wmlp.flags = FOCUS_FLAGE;
-            wmlp.alpha =1.0f;
-            wm.updateViewLayout(winform, wmlp);
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
                 max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
             else
@@ -753,9 +769,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 nowState = State.MAX;
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 , -(screenSize.getWidth() / 2), -(screenSize.getHeight() / 2) , transitionsDuration);
                 heightMini.startScroll(0,0, screenSize.getWidth(),screenSize.getHeight(), transitionsDuration);
+            }else if(previousState == State.FULLSCREEN){
+                fullscreenWindowActivity.exitFullscreen();
+                wm.addView(winform, wmlp);
             }
-            recoveryButtons();
-            sizeBar.setVisibility(View.GONE);
+            wmlp.flags = FOCUS_FLAGE;
+            wmlp.alpha =1.0f;
+            wm.updateViewLayout(winform, wmlp);
+            setDisplayObject();
             runUi.post(new runTransitions(nowState));
         }
     }
@@ -771,9 +792,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            wmlp.flags = FOCUS_FLAGE;
-            wmlp.alpha =1.0f;
-            wm.updateViewLayout(winform, wmlp);
             if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
                 max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
             else
@@ -792,8 +810,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }else if(previousState == State.HIDE){
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(0, 0, width, height, transitionsDuration);
+            }else if(previousState == State.FULLSCREEN){
+                fullscreenWindowActivity.exitFullscreen();
+                wm.addView(winform, wmlp);
+                int dy;
+                topMini.startScroll(0, 0, left, top, transitionsDuration);
+                heightMini.startScroll( screenSize.getWidth(),
+                    dy = screenSize.getHeight(),
+                    width-screenSize.getWidth(), height-dy, transitionsDuration);
             }
-            recoveryButtons();
+            wmlp.flags = FOCUS_FLAGE;
+            wmlp.alpha =1.0f;
+            wm.updateViewLayout(winform, wmlp);
+            setDisplayObject();
             runUi.post(new runTransitions(nowState));
         }
     }
@@ -809,8 +838,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            wmlp.flags = NO_FOCUS_FLAGE;
-            wm.updateViewLayout(winform, wmlp);
             if (previousState == State.MAX) {
                 topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
@@ -823,9 +850,37 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(wmlp.x, wmlp.y, screenSize.getWidth() / 2 - wmlp.x, screenSize.getHeight() / 2 - wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
+            }else if(previousState == State.FULLSCREEN){
+                fullscreenWindowActivity.exitFullscreen();
+                wm.addView(winform, wmlp);
+                topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
+                heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
+                        , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
             }
+            wmlp.flags = NO_FOCUS_FLAGE;
+            wm.updateViewLayout(winform, wmlp);
             windowAction.goHide(this);
             runUi.post(new runTransitions(nowState));
+        }
+    }
+
+    /**
+     * 全螢幕
+     */
+    public void fullscreen(){
+        if(nowState != State.CLOSE && nowState != State.FULLSCREEN) {
+            previousState = nowState;
+            nowState = State.FULLSCREEN;
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+                max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
+            else
+                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
+            setDisplayObject(this.display_object);
+            wm.removeView(winform);
+            Intent intent = new Intent(context, FullscreenWindowActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
+            context.startActivity(intent);
         }
     }
 
@@ -857,6 +912,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(wmlp.x, wmlp.y, screenSize.getWidth() / 2 - wmlp.x, screenSize.getHeight() / 2 - wmlp.y, transitionsDuration);
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
+            }else if(previousState == State.FULLSCREEN){
+                fullscreenWindowActivity.exitFullscreen();
+                wm.addView(winform, wmlp);
+                topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
+                heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
+                        , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
             }
             runUi.post(new runTransitions(nowState));
         }
@@ -883,32 +944,36 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             close_button.setVisibility(View.GONE);
         if((display_object & SIZE_BAR) == SIZE_BAR)
             sizeBar.setVisibility(View.GONE);
+        if((display_object & FULLSCREEN_BUTTON) == FULLSCREEN_BUTTON)
+            fullscreen.setVisibility(View.GONE);
     }
 
-    /**
-     * 顯示所有按鈕控制項
-     */
-    private void recoveryButtons(){
-        if((display_object & MENU_BUTTON) == MENU_BUTTON)
-            menu.setVisibility(View.VISIBLE);
-        else
-            title.setPadding((int)(context.getResources().getDisplayMetrics().density*TITLE_LIFT_TO_EDGE_DISTANCE),0,0,0);
-        microMaxButtonBackground.setVisibility(View.VISIBLE);
-        if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
-            titleBarAndButtons.setVisibility(View.VISIBLE);
-        else
-            titleBarAndButtons.setVisibility(View.GONE);
-        if((display_object & MINI_BUTTON) == MINI_BUTTON)
-            mini.setVisibility(View.VISIBLE);
-        if((display_object & MAX_BUTTON) == MAX_BUTTON)
-            max.setVisibility(View.VISIBLE);
-        if((display_object & HIDE_BUTTON) == HIDE_BUTTON)
-            hide.setVisibility(View.VISIBLE);
-        if((display_object & CLOSE_BUTTON) == CLOSE_BUTTON)
-            close_button.setVisibility(View.VISIBLE);
-        if((display_object & SIZE_BAR) == SIZE_BAR)
-            sizeBar.setVisibility(View.VISIBLE);
-    }
+//    /**
+//     * 顯示所有按鈕控制項
+//     */
+//    private void recoveryButtons(){
+//        if((display_object & MENU_BUTTON) == MENU_BUTTON)
+//            menu.setVisibility(View.VISIBLE);
+//        else
+//            title.setPadding((int)(context.getResources().getDisplayMetrics().density*TITLE_LIFT_TO_EDGE_DISTANCE),0,0,0);
+//        microMaxButtonBackground.setVisibility(View.VISIBLE);
+//        if((display_object & TITLE_BAR_AND_BUTTONS) == TITLE_BAR_AND_BUTTONS)
+//            titleBarAndButtons.setVisibility(View.VISIBLE);
+//        else
+//            titleBarAndButtons.setVisibility(View.GONE);
+//        if((display_object & MINI_BUTTON) == MINI_BUTTON)
+//            mini.setVisibility(View.VISIBLE);
+//        if((display_object & MAX_BUTTON) == MAX_BUTTON)
+//            max.setVisibility(View.VISIBLE);
+//        if((display_object & HIDE_BUTTON) == HIDE_BUTTON)
+//            hide.setVisibility(View.VISIBLE);
+//        if((display_object & CLOSE_BUTTON) == CLOSE_BUTTON)
+//            close_button.setVisibility(View.VISIBLE);
+//        if((display_object & SIZE_BAR) == SIZE_BAR)
+//            sizeBar.setVisibility(View.VISIBLE);
+//        if((display_object & FULLSCREEN_BUTTON) == FULLSCREEN_BUTTON)
+//            fullscreen.setVisibility(View.VISIBLE);
+//    }
 
     /**
      * 隱藏或顯示的控制項物件
@@ -923,6 +988,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             menu.setVisibility(View.VISIBLE);
             title.setPadding(0,0,0,0);
         }
+        microMaxButtonBackground.setVisibility(View.VISIBLE);
         if((display_object & TITLE_BAR_AND_BUTTONS) != TITLE_BAR_AND_BUTTONS)
             titleBarAndButtons.setVisibility(View.GONE);
         else
@@ -943,10 +1009,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             close_button.setVisibility(View.GONE);
         else
             close_button.setVisibility(View.VISIBLE);
-        if((display_object & SIZE_BAR) != SIZE_BAR || nowState == State.MAX)
+        if((display_object & SIZE_BAR) != SIZE_BAR || nowState == State.MAX || nowState == State.FULLSCREEN)
             sizeBar.setVisibility(View.GONE);
         else
             sizeBar.setVisibility(View.VISIBLE);
+        if((display_object & FULLSCREEN_BUTTON) != FULLSCREEN_BUTTON || nowState == State.FULLSCREEN)
+            fullscreen.setVisibility(View.GONE);
+        else
+            fullscreen.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -963,6 +1033,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         mini.getLayoutParams().width = buttonsWidth;
         max.getLayoutParams().height = buttonsHeight;
         max.getLayoutParams().width = buttonsWidth;
+        fullscreen.getLayoutParams().height = buttonsHeight;
+        fullscreen.getLayoutParams().width = buttonsWidth;
         close_button.getLayoutParams().height = buttonsHeight;
         close_button.getLayoutParams().width = buttonsWidth;
         sizeBar.getLayoutParams().height = sizeBarHeight;
@@ -981,8 +1053,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             ((WindowFrom) winform).setWindowStyleOfFocus();
             wmlp.flags = (nowState == State.MINI) ? NO_FOCUS_FLAGE_FOR_MINI_STATE : FOCUS_FLAGE;
             wmlp.alpha =1.0f;
-            wm.removeView(winform);
-            wm.addView(winform,wmlp);
+            if(nowState != State.FULLSCREEN){
+                wm.removeView(winform);
+                wm.addView(winform,wmlp);
+            }
         }
         for(int key : this.subWindowNumbers)
             WindowManager.getWindowStruct(key).focusWindow();
@@ -994,10 +1068,17 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public void focusAndShowWindow(){
         focusWindow();
         if(nowState == State.MINI || nowState == State.HIDE) {
-            if (previousState != null && previousState == State.MAX)
+            if (previousState == State.MAX)
                 max();
+            else if(previousState == State.FULLSCREEN)
+                fullscreen();
             else
                 general();
+        }else if(nowState == State.FULLSCREEN){
+            Intent intent = new Intent(context, FullscreenWindowActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
+            context.startActivity(intent);
         }
         for(int key : this.subWindowNumbers)
             WindowManager.getWindowStruct(key).focusAndShowWindow();
@@ -1015,7 +1096,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 ((WindowFrom) winform).setWindowStyleOfUnFocus();
                 wmlp.flags = NO_FOCUS_FLAGE;
             }
-            wm.updateViewLayout(winform,wmlp);
+            if(nowState != State.FULLSCREEN)
+                wm.updateViewLayout(winform,wmlp);
         }
     }
 
@@ -1342,5 +1424,22 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void showPage(int position){
         menuList.showPage(position);
+    }
+
+
+    /**
+     * 讓全螢幕畫面的Activity取得winform
+     * @return winform
+     */
+    View getWinformForFullScreenActivity(){
+        return winform;
+    }
+
+    /**
+     * 傳入全螢幕畫面的Activity
+     * @param fullscreenWindowActivity 全螢幕畫面的Activity
+     */
+    void setFullscreenActivity(FullscreenWindowActivity fullscreenWindowActivity){
+        this.fullscreenWindowActivity = fullscreenWindowActivity;
     }
 }
