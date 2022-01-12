@@ -91,7 +91,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 //-------------------------------------------------------
 
     public enum State{FULLSCREEN,MAX,MINI,HIDE,GENERAL,CLOSE}
-    public State nowState = State.GENERAL;//當前狀態
+    public State nowState = State.HIDE;//當前狀態
     public State previousState = null;//前一次的狀態
 
     /**
@@ -113,6 +113,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private int buttonsHeight;
         private int buttonsWidth;
         private int sizeBarHeight;
+        private State openState = State.GENERAL;
         private WindowAction windowAction = new WindowAction() {
             @Override
             public void goHide(WindowStruct windowStruct) {
@@ -241,6 +242,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             this.constructionAndDeconstructionWindow = constructionAndDeconstructionWindow;
             return this;
         }
+        public Builder openState(State openState){
+            this.openState = openState;
+            return this;
+        }
         public Builder windowPages(int[] windowPagesForLayoutResources){
             this.windowPages = new View[windowPagesForLayoutResources.length];
             View wincon = LayoutInflater.from(context).inflate(R.layout.window,null).findViewById(R.id.wincon);
@@ -265,7 +270,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             return this;
         }
         public WindowStruct show(){
-            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, buttonsHeight, buttonsWidth, sizeBarHeight, displayObject, transitionsDuration, screenSize, windowAction, constructionAndDeconstructionWindow, parentWindowNumber);
+            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, buttonsHeight, buttonsWidth, sizeBarHeight, displayObject, transitionsDuration, screenSize, windowAction, constructionAndDeconstructionWindow, parentWindowNumber, openState);
         }
     }
 
@@ -288,7 +293,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber){
+    public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber, State openState){
         if(WindowManager.windowList.containsKey(WindowManager.focusedWindowNumber)){
             WindowStruct WS = WindowManager.getWindowStruct(WindowManager.focusedWindowNumber);
             WS.unFocusWindow();
@@ -320,10 +325,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         wmlp.format = PixelFormat.TRANSPARENT;//背景(透明)
         wmlp.flags = FOCUS_FLAGE;
         wmlp.gravity = Gravity.LEFT | Gravity.TOP;//設定重力(初始位置)
-        wmlp.x = Left;
-        wmlp.y = Top;//設定原點座標
-        wmlp.width = android.view.WindowManager.LayoutParams.WRAP_CONTENT;//設定視窗大小
-        wmlp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
+        wmlp.x = screenSize.getWidth() / 2;
+        wmlp.y = screenSize.getHeight() / 2;//設定原點座標
+        wmlp.width = 0;//設定視窗大小
+        wmlp.height = 0;
 
         winform = LayoutInflater.from(context).inflate(R.layout.window,null);
         ((WindowFrom)winform).setWindowStruct(this);
@@ -449,9 +454,26 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         setDisplayObject();
         //-------------------------------------------------------------------------------------
         //---------------------------視窗開啟動畫------------------------------------------------------
-        topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
-        heightMini.startScroll(0, 0, width, height, transitionsDuration);
-        runUi.post(new runTransitions(nowState));
+//        topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
+//        heightMini.startScroll(0, 0, width, height, transitionsDuration);
+//        runUi.post(new runTransitions(nowState));
+        switch (openState){
+            case HIDE:
+                hide();
+                break;
+            case MINI:
+                mini();
+                break;
+            case GENERAL:
+                general();
+                break;
+            case MAX:
+                max();
+                break;
+            case FULLSCREEN:
+                fullscreen();
+                break;
+        }
         //---------------------------------------------------------------------------------------------
         this.parentWindowNumber = parentWindowNumber;
         if(parentWindowNumber != -1)
@@ -871,11 +893,20 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState != State.CLOSE && nowState != State.FULLSCREEN) {
             previousState = nowState;
             nowState = State.FULLSCREEN;
+            if(!topMini.isFinished())
+                topMini.abortAnimation();
+            if(!heightMini.isFinished())
+                heightMini.abortAnimation();
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
                 max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
             else
                 max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
             setDisplayObject(this.display_object);
+            wmlp.x = 0;
+            wmlp.y = 0;
+            wmlp.width = screenSize.getWidth();
+            wmlp.height = screenSize.getHeight();
+            wm.updateViewLayout(winform, wmlp);//先將視窗變成最大化，這是為了讓視窗重全螢幕切到其他狀態時，動畫能夠是從對大畫開始轉變，而不是從其他地方瞬間飛到(0,0)點座標(transitionsDuration為0時這個問題看起來特別明顯)
             wm.removeView(winform);
             Intent intent = new Intent(context, FullscreenWindowActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
