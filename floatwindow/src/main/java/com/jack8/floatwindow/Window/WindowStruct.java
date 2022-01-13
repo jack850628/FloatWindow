@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -77,6 +78,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
     private FullscreenWindowActivity fullscreenWindowActivity;
 
+    private OnWindowTitleChangeListener onWindowTitleChangeListener = new OnWindowTitleChangeListener(){
+        @Override
+        public void OnChanged(String title) {
+
+        }
+    };
+
     //------------可隱藏或顯示的控制項物件------------------
     private int display_object;
     public static final int ALL_NOT_DISPLAY = 0x00;
@@ -93,6 +101,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public enum State{FULLSCREEN,MAX,MINI,HIDE,GENERAL,CLOSE}
     public State nowState = State.HIDE;//當前狀態
     public State previousState = null;//前一次的狀態
+
 
     /**
      * 建構WindowStruct的工廠模式
@@ -386,7 +395,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
 
         //-------------------------建立視窗內容畫面----------------------------------------------------
         wincon.addView(winconPage[0]);
-        title.setText(windowPageTitles[0]);
+        setWindowTitle(windowPageTitles[0]);
         title.setOnTouchListener(this);
         title.setOnClickListener(this);//還原視窗大小
         close_button.setOnClickListener(this);
@@ -493,6 +502,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         void onPause(Context context, View pageView, int position, WindowStruct windowStruct);
     }
 
+    public interface OnWindowTitleChangeListener{
+        void OnChanged(String title);
+    }
+
     public static abstract class ScreenSize{
         public  abstract int getWidth();
         public  abstract int getHeight();
@@ -591,7 +604,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wincon.removeView(winconPage[currentWindowPagePosition]);
             wincon.addView(winconPage[position]);
             CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
-            title.setText(windowTitle[position]);
+            setWindowTitle(windowTitle[position]);
             currentWindowPagePosition = position;
         }
         @Override
@@ -716,8 +729,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             } else if (state == State.FULLSCREEN) {
                 wm.removeView(winform);
                 Intent intent = new Intent(context, FullscreenWindowActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                }else{
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                }
+//                intent.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
+                intent.setData(Uri.parse(String.valueOf(getNumber())));//一定要setData，這樣才能在要叫回這個Activity時成功找到
                 context.startActivity(intent);
             } else if (state == State.CLOSE) {
                 for (int i = 0; i < winconPage.length; i++)
@@ -1135,8 +1155,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 general();
         }else if(nowState == State.FULLSCREEN){
             Intent intent = new Intent(context, FullscreenWindowActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            }else{
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            }
             intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
+            intent.setData(Uri.parse(String.valueOf(getNumber())));//一定要setData才能找出經用過這組Intent開啟過的Activity
             context.startActivity(intent);
         }
         for(int key : this.subWindowNumbers)
@@ -1393,7 +1419,25 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public void setWindowTitle(int position, String titleText){
         windowTitle[position] = titleText;
         if(currentWindowPagePosition == position)
-            title.setText(titleText);
+            setWindowTitle(titleText);
+    }
+
+    /**
+     * 設定視窗標題
+     * @param titleText 標題文字
+     */
+    public void setWindowTitle(String titleText){
+        windowTitle[currentWindowPagePosition] = titleText;
+        title.setText(titleText);
+        onWindowTitleChangeListener.OnChanged(titleText);
+    }
+
+    /**
+     * 設定視窗標題改變監聽器
+     * @param onWindowTitleChangeListener 視窗標題改變監聽器
+     */
+    public void setOnWindowTitleChangeListener(OnWindowTitleChangeListener onWindowTitleChangeListener){
+        this.onWindowTitleChangeListener = onWindowTitleChangeListener;
     }
 
     /**

@@ -2,6 +2,8 @@ package com.jack8.floatwindow.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
@@ -25,12 +27,22 @@ public class FullscreenWindowActivity extends AppCompatActivity {
         getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN, android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         windowNumber = getIntent().getIntExtra(WINDOW_NUMBER_EXTRA_NAME, -1);
         WindowStruct ws = WindowManager.getWindowStruct(windowNumber);
-        if(ws == null){
-            finish();
-            return;
-        }else if(ws.nowState != WindowStruct.State.FULLSCREEN){
-            ws.fullscreen();
-            return;
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+            if(ws == null){
+                finish();
+                return;
+            }else if(ws.nowState != WindowStruct.State.FULLSCREEN){
+                ws.fullscreen();
+                return;
+            }
+        }else{
+            ws.setOnWindowTitleChangeListener(new WindowStruct.OnWindowTitleChangeListener() {
+                @Override
+                public void OnChanged(String title) {
+                    setTaskDescription(new ActivityManager.TaskDescription(title));
+                }
+            });
+            setTaskDescription(new ActivityManager.TaskDescription(ws.getWindowTitle()));
         }
         ws.setFullscreenActivity(this);
         winform = ws.getWinformForFullScreenActivity();
@@ -48,15 +60,17 @@ public class FullscreenWindowActivity extends AppCompatActivity {
     void exitFullscreen(){
         ((ViewGroup)winform.getParent()).removeView(winform);
         WindowManager.getWindowStruct(windowNumber).setFullscreenActivity(null);
-        finish();
+            finish();
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
-//        if(ws != null && ws.nowState == WindowStruct.State.FULLSCREEN){//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
-//            ws.mini();
-//        }
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
+            if (ws != null && ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
+                ws.close();
+            }
+        }
+    }
 }
