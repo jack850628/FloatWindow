@@ -19,6 +19,7 @@ import android.os.Looper;
 import androidx.annotation.RequiresApi;
 
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.view.WindowManager;
 import android.webkit.DownloadListener;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
@@ -46,9 +48,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.util.JsonUtils;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.jack8.floatwindow.Window.WindowFrom;
 import com.jack8.floatwindow.Window.WindowStruct;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.List;
@@ -243,6 +249,7 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 final String title = webView.getTitle();
                 //pageView.setTag(title);
                 windowStruct.setWindowTitle(position, title);
+                path.setText(url);
                 JTools.threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -565,8 +572,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 if (resultType == WebView.HitTestResult.SRC_ANCHOR_TYPE ||
                         resultType == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE ||
                         resultType == WebView.HitTestResult.ANCHOR_TYPE) {
-                    ListView listView=new ListView(context);
-                    final AlertDialog alertDialog=new AlertDialog.Builder(context).setView(listView).create();
+                    ListView listView = new ListView(context);
+                    final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(listView).create();
                     alertDialog.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
                     alertDialog.show();
                     listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(R.string.open_link),context.getString(R.string.open_link_in_new_window),context.getString(R.string.copy_link)}));
@@ -600,6 +607,54 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                         }
                     });
                     return true;
+                }else if(resultType == WebView.HitTestResult.EDIT_TEXT_TYPE){
+                    if(windowStruct.nowState != WindowStruct.State.FULLSCREEN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                        ListView listView = new ListView(context);
+                        final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(listView).create();
+                        alertDialog.getWindow().setType((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? WindowManager.LayoutParams.TYPE_SYSTEM_ALERT : WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+                        alertDialog.show();
+                        listView.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_selectable_list_item,new String[]{context.getString(android.R.string.cut),context.getString(android.R.string.copy),context.getString(android.R.string.paste)}));
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                switch (position){
+                                    case 0:
+                                        web.evaluateJavascript("(()=>{let val = document.activeElement.value; document.activeElement.value = ''; return {value: val}})()", new ValueCallback<String>() {
+                                            @Override
+                                            public void onReceiveValue(String value) {
+                                                try {
+                                                    JSONObject jsonObject = new JSONObject(value);
+                                                    clipboard.copyToClipboard(jsonObject.getString("value"));
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                    crashlytics.log(String.format("文字剪下失敗 %s\n", e.getStackTrace()));
+                                                }
+                                            }
+                                        });
+                                        break;
+                                    case 1:
+                                        web.evaluateJavascript("(()=>({value: document.activeElement.value}))()", new ValueCallback<String>() {
+                                            @Override
+                                            public void onReceiveValue(String value) {
+                                                try {
+                                                    JSONObject jsonObject = new JSONObject(value);
+                                                    clipboard.copyToClipboard(jsonObject.getString("value"));
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                    crashlytics.log(String.format("文字複製失敗 %s\n", e.getStackTrace()));
+                                                }
+                                            }
+                                        });
+                                        break;
+                                    case 2:
+                                        web.evaluateJavascript("document.activeElement.value += \"" + JsonUtils.escapeString(clipboard.copyFromClipboard()) + "\"", null);
+                                        break;
+                                }
+                                alertDialog.dismiss();
+                            }
+                        });
+                        return true;
+                    }
                 }
                 return false;
             }
