@@ -677,15 +677,18 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         }
     }
 
-    private class runTransitions implements Runnable{//執行轉場動畫
+    private class RunTransitions implements Runnable{//執行轉場動畫
         private State state;
 
-        public runTransitions(State state){
+        public RunTransitions(State state){
             this.state = state;
         }
 
         @Override
         public void run() {
+            if(state != nowState){//當transitionsDuration很大時，使用者很有機會在轉場動畫還沒播完時就按下其他狀態按鈕
+                return;//當轉場動畫還沒播完時狀態就改變時，取消狀態就改變前動畫
+            }
             if (transitionsDuration == 0) {
                 //abortAnimation可以使Scroller終止動畫跳過滾動過程直接給出最後數值
                 topMini.abortAnimation();
@@ -710,6 +713,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             } else if (state == State.HIDE) {
                 wmlp.alpha = 0.0f;
                 wm.updateViewLayout(winform, wmlp);
+            } else if (state == State.FULLSCREEN) {
+                wm.removeView(winform);
+                Intent intent = new Intent(context, FullscreenWindowActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
+                context.startActivity(intent);
             } else if (state == State.CLOSE) {
                 for (int i = 0; i < winconPage.length; i++)
                     CDAW.Deconstruction(context, winconPage[i], i, WindowStruct.this);
@@ -747,8 +756,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                         screenSize.getWidth() / 2 - buttonsWidth, -(screenSize.getHeight() / 2), transitionsDuration);
                 heightMini.startScroll(0, 0, buttonsWidth, buttonsHeight, transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
-                fullscreenWindowActivity.exitFullscreen();
-                wm.addView(winform, wmlp);
+                if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
+                    fullscreenWindowActivity.exitFullscreen();
+                    wm.addView(winform, wmlp);
+                }
                 int dy;
                 topMini.startScroll(0, 0, (screenSize.getWidth() - buttonsWidth), 0, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(),
@@ -759,7 +770,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha = 1.0f;
             wm.updateViewLayout(winform, wmlp);
             hideButtons();
-            runUi.post(new runTransitions(nowState));
+            runUi.post(new RunTransitions(nowState));
         }
     }
 
@@ -788,18 +799,19 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                         , screenSize.getWidth() - winform.getLayoutParams().width,
                         screenSize.getHeight() - winform.getLayoutParams().height, transitionsDuration);
             } else if(previousState == State.HIDE){
-                nowState = State.MAX;
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 , -(screenSize.getWidth() / 2), -(screenSize.getHeight() / 2) , transitionsDuration);
                 heightMini.startScroll(0,0, screenSize.getWidth(),screenSize.getHeight(), transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
-                fullscreenWindowActivity.exitFullscreen();
-                wm.addView(winform, wmlp);
+                if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
+                    fullscreenWindowActivity.exitFullscreen();
+                    wm.addView(winform, wmlp);
+                }
             }
             wmlp.flags = FOCUS_FLAGE;
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
             setDisplayObject();
-            runUi.post(new runTransitions(nowState));
+            runUi.post(new RunTransitions(nowState));
         }
     }
 
@@ -833,8 +845,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(0, 0, width, height, transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
-                fullscreenWindowActivity.exitFullscreen();
-                wm.addView(winform, wmlp);
+                if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
+                    fullscreenWindowActivity.exitFullscreen();
+                    wm.addView(winform, wmlp);
+                }
                 int dy;
                 topMini.startScroll(0, 0, left, top, transitionsDuration);
                 heightMini.startScroll( screenSize.getWidth(),
@@ -845,7 +859,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
             setDisplayObject();
-            runUi.post(new runTransitions(nowState));
+            runUi.post(new RunTransitions(nowState));
         }
     }
 
@@ -873,8 +887,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
-                fullscreenWindowActivity.exitFullscreen();
-                wm.addView(winform, wmlp);
+                if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
+                    fullscreenWindowActivity.exitFullscreen();
+                    wm.addView(winform, wmlp);
+                }
                 topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
                         , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
@@ -882,7 +898,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.flags = NO_FOCUS_FLAGE;
             wm.updateViewLayout(winform, wmlp);
             windowAction.goHide(this);
-            runUi.post(new runTransitions(nowState));
+            runUi.post(new RunTransitions(nowState));
         }
     }
 
@@ -901,17 +917,27 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
             else
                 max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
-            setDisplayObject(this.display_object);
-            wmlp.x = 0;
-            wmlp.y = 0;
-            wmlp.width = screenSize.getWidth();
-            wmlp.height = screenSize.getHeight();
-            wm.updateViewLayout(winform, wmlp);//先將視窗變成最大化，這是為了讓視窗重全螢幕切到其他狀態時，動畫能夠是從對大畫開始轉變，而不是從其他地方瞬間飛到(0,0)點座標(transitionsDuration為0時這個問題看起來特別明顯)
-            wm.removeView(winform);
-            Intent intent = new Intent(context, FullscreenWindowActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
-            context.startActivity(intent);
+            if (previousState == State.GENERAL) {
+                topMini.startScroll(left, top, -left, -top, transitionsDuration);
+                heightMini.startScroll(width, height, screenSize.getWidth() - width,
+                        screenSize.getHeight() - height, transitionsDuration);
+            } else if(previousState == State.MINI){
+                topMini.startScroll(wmlp.x, wmlp.y, -wmlp.x, -wmlp.y, transitionsDuration);
+                heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height
+                        , screenSize.getWidth() - winform.getLayoutParams().width,
+                        screenSize.getHeight() - winform.getLayoutParams().height, transitionsDuration);
+            } else if(previousState == State.HIDE){
+                topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 , -(screenSize.getWidth() / 2), -(screenSize.getHeight() / 2) , transitionsDuration);
+                heightMini.startScroll(0,0, screenSize.getWidth(),screenSize.getHeight(), transitionsDuration);
+            }
+//            else if(previousState == State.MAX){
+//
+//            }
+            wmlp.flags = FOCUS_FLAGE;
+            wmlp.alpha =1.0f;
+            wm.updateViewLayout(winform, wmlp);
+            setDisplayObject();
+            runUi.post(new RunTransitions(nowState));
         }
     }
 
@@ -944,13 +970,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 heightMini.startScroll(winform.getLayoutParams().width, winform.getLayoutParams().height,
                         -winform.getLayoutParams().width, -winform.getLayoutParams().height, transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
-                fullscreenWindowActivity.exitFullscreen();
-                wm.addView(winform, wmlp);
+                if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
+                    fullscreenWindowActivity.exitFullscreen();
+                    wm.addView(winform, wmlp);
+                }
                 topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
                         , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
             }
-            runUi.post(new runTransitions(nowState));
+            runUi.post(new RunTransitions(nowState));
         }
     }
 
