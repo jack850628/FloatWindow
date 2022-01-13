@@ -87,6 +87,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     private View customView;
     private WebChromeClient.CustomViewCallback customViewCallback;
 
+    private boolean canSendHistory = false;//因為onReceivedTitle會比doUpdateVisitedHistory慢調用，所以在doUpdateVisitedHistory送出紀錄的話標題會是上一個網頁的標題，但單純在onReceivedTitle送標題會導致只要網頁使用javascript改標題，就會送出一次歷史紀錄。
+
     public WebBrowser(){
         crashlytics = FirebaseCrashlytics.getInstance();
     }
@@ -94,7 +96,6 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
     public void loadUrl(String url){
         PB.setVisibility(View.VISIBLE);
         PB.setProgress(0);
-        path.setText(url);
         web.loadUrl(url);
     }
 
@@ -244,18 +245,15 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
 //                windowFormMenu.setPadding(0, 0, 0, 0);
             }
 
+//            @Override
+//            public void onPageFinished(WebView webView, final String url) {
+//
+//            }
+
             @Override
-            public void onPageFinished(WebView webView, final String url) {
-                final String title = webView.getTitle();
-                //pageView.setTag(title);
-                windowStruct.setWindowTitle(position, title);
+            public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
                 path.setText(url);
-                JTools.threadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataBaseForBrowser.historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
-                    }
-                });
+                canSendHistory = true;
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
@@ -529,6 +527,21 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                 thisPageHaveIcon = true;
                 windowFormMenu.setBackground(new BitmapDrawable(context.getResources(), icon));
 //                windowFormMenu.setPadding(5, 5, 5, 5);
+            }
+
+            @Override
+            public void onReceivedTitle(WebView webView, String title) {
+                windowStruct.setWindowTitle(position, title);
+                if(canSendHistory) {
+                    canSendHistory = false;
+                    final String url = webView.getUrl();
+                    JTools.threadPool.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            dataBaseForBrowser.historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
+                        }
+                    });
+                }
             }
 
             /*------------全螢幕播放--------------
