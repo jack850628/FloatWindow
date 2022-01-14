@@ -86,8 +86,8 @@
     <string name="resident_at_the_notification_center">resident at the notification center</string>
     <string name="what_is_new_string1">You can change the default browser display mode in the browser settings.</string>
     <string name="help_string2">From the notification center, you can quickly open any function of the FloatWindow.</string>
-    <string name="watch_ad">Be careful! This is advertising</string>
-    <string name="watched_ad">Thank you for your interest in advertising! Thank you!</string>
+    <string name="watch_ad">Be careful! This is advertisement</string>
+    <string name="watched_ad">Thank you for your interest in advertisement! Thank you!</string>
     <string name="download_method">Download method</string>
     <string name="call_other_browsers_download">This will call other browsers to download</string>
     <string name="are_you_sure_download">Are you sure to download?</string>
