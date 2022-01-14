@@ -7,7 +7,6 @@
     <application>
         <activity
             android:name=".Window.FullscreenWindowActivity"
-            android:exported="false"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>

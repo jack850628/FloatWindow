@@ -16,6 +16,7 @@
         <activity android:name=".LogView"></activity>
         <activity
             android:name=".MainActivity"
+            android:excludeFromRecents="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +31,8 @@
         <activity
             android:name=".WebBrowserLauncher"
             android:icon="@drawable/browser"
+            android:excludeFromRecents="true"
+            android:exported="true"
             android:label="@string/web_browser">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -51,6 +54,8 @@
         <activity
             android:name=".NotePageLauncher"
             android:icon="@drawable/note"
+            android:excludeFromRecents="true"
+            android:exported="true"
             android:label="@string/note">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -63,6 +68,8 @@
         <activity
             android:name=".CalculatorLauncher"
             android:icon="@drawable/calculator"
+            android:excludeFromRecents="true"
+            android:exported="true"
             android:label="@string/calculator"></activity>
         <activity
             android:name=".Setting"
