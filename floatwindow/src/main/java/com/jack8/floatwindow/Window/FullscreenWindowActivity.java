@@ -60,12 +60,13 @@ public class FullscreenWindowActivity extends AppCompatActivity {
     }
 
     @Override
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void onDestroy() {
         super.onDestroy();
-        WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
-        if (ws != null && ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
-            ws.close();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
+            if (ws != null && ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
+                ws.close();
+            }
         }
     }
 }
