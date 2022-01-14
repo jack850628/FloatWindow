@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.webkit.DownloadListener;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
@@ -788,6 +789,16 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                     path.setText(webHistoryItem.getUrl());//取得上一頁的網址連結
                     web.goBack();
                 }
+            }
+        });
+        path.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
+                    web.loadUrl(path.getText().toString());
+                    return true;
+                }
+                return false;
             }
         });
         menu.setOnClickListener(new View.OnClickListener() {
