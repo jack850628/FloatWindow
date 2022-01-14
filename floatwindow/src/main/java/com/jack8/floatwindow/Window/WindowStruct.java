@@ -1311,7 +1311,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @return  寬度
      */
     public int getRealWidth(){
-        return wmlp.width;
+        return winform.getWidth();
     }
 
     /**
@@ -1338,7 +1338,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @return  高度
      */
     public int getRealHeight(){
-        return wmlp.height;
+        return winform.getHeight();
     }
 
     /**
