@@ -1123,6 +1123,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * 讓該視窗獲得焦點
      */
     public void focusWindow(){
+        focusWindow(true);
+    }
+
+    /**
+     * 讓該視窗獲得焦點
+     * @param eachSubWindow 判斷是否要focus子視窗
+     */
+    private void focusWindow(boolean eachSubWindow){
         if(nowState != State.CLOSE && WindowManager.focusedWindowNumber != this.Number) {//如果視窗編號不是現在焦點視窗編號
             if (WindowManager.windowIn(WindowManager.focusedWindowNumber)) {//如果現在焦點視窗編號在有視窗清單裡
                 WindowStruct WS = WindowManager.getWindowStruct(WindowManager.focusedWindowNumber);
@@ -1137,15 +1145,17 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 wm.addView(winform,wmlp);
             }
         }
-        for(int key : this.subWindowNumbers)
-            WindowManager.getWindowStruct(key).focusWindow();
+        if(eachSubWindow) {
+            for (int key : this.subWindowNumbers)
+                WindowManager.getWindowStruct(key).focusWindow(true);
+        }
     }
 
     /**
      * 讓該視窗獲得焦點並顯示視窗
      */
     public void focusAndShowWindow(){
-        focusWindow();
+        focusWindow(false);
         if(nowState == State.MINI || nowState == State.HIDE) {
             if (previousState == State.MAX)
                 max();
