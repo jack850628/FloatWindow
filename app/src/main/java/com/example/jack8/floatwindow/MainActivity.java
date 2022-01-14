@@ -16,29 +16,20 @@ import android.os.Bundle;
 
 
 public class MainActivity extends AppCompatActivity {
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode() == Activity.RESULT_OK){
-                        startFloatWindow();
-                    }else{
-                        finish();
-                    }
-                }
-            }
-    );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.window);
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M && !Settings.canDrawOverlays(MainActivity.this))
-            activityResultLauncher.launch(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + MainActivity.this.getPackageName())));
-        else {
-            startFloatWindow();
-        }
+        new RequestPermission(this, new RequestPermission.Callback() {
+            @Override
+            public void callback() {
+                startFloatWindow();
+            }
+        }, new RequestPermission.Callback() {
+            @Override
+            public void callback() {
+                finish();
+            }
+        }).resultPermission();
     }
     private void startFloatWindow(){
         Intent intent = new Intent(this, FloatServer.class);

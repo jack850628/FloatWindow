@@ -1,17 +1,13 @@
 package com.jack8.floatwindow.Window;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-
-import com.jack8.floatwindow.Window.WindowManager;
 
 public class FullscreenWindowActivity extends AppCompatActivity {
 
@@ -64,13 +60,12 @@ public class FullscreenWindowActivity extends AppCompatActivity {
     }
 
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     protected void onDestroy() {
         super.onDestroy();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
-            if (ws != null && ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
-                ws.close();
-            }
+        WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
+        if (ws != null && ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
+            ws.close();
         }
     }
 }
