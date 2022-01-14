@@ -604,8 +604,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wincon.removeView(winconPage[currentWindowPagePosition]);
             wincon.addView(winconPage[position]);
             CDAW.onResume(context,winconPage[position],position,WindowStruct.this);
-            setWindowTitle(windowTitle[position]);
             currentWindowPagePosition = position;
+            setWindowTitle(windowTitle[position]);
         }
         @Override
         public void onClick(View v) {
@@ -1427,9 +1427,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param titleText 標題文字
      */
     public void setWindowTitle(int position, String titleText){
-        windowTitle[position] = titleText;
         if(currentWindowPagePosition == position)
             setWindowTitle(titleText);
+        else
+            windowTitle[position] = titleText;
     }
 
     /**
