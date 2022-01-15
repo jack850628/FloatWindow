@@ -246,10 +246,15 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
 //                windowFormMenu.setPadding(0, 0, 0, 0);
             }
 
-//            @Override
-//            public void onPageFinished(WebView webView, final String url) {
-//
-//            }
+            @Override
+            public void onPageFinished(WebView webView, final String url) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    webView.evaluateJavascript(WebBrowserExpansionFunction.JS_FIND_SELECT, null);
+                    if (url.matches("https?:\\/\\/.*?\\.youtube.com\\/.*")) {
+                        webView.evaluateJavascript(WebBrowserExpansionFunction.YOUTUBE_CONTINUE_PLAY, null);
+                    }
+                }
+            }
 
             @Override
             public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
@@ -769,6 +774,8 @@ public class WebBrowser implements WindowStruct.constructionAndDeconstructionWin
                     if(matcher.find())
                         url = matcher.group();
                 }
+                web.addJavascriptInterface(new WebBrowserExpansionFunction(context, web), WebBrowserExpansionFunction.NAME);
+//                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) web.setWebContentsDebuggingEnabled(true);
                 path.setText(url);
                 web.loadUrl(url);
             }
