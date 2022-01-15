@@ -79,7 +79,8 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4604853118314154~2222092369" />
 
-        <receiver android:name=".BootCompleted">
+        <receiver android:name=".BootCompleted"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
