@@ -12,6 +12,7 @@ public class WindowParameter {
     private static final String SIZE_BAR_HEIGHT = "SizeBarHeight";
     private static final String AUTO_RUN = "autoRun";
     private static final String PERMANENT = "permanent";
+    private static final String WHAT_IS_NEW_VERSION = "whatIsNewVersion";
 
     private static int SECOND_TEMP = -1;
     private static int BUTTONS_HEIGHT_TEMP = -1;
@@ -19,6 +20,7 @@ public class WindowParameter {
     private static int SIZE_BAR_HEIGHT_TEMP = -1;
     private static int AUTO_RUN_TEMP = -1;
     private static int PERMANENT_TEMP = -1;
+    private static String WHAT_IS_NEW_VERSION_TEMP = null;
 
     public static int getWindowTransitionsDuration(Context context){
         if(SECOND_TEMP == -1)
@@ -137,4 +139,23 @@ public class WindowParameter {
         context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putBoolean(PERMANENT,value).apply();;
     }
 
+    /**
+     * 取得新功能版本號
+     * @param context app context
+     * @return 新功能版本號
+     */
+    public static String getWhatIsNewVersion(Context context){
+        if(WHAT_IS_NEW_VERSION_TEMP == null)
+            WHAT_IS_NEW_VERSION_TEMP = context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getString(WHAT_IS_NEW_VERSION,"");
+        return WHAT_IS_NEW_VERSION_TEMP;
+    }
+
+    /**
+     * 設定新功能版本號
+     * @param context app context
+     */
+    public static void setWhatIsNewVersion(Context context, String whatIsNewVersion){
+        WHAT_IS_NEW_VERSION_TEMP = whatIsNewVersion;
+        context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putString(WHAT_IS_NEW_VERSION, whatIsNewVersion).apply();
+    }
 }

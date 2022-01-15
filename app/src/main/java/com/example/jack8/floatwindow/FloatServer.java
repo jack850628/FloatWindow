@@ -1,5 +1,6 @@
 package com.example.jack8.floatwindow;
 
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -62,6 +63,7 @@ public class FloatServer extends Service {
     public static final String BROWSER_MODE = "browser_mode";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
+    private static final String WHAT_IS_NEW_VERSION_REGEX = "\\.\\d+$";
 
     static int wm_count=0;//計算FloatServer總共開了多少次
 
@@ -70,7 +72,6 @@ public class FloatServer extends Service {
     final int NOTIFY_ID=851262;
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
     WindowStruct windowManager = null;//視窗管理員
-    WindowStruct menu = null;
     WindowStruct help = null;
     Handler handler = new Handler();
     WindowStruct.WindowAction windowAction = new WindowStruct.WindowAction() {
@@ -355,31 +356,7 @@ public class FloatServer extends Service {
                             helpButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    if(help == null) {
-                                        wm_count++;
-                                        help = new WindowStruct.Builder(FloatServer.this, wm)
-                                                .windowPages(new int[]{R.layout.what_is_new, R.layout.help})
-                                                .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
-                                                .transitionsDuration(WindowParameter.getWindowTransitionsDuration(FloatServer.this))
-                                                .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(FloatServer.this)))
-                                                .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(FloatServer.this)))
-                                                .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(FloatServer.this)))
-                                                .windowAction(new WindowStruct.WindowAction() {
-                                                    @Override
-                                                    public void goHide(WindowStruct windowStruct) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void goClose(WindowStruct windowStruct) {
-                                                        help = null;
-                                                        windowAction.goClose(windowStruct);
-                                                    }
-                                                })
-                                                .constructionAndDeconstructionWindow(new Help())
-                                                .show();
-                                    }else
-                                        help.focusAndShowWindow();
+                                    openHelpWindow();
                                 }
                             });
                             ViewGroup micro_max_button = pageView.getRootView().findViewById(R.id.micro_max_button_background);
@@ -576,7 +553,39 @@ public class FloatServer extends Service {
             }
         }
 
+        if(!WindowParameter.getWhatIsNewVersion(FloatServer.this).equals(BuildConfig.VERSION_NAME.replaceAll(WHAT_IS_NEW_VERSION_REGEX, ""))){
+            openHelpWindow();
+        }
         return START_STICKY;//START_REDELIVER_INTENT;
+    }
+    void openHelpWindow(){
+        if(help == null) {
+            wm_count++;
+            help = new WindowStruct.Builder(FloatServer.this, wm)
+                    .displayObject(WindowStruct.MENU_BUTTON | WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                    .windowPages(new int[]{R.layout.what_is_new, R.layout.help})
+                    .windowPageTitles(new String[]{getResources().getString(R.string.new_functions), getResources().getString(R.string.help)})
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(FloatServer.this))
+                    .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(FloatServer.this)))
+                    .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(FloatServer.this)))
+                    .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(FloatServer.this)))
+                    .windowAction(new WindowStruct.WindowAction() {
+                        @Override
+                        public void goHide(WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void goClose(WindowStruct windowStruct) {
+                            help = null;
+                            WindowParameter.setWhatIsNewVersion(FloatServer.this, BuildConfig.VERSION_NAME.replaceAll(WHAT_IS_NEW_VERSION_REGEX, ""));
+                            windowAction.goClose(windowStruct);
+                        }
+                    })
+                    .constructionAndDeconstructionWindow(new Help())
+                    .show();
+        }else
+            help.focusAndShowWindow();
     }
     void shohWindowManager(){
         final ListView hideMenu = new ListView(this);

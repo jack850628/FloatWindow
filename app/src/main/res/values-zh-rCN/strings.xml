@@ -85,7 +85,7 @@
     <string name="close_notification">关闭通知</string>
     <string name="auto_execute_in_boot_after">开机后自动运行</string>
     <string name="resident_at_the_notification_center">常驻于通知中心</string>
-    <string name="what_is_new_string1">你可以在浏览器设定中更改预设的浏览器显示模式。</string>
+    <string name="what_is_new_title1">全萤幕窗口</string>
     <string name="help_string2">从通知中心可以快速开启浮动视窗的任意功能</string>
     <string name="watch_ad">这是广告</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
@@ -104,6 +104,11 @@
         <item>预设模式</item>
         <item>桌面模式</item>
     </string-array>
-    <string name="what_is_new_string2">加入至主画面的捷径，会记住浏览该网页所使用的显示模式。</string>
+    <string name="what_is_new_string1">当按下全萤幕按钮后，窗口将会像一般APP一样填满整个萤幕，如果要关闭窗口您可以按右上角的X按钮，如果系统版本大于等于5.0以上还可以使用系统的应用程式总览画面关闭窗口。</string>
     <string name="default_browser_mode">预设浏览模式</string>
+    <string name="what_is_new_string2">若您将全萤幕视窗给隐藏了，您一样可以至通知中心按下浮动视窗的视窗清单按钮找回被隐藏的视窗。</string>
+    <string name="what_is_new_title2">网页文字剪下复制贴上</string>
+    <string name="what_is_new_string3">从此版本开始，您可以长按网页中的文字编辑区块径行剪下复制贴上，如果视窗是在全萤幕状态下，您还可以选取网页上的文字。</string>
+    <string name="what_is_new_title3">网页中的下拉式菜单</string>
+    <string name="what_is_new_string4">從此版本開始，點擊網頁中的下拉式選單不會在總是沒有反應了(不過部分網頁中可能還是無效)。</string>
 </resources>

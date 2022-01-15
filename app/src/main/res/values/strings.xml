@@ -84,7 +84,7 @@
     <string name="close_notification">Close Notification</string>
     <string name="auto_execute_in_boot_after">auto execute in boot after</string>
     <string name="resident_at_the_notification_center">resident at the notification center</string>
-    <string name="what_is_new_string1">You can change the default browser display mode in the browser settings.</string>
+    <string name="what_is_new_title1">Fullscreen Window</string>
     <string name="help_string2">From the notification center, you can quickly open any function of the FloatWindow.</string>
     <string name="watch_ad">Be careful! This is advertisement</string>
     <string name="watched_ad">Thank you for your interest in advertisement! Thank you!</string>
@@ -103,6 +103,11 @@
         <item>defailt mode</item>
         <item>desktop mode</item>
     </string-array>
-    <string name="what_is_new_string2">Shortcut added to the home screen will remember the display mode used to browse the page.</string>
+    <string name="what_is_new_string1">When the full screen button is pressed, the window will fill the entire screen like a normal APP. If you want to close the window, you can press the X button in the upper right corner. If the system version is greater than or equal to 5.0, you can also use the recent apps screen to close the window.</string>
     <string name="default_browser_mode">default browser mode</string>
+    <string name="what_is_new_string2">If you hide the full screen window, you can also go to the notification center and click the window list button of the FloatWindow to retrieve the hidden window.</string>
+    <string name="what_is_new_title2">Cut copy and paste webpage text</string>
+    <string name="what_is_new_string3">Starting from this version, you can long-press the text editing block in the webpage to cut, copy and paste, and if the window is in full screen state, you can also select the text on the webpage.</string>
+    <string name="what_is_new_title3">Drop-down menus in web pages</string>
+    <string name="what_is_new_string4">Starting with this version, clicking on the drop-down menu on a web page will no longer always be nothing(although it may still not work on some web pages).</string>
 </resources>
