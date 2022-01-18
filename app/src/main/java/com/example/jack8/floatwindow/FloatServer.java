@@ -124,47 +124,50 @@ public class FloatServer extends Service {
         ).build());
         MobileAds.initialize(this);
 
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            flags = PendingIntent.FLAG_IMMUTABLE;
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notify_view);
         remoteViews.setOnClickPendingIntent(R.id.web_browser,
                 PendingIntent.getActivity(this,
                         0,
                         new Intent(this, WebBrowserLauncher.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.note,
                 PendingIntent.getActivity(this,
                         1,
                         new Intent(this, NotePageLauncher.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.calculato,
                 PendingIntent.getActivity(this,
                         2,
                         new Intent(this, CalculatorLauncher.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.setting,
                 PendingIntent.getActivity(this,
                         3,
                         new Intent(this, Setting.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.window_list,
                 PendingIntent.getService(this,
                         4,
                         new Intent(this,FloatServer.class).putExtra(INTENT,OPEN_WINDOW_MANAGER),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.close,
                 PendingIntent.getService(this,
                         5,
                         new Intent(this,FloatServer.class).putExtra(INTENT,CLOSE_FLOAT_WINDOW),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                 )
         );
 

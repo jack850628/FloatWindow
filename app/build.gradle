@@ -9,8 +9,8 @@ android {
         applicationId "com.jack850628.floatwindow"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 49
-        versionName "1.5.0115"
+        versionCode 50
+        versionName "1.5.0118"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -57,4 +57,6 @@ dependencies {
 
     implementation project(path: ':floatwindow')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    implementation 'androidx.work:work-runtime:2.7.1'
 }
