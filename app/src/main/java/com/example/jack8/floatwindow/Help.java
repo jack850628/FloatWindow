@@ -7,7 +7,7 @@ import android.widget.ImageView;
 
 import com.jack8.floatwindow.Window.WindowStruct;
 
-public class Help implements WindowStruct.constructionAndDeconstructionWindow  {
+public class Help extends WindowStruct.constructionAndDeconstructionWindow  {
     @Override
     public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
         switch (position){

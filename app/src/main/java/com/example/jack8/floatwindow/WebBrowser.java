@@ -63,7 +63,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebBrowser implements WindowStruct.constructionAndDeconstructionWindow {
+public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow {
     public Handler handler = new Handler(Looper.getMainLooper());
     WebView web;
 

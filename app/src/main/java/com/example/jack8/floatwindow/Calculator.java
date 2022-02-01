@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * 初始化視窗內容
  */
-public class Calculator implements WindowStruct.constructionAndDeconstructionWindow {
+public class Calculator extends WindowStruct.constructionAndDeconstructionWindow {
     private AdRequest adRequest = new AdRequest.Builder().build();
 
     /**

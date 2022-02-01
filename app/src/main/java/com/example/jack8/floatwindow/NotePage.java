@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class NotePage implements WindowStruct.constructionAndDeconstructionWindow {
+public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
     final static int ADD_NOTE = 0,OPEN_NOTE = 1;
     final static String NOTE = "Note",NOTES = "Notes";
     static LinkedList<String> showingNoteIdList = new LinkedList<>();

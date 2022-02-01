@@ -303,10 +303,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
     public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Object[][] windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber, State openState){
-        if(WindowManager.windowList.containsKey(WindowManager.focusedWindowNumber)){
-            WindowStruct WS = WindowManager.getWindowStruct(WindowManager.focusedWindowNumber);
-            WS.unFocusWindow();
-        }
+        if(WindowManager.windowList.containsKey(WindowManager.focusedWindowNumber))
+            WindowManager.getWindowStruct(WindowManager.focusedWindowNumber).unFocusWindow();
         WindowManager.focusedWindowNumber = this.Number = Index++;
         this.context = context;
         this.wm = wm;
@@ -487,6 +485,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         this.parentWindowNumber = parentWindowNumber;
         if(parentWindowNumber != -1)
             WindowManager.getWindowStruct(parentWindowNumber).subWindowNumbers.add(Number);
+        CDAW.onFocus(context, this);//防止視窗閃爍，所以不呼叫focusWindow()
     }
 
     public interface WindowAction{
@@ -494,12 +493,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         void goClose(WindowStruct windowStruct);//當按下關閉視窗按鈕
     }
 
-    public interface constructionAndDeconstructionWindow{
-        void Construction(Context context, View pageView, int position,Object[] args , WindowStruct windowStruct);
-        void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct);
+    public static class constructionAndDeconstructionWindow{
+        public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct){}
+        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct){}
 
-        void onResume(Context context, View pageView, int position, WindowStruct windowStruct);
-        void onPause(Context context, View pageView, int position, WindowStruct windowStruct);
+        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct){}
+        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct){}
+
+        public void onFocus(Context context, WindowStruct windowStruct){}
+        public void onUnFocus(Context context, WindowStruct windowStruct){}
     }
 
     public interface OnWindowTitleChangeListener{
@@ -740,6 +742,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 intent.setData(Uri.parse(String.valueOf(getNumber())));//一定要setData，這樣才能在要叫回這個Activity時成功找到
                 context.startActivity(intent);
             } else if (state == State.CLOSE) {
+                CDAW.onPause(context, winconPage[currentWindowPagePosition], currentWindowPagePosition, WindowStruct.this);
                 for (int i = 0; i < winconPage.length; i++)
                     CDAW.Deconstruction(context, winconPage[i], i, WindowStruct.this);
                 windowAction.goClose(WindowStruct.this);
@@ -1144,6 +1147,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 wm.removeView(winform);
                 wm.addView(winform,wmlp);
             }
+            CDAW.onFocus(context, this);
         }
         if(eachSubWindow) {
             for (int key : this.subWindowNumbers)
@@ -1193,6 +1197,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }
             if(nowState != State.FULLSCREEN)
                 wm.updateViewLayout(winform,wmlp);
+            CDAW.onUnFocus(context, this);
         }
     }
 
