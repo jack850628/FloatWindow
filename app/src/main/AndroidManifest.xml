@@ -77,7 +77,12 @@
             android:label="@string/calculator"></activity>
         <activity
             android:name=".Setting"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize">
+            <meta-data android:name="WindowManagerPreference:FreeformWindowSize"
+                android:value="[phone|tablet|maximize]" />
+            <meta-data android:name="WindowManagerPreference:FreeformWindowOrientation"
+                android:value="[portrait|landscape]" />
+        </activity>
         <activity android:name=".HelpMeAd" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

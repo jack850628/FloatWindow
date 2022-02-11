@@ -7,8 +7,14 @@
     <application>
         <activity
             android:name=".Window.FullscreenWindowActivity"
-            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard|density"
+            android:resizeableActivity="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <meta-data android:name="WindowManagerPreference:FreeformWindowSize"
+                android:value="[phone|tablet|maximize]" />
+            <meta-data android:name="WindowManagerPreference:FreeformWindowOrientation"
+                android:value="[portrait|landscape]" />
+        </activity>
     </application>
 
 </manifest>
