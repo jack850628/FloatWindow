@@ -7,7 +7,7 @@
     <application>
         <activity
             android:name=".Window.FullscreenWindowActivity"
-            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard|density"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard|density|navigation|smallestScreenSize|uiMode"
             android:resizeableActivity="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data android:name="WindowManagerPreference:FreeformWindowSize"
