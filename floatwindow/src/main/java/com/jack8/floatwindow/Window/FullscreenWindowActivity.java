@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -12,8 +13,9 @@ import android.view.ViewGroup;
 public class FullscreenWindowActivity extends AppCompatActivity {
 
     public static final String WINDOW_NUMBER_EXTRA_NAME = "WINDOW_NUMBER";
-    int windowNumber;
-    View winform;
+    private WindowStruct.OnWindowTitleChangeListener onWindowTitleChangeListener;
+    private int windowNumber;
+    private View winform;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +34,13 @@ public class FullscreenWindowActivity extends AppCompatActivity {
                 return;
             }
         }else{
-            ws.setOnWindowTitleChangeListener(new WindowStruct.OnWindowTitleChangeListener() {
+            onWindowTitleChangeListener = new WindowStruct.OnWindowTitleChangeListener() {
                 @Override
-                public void OnChanged(String title) {
+                public void onTitleChanged(Context context, WindowStruct windowStruct, String title) {
                     setTaskDescription(new ActivityManager.TaskDescription(title));
                 }
-            });
+            };
+            ws.addWindowTitleChangeListener(onWindowTitleChangeListener);
             setTaskDescription(new ActivityManager.TaskDescription(ws.getWindowTitle()));
         }
         ws.setFullscreenActivity(this);
@@ -64,8 +67,11 @@ public class FullscreenWindowActivity extends AppCompatActivity {
         super.onDestroy();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             WindowStruct ws = WindowManager.getWindowStruct(windowNumber);//當使用者是按X按鈕關視窗時，ws會為null
-            if (ws != null && ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
-                ws.close();
+            if(ws != null) {
+                ws.removeWindowTitleChangeListener(onWindowTitleChangeListener);
+                if (ws.nowState == WindowStruct.State.FULLSCREEN) {//當使用者是是從多工畫面關掉視窗時，ws.nowState會等於WindowStruct.State.FULLSCREEN
+                    ws.close();
+                }
             }
         }
     }
