@@ -5,24 +5,43 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/message"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        style="@style/AppTheme.WindiowText"
-        android:textSize="18sp"/>
+        android:orientation="vertical">
 
-    <com.example.jack8.floatwindow.FwEditView
-        android:id="@+id/input_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        style="@style/AppTheme.WindiowText"
-        android:ems="10"
-        android:visibility="gone"
-        android:inputType="textPersonName" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/message"
+                    style="@style/AppTheme.WindiowText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <com.example.jack8.floatwindow.FwEditView
+            android:id="@+id/input_text"
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,20 +52,20 @@
         <Button
             android:id="@+id/confirm"
             style="@style/AppTheme.Button"
-            android:theme="@style/AppTheme.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/confirm" />
+            android:text="@string/confirm"
+            android:theme="@style/AppTheme.Button" />
 
         <Button
             android:id="@+id/cancel"
             style="@style/AppTheme.Button"
-            android:theme="@style/AppTheme.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/cancel"
+            android:theme="@style/AppTheme.Button"
             android:visibility="gone" />
     </LinearLayout>
 

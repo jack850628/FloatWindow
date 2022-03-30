@@ -32,13 +32,14 @@ public class MoveWindow implements View.OnTouchListener{
                     return false;
                 }
                 int x = (int) (event.getRawX() - H);
-                int y = (int) (event.getRawY() - W - getStatusBarHeight());//60為狀態列高度
+                int y = (int) (event.getRawY() - W - getStatusBarHeight());
                 if (v.getParent() != null)
                     y -= (v.getTop() - ((ViewGroup) v.getParent()).getTop());
                 if (y < 0)
                     y = 0;
-                windowStruct.setPosition(x, y);
+                windowStruct.setPosition(x, y, true);
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                windowStruct.setPosition(windowStruct.getPositionX(), windowStruct.getPositionY());
                 H = -1;
                 W = -1;
             }

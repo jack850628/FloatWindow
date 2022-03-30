@@ -22,6 +22,7 @@ import com.jack8.floatwindow.Window.WindowStruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 public class Brickout {
     private Activity activity;
@@ -101,7 +102,7 @@ public class Brickout {
                                     .windowSizeBarHeight((int) (activity.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(activity)))
                                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                         @Override
-                                        public void Construction(Context context, View view, int i, Object[] objects, WindowStruct windowStruct) {
+                                        public void Construction(Context context, View view, int i, Map<String, Object> args, WindowStruct windowStruct) {
                                             ((TextView) view.findViewById(R.id.total_score)).setText(String.valueOf(totalScore));
                                         }
 

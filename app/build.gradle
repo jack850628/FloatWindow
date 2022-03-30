@@ -9,8 +9,8 @@ android {
         applicationId "com.jack850628.floatwindow"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 52
-        versionName "1.5.0212"
+        versionCode 53
+        versionName "1.6.0330"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -31,6 +31,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.firebase:firebase-database:20.0.2'
+    implementation 'androidx.test:rules:1.4.0'
     androidTestImplementation('androidx.test.espresso:espresso-core:3.3.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -39,13 +40,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'customtabs'
     })
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    testImplementation 'junit:junit:4.13.1'
 
     implementation 'com.google.android.gms:play-services-ads:20.3.0'//google廣告，最後支援minSdkVersion 14的版本為17.2.1
 
     implementation 'androidx.room:room-runtime:2.3.0'
     annotationProcessor 'androidx.room:room-compiler:2.3.0'
-    testImplementation 'androidx.room:room-testing:2.3.0'
     //noinspection GradleCompatible
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
@@ -59,4 +58,11 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.work:work-runtime:2.7.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.room:room-testing:2.3.0'
+    testImplementation 'org.mockito:mockito-core:4.4.0'
+    androidTestImplementation 'org.mockito:mockito-android:4.4.0'
+    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation 'io.mockk:mockk:1.12.3'
 }

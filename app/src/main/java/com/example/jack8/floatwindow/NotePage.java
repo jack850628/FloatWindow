@@ -33,9 +33,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
-public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
-    final static int ADD_NOTE = 0,OPEN_NOTE = 1;
+public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
+    public static final String NODE_LIST = "NodeList", HIDE_FRAME = "hideFrame", EXTRA_TEXT = "extraText", NOTE_ID = "noteId";
     final static String NOTE = "Note",NOTES = "Notes";
     static LinkedList<String> showingNoteIdList = new LinkedList<>();
     static WindowStruct otherNoteList = null;//其他便條紙清單視窗
@@ -123,7 +124,7 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
                                 .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                 .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                     @Override
-                                    public void Construction(final Context context, View pageView, int _, Object[] args, final WindowStruct ws) {
+                                    public void Construction(final Context context, View pageView, int _, Map<String, Object> args, final WindowStruct ws) {
                                         pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
@@ -148,21 +149,6 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
                                                 ws.close();
                                             }
                                         });
-                                    }
-
-                                    @Override
-                                    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-
-                                    }
-
-                                    @Override
-                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                    }
-
-                                    @Override
-                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                                     }
                                 })
                                 .windowAction(new WindowStruct.WindowAction() {
@@ -194,8 +180,13 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
     Button nodePageMenuButton;
     MoveWindow moveWindow;
     int nodePageDisplayObj;
+
+    public NotePage(){
+        super(NotePageLauncher.class);
+    }
+
     @Override
-    public void Construction(final Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+    public void Construction(final Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
         final EditText note=(EditText) pageView.findViewById(R.id.note);
         final Clipboard clipboard=new Clipboard(context);
         final View toolsBar = pageView.findViewById(R.id.tools_bar);
@@ -204,6 +195,8 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
         final ImageView showFrame = toolsBar.findViewById(R.id.show_frame);
         final ImageView close = toolsBar.findViewById(R.id.close);
         final SharedPreferences noteSpf = context.getSharedPreferences(NOTE,0);
+
+        nodePageDisplayObj = windowStruct.getDisplayObject();
 
         note.addTextChangedListener(new TextWatcher() {
             @Override
@@ -275,54 +268,7 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         switch (position){
                             case 0:{
-                                if(otherNoteList == null) {
-                                    ListView nodeList = new ListView(context);
-                                    nodeList.setAdapter(otherNodeListAdapter);
-                                    nodeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            FloatServer.wm_count++;
-                                            new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                                    .windowPageTitles(new String[]{context.getString(R.string.note)})
-                                                    .windowPages(new int[]{R.layout.note_page})
-                                                    .windowInitArgs(
-                                                            position == 0
-                                                                    ?new Object[][]{{NotePage.ADD_NOTE,""}}
-                                                                    :new Object[][]{{NotePage.OPEN_NOTE,otherNodeListAdapter.noteList.get(position)[0]}}
-                                                    )
-                                                    .windowAction(((FloatServer)context).windowAction)
-                                                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                                    .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                                                    .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                                                    .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                                                    .constructionAndDeconstructionWindow(new NotePage())
-                                                    .show();
-                                        }
-                                    });
-                                    FloatServer.wm_count++;
-                                    otherNoteList = new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                            .windowPages(new View[]{nodeList})
-                                            .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
-                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.FULLSCREEN_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
-                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                                            .windowAction(new WindowStruct.WindowAction() {
-                                                @Override
-                                                public void goHide(WindowStruct windowStruct) {
-
-                                                }
-
-                                                @Override
-                                                public void goClose(WindowStruct windowStruct) {
-                                                    otherNoteList = null;
-                                                    ((FloatServer)context).windowAction.goClose(windowStruct);
-                                                }
-                                            })
-                                            .show();
-                                }else
-                                    otherNoteList.focusAndShowWindow();
+                                openNodeList(context, new Intent());
                                 break;
                             }
                             case 1:{
@@ -336,10 +282,11 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
                                 break;
                             }
                             case 2:
-                                nodePageDisplayObj = windowStruct.getDisplayObject();
                                 windowStruct.setDisplayObject(WindowStruct.ALL_NOT_DISPLAY);
                                 showFrame.setVisibility(View.VISIBLE);
                                 note.setOnTouchListener(moveWindow);
+                                NotePage.super.querys.put(HIDE_FRAME, String.valueOf(true));
+                                NotePage.super.updateUri(windowStruct);
                                 break;
                         }
                         popupWindow.dismiss();
@@ -379,6 +326,9 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
                         windowStruct.setDisplayObject(nodePageDisplayObj);
                         showFrame.setVisibility(View.GONE);
                         note.setOnTouchListener(null);
+                        NotePage.super.querys.remove(HIDE_FRAME);
+                        NotePage.super.updateUri(windowStruct);
+                        break;
                 }
                 toolsBar.setVisibility(View.GONE);
             }
@@ -388,52 +338,88 @@ public class NotePage extends WindowStruct.constructionAndDeconstructionWindow {
         showFrame.setOnClickListener(copy_paste);
         close.setOnClickListener(copy_paste);
 
-        if(otherNodeListAdapter == null)
-            otherNodeListAdapter = new OtherNodeListAdapter(context,showingNoteIdList);
-        if(args == null || args.length == 0) {
+        if(args.size() == 0) {
+            noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
+            showingNoteIdList.add(noteId);
+        }else if(args.containsKey(EXTRA_TEXT)){
+            noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
+            showingNoteIdList.add(noteId);
+            note.setText((String) args.get(EXTRA_TEXT));
+        }else if(args.containsKey(NOTE_ID)){
+            noteId = (String)args.get(NOTE_ID);
+            showingNoteIdList.add(noteId);
             try {
                 JSONObject notes = new JSONObject(noteSpf.getString(NOTES, "{}"));
-                Iterator<String> keys = notes.keys();
-                while (keys.hasNext()){
-                    String key = keys.next();
-                    if (!showingNoteIdList.contains(key)) {
-                        noteId = key;
-                        showingNoteIdList.add(noteId);
-                        break;
-                    }
-                }
-                if (noteId != null) {
-                    note.setText(notes.getString(noteId));
+                note.setText(notes.getString(noteId));
+                if(otherNodeListAdapter == null)
+                    otherNodeListAdapter = new OtherNodeListAdapter(context,showingNoteIdList);
+                else
                     otherNodeListAdapter.update(showingNoteIdList);
-                }else{
-                    noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
-                    showingNoteIdList.add(noteId);
-                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }else{
-            int flag = (int)args[0];
-            switch (flag){
-                case ADD_NOTE: {
-                    noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
-                    showingNoteIdList.add(noteId);
-                    note.setText((String) args[1]);
-                    break;
-                }
-                case OPEN_NOTE:{
-                    noteId = (String)args[1];
-                    showingNoteIdList.add(noteId);
-                    try {
-                        JSONObject notes = new JSONObject(noteSpf.getString(NOTES, "{}"));
-                        note.setText(notes.getString(noteId));
-                        otherNodeListAdapter.update(showingNoteIdList);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
         }
+        super.pathLayers = new String[]{noteId};
+
+        if(args.containsKey(HIDE_FRAME) && (boolean) args.get(HIDE_FRAME)){
+            windowStruct.setDisplayObject(WindowStruct.ALL_NOT_DISPLAY);
+            showFrame.setVisibility(View.VISIBLE);
+            note.setOnTouchListener(moveWindow);
+            NotePage.super.querys.put(HIDE_FRAME, String.valueOf(true));
+        }
+
+        super.updateUri(windowStruct);
+    }
+
+    public static void openNodeList(Context context, Intent intent){
+        if(otherNodeListAdapter == null)
+            otherNodeListAdapter = new OtherNodeListAdapter(context,showingNoteIdList);
+        else
+            otherNodeListAdapter.update(showingNoteIdList);
+        if(otherNoteList == null) {
+            ListView nodeList = new ListView(context);
+            nodeList.setAdapter(otherNodeListAdapter);
+            nodeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(context, NotePageLauncher.class);
+                    intent.putExtra(JTools.IntentParameter.PATH, "/" + (position > 0? otherNodeListAdapter.noteList.get(position)[0]: ""));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+            });
+            FloatServer.wm_count++;
+            otherNoteList = new JTools.WindowBuilderByIntent(intent)
+                    .create(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                    .windowPages(new View[]{nodeList})
+                    .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
+                    .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.FULLSCREEN_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
+                    .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                    .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                    .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                    .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                    .constructionAndDeconstructionWindow(new AutoRecordConstructionAndDeconstructionWindow(NotePageLauncher.class){
+                        @Override
+                        public void onCreate(Context context, Map<String, Object> args, WindowStruct windowStruct){
+                            super.pathLayers = new String[]{NODE_LIST};
+                            super.onCreate(context, args, windowStruct);
+                        }
+                    })
+                    .windowAction(new WindowStruct.WindowAction() {
+                        @Override
+                        public void goHide(WindowStruct windowStruct) {
+
+                        }
+
+                        @Override
+                        public void goClose(WindowStruct windowStruct) {
+                            otherNoteList = null;
+                            ((FloatServer)context).windowAction.goClose(windowStruct);
+                        }
+                    })
+                    .show();
+        }else
+            otherNoteList.focusAndShowWindow();
     }
 
     @Override

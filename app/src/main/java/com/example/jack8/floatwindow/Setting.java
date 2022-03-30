@@ -25,6 +25,8 @@ import com.google.android.gms.ads.MobileAds;
 
 import net.margaritov.preference.colorpicker.ColorPickerDialog;
 
+import java.util.Map;
+
 public class Setting extends AppCompatActivity {
     private AdView mAdView;
 
@@ -412,7 +414,7 @@ public class Setting extends AppCompatActivity {
                                 ImageView icon;
 
                                 @Override
-                                public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+                                public void Construction(Context context, View pageView, int position, Map<String, Object> args, WindowStruct windowStruct) {
                                     app_name = pageView.findViewById(R.id.app_name);
                                     version = pageView.findViewById(R.id.version);
                                     icon = pageView.findViewById(R.id.icon);

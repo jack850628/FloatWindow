@@ -1,6 +1,7 @@
 package com.example.jack8.floatwindow;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class BookmarkList {
 
@@ -87,15 +89,10 @@ public class BookmarkList {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             switch (position){
                                 case 0:{
-                                    FloatServer.wm_count++;
-                                    new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                            .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
-                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
-                                            .windowInitArgs(new Object[][]{new String[]{bookmarkList.get(index).url}})
-                                            .windowAction(((FloatServer)context).windowAction)
-                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                            .constructionAndDeconstructionWindow(new WebBrowser())
-                                            .show();
+                                    Intent intent = new Intent(context, WebBrowserLauncher.class);
+                                    intent.putExtra(Intent.EXTRA_TEXT, bookmarkList.get(index).url);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent);
                                     break;
                                 }
                                 case 1:{
@@ -111,7 +108,7 @@ public class BookmarkList {
                                             .height((int)(context.getResources().getDisplayMetrics().density*155))
                                             .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                                 @Override
-                                                public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                                                public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
                                                     final EditText title_box = pageView.findViewById(R.id.title);
                                                     final EditText url_box = pageView.findViewById(R.id.home_link);
 

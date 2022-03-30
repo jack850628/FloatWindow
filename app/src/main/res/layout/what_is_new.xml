@@ -37,77 +37,17 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/what_is_new_image1" />
-
         <TextView
             style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string1" />
 
-        <TextView
-            style="@style/AppTheme.WindiowText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/what_is_new_string2" />
-
-        <ImageView
-            android:id="@+id/what_is_new_image1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/notify_image" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="30dp" />
-
-        <LinearLayout
-            android:id="@+id/works_greater_SDK_18"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/AppTheme.WindiowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/what_is_new_title2"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                style="@style/AppTheme.WindiowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/what_is_new_string3" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="30dp" />
-
-            <TextView
-                style="@style/AppTheme.WindiowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/what_is_new_title3"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@drawable/what_is_new_image2" />
-
-            <TextView
-                style="@style/AppTheme.WindiowText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/what_is_new_string4" />
-        </LinearLayout>
+<!--        <LinearLayout-->
+<!--            android:id="@+id/works_greater_SDK_18"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical">-->
+<!--        </LinearLayout>-->
     </LinearLayout>
 </ScrollView>

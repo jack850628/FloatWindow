@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class NotePageLauncher extends AppCompatActivity {
 
@@ -25,19 +26,18 @@ public class NotePageLauncher extends AppCompatActivity {
         }).resultPermission();
     }
     private void startFloatWindow(){
-        Intent intent=new Intent(this, FloatServer.class);
+        Intent intent = new Intent(this, FloatServer.class);
         Intent extra_intent = getIntent();
-        String url = null;
-        if(extra_intent.getStringExtra(Intent.EXTRA_TEXT) != null)//帶有外部字串的啟動方法
-            url = extra_intent.getStringExtra(Intent.EXTRA_TEXT);
-        else if(extra_intent.getDataString() != null)//呼叫瀏覽器的的啟動方式
-            url = extra_intent.getDataString();
-        if(url == null) {
-            intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE);
-        }else{
-            intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE | FloatServer.OPEN_EXTRA_URL);
-            intent.putExtra(FloatServer.EXTRA_URL,url);
+        JTools.intentExtraCopyToIntent(extra_intent, intent);
+        if(extra_intent.getDataString() != null)
+            intent.putExtra(Intent.EXTRA_TEXT, extra_intent.getDataString());
+        if(!intent.hasExtra(Intent.EXTRA_TEXT) && !intent.hasExtra(JTools.IntentParameter.PATH)){
+            intent.putExtra(JTools.IntentParameter.PATH, "/" + NotePage.NODE_LIST);
         }
+//        String url = null;
+//        if(extra_intent.getStringExtra(Intent.EXTRA_TEXT) != null)//帶有外部字串的啟動方法
+//            url = extra_intent.getStringExtra(Intent.EXTRA_TEXT);
+        intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_NOTE_PAGE);
 
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             startService(intent);

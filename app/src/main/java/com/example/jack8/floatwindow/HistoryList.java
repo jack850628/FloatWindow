@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
+import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,18 +92,10 @@ public class HistoryList {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             switch (position){
                                 case 0:{
-                                    FloatServer.wm_count++;
-                                    new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                            .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
-                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
-                                            .windowInitArgs(new Object[][]{new String[]{historyList.get(index).url}})
-                                            .windowAction(((FloatServer)context).windowAction)
-                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                                            .constructionAndDeconstructionWindow(new WebBrowser())
-                                            .show();
+                                    Intent intent = new Intent(context, WebBrowserLauncher.class);
+                                    intent.putExtra(Intent.EXTRA_TEXT, historyList.get(index).url);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent);
                                     break;
                                 }
                                 case 1:

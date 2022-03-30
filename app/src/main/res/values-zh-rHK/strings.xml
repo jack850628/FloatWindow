@@ -81,11 +81,10 @@
     <string name="window_buttons_height">視窗按鈕高度</string>
     <string name="window_buttons_width">視窗按鈕寬度</string>
     <string name="window_size_bar_height">視窗大小調整列高度</string>
-    <string name="close_notification_message">請先關閉所有視窗</string>
+    <string name="close_notification_message">還有未關閉的視窗！\n如果直接關閉FloatWindow，\n再次開啟時，視窗會自動恢復。\n</string>
     <string name="close_notification">關閉通知</string>
     <string name="auto_execute_in_boot_after">開機後自動執行</string>
     <string name="resident_at_the_notification_center">常駐於通知中心</string>
-    <string name="what_is_new_title1">全螢幕視窗</string>
     <string name="help_string2">從通知中心可以快速開啟浮動視窗的任意功能</string>
     <string name="watch_ad">這是廣告</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
@@ -104,11 +103,9 @@
         <item>預設模式</item>
         <item>桌面模式</item>
     </string-array>
-    <string name="what_is_new_string1">當按下全螢幕按鈕後，視窗將會像一般APP一樣填滿整個螢幕，如果要關閉視窗您可以按右上角的X按鈕，如果系統版本大於等於5.0以上還可以使用系統的應用程式總覽畫面關閉視窗。</string>
     <string name="default_browser_mode">預設瀏覽模式</string>
-    <string name="what_is_new_string2">若您將全螢幕視窗給隱藏了，您一樣可以至通知中心按下浮動視窗的視窗清單按鈕找回被隱藏的視窗。</string>
-    <string name="what_is_new_title2">網頁文字剪下複製貼上</string>
-    <string name="what_is_new_string3">從此版本開始，您可以長按網頁中的文字編輯區塊逕行剪下複製貼上，如果視窗是在全螢幕狀態下，您還可以選取網頁上的文字。</string>
-    <string name="what_is_new_title3">網頁中的下拉式選單</string>
-    <string name="what_is_new_string4">從此版本開始，點擊網頁中的下拉式選單不會在總是沒有反應了(不過部分網頁中可能還是無效)。</string>
+    <string name="what_is_new_title1">恢复上一次开启的窗口</string>
+    <string name="what_is_new_string1">從此版本開始，在浮動視窗運行的狀態下將手機重新啟動，再次開啟浮動視窗，原本開啟的視窗將會回到原本的位置。</string>
+    <string name="do_close">確認關閉</string>
+    <string name="view_open_windows">查看開啟中的視窗</string>
 </resources>

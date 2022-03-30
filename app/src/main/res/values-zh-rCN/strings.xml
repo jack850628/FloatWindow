@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string name="app_name">浮动视窗</string>
-        <string name="version">版本:</string>
+    <string name="app_name">浮动视窗</string>
+    <string name="version">版本:</string>
 
-        <string name="web_browser">网页浏览器</string>
-        <string name="note">便条纸</string>
-        <string name="temperature_conversion">温度转换</string>
-        <string name="BMI_conversion">BMI转换</string>
-        <string name="setting">设定</string>
-        <string name="windows_list">所有视窗清单</string>
-        <string name="runing">执行中</string>
-        <string name="open_page_of">要使用哪个页面开启?</string>
-        <string name="web_say">网页讯息</string>
-        <string name="confirm">确认</string>
-        <string name="cancel">取消</string>
-        <string name="open_link">开启连结</string>
-        <string name="open_link_in_new_window">在新的视窗开启连结</string>
-        <string name="copy_link">复制连结网址</string>
-        <string name="copyed">以复制到剪贴簿</string>
-        <string name="share_the_website">分享</string>
-        <string name="open_to_other_browser">用其他浏览器开启</string>
-        <string name="select_APP">选择APP</string>
-        <string name="select_browser">选择浏览器</string>
-        <string name="temperature">温度</string>
-        <string name="conversion_to_fah">转华氏</string>
-        <string name="conversion_to_celsius">转摄氏</string>
-        <string name="height">身高</string>
-        <string name="cm">公分</string>
-        <string name="weight">体重</string>
-        <string name="kg">公斤</string>
-        <string name="conversion">转换</string>
+    <string name="web_browser">网页浏览器</string>
+    <string name="note">便条纸</string>
+    <string name="temperature_conversion">温度转换</string>
+    <string name="BMI_conversion">BMI转换</string>
+    <string name="setting">设定</string>
+    <string name="windows_list">所有视窗清单</string>
+    <string name="runing">执行中</string>
+    <string name="open_page_of">要使用哪个页面开启?</string>
+    <string name="web_say">网页讯息</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="open_link">开启连结</string>
+    <string name="open_link_in_new_window">在新的视窗开启连结</string>
+    <string name="copy_link">复制连结网址</string>
+    <string name="copyed">以复制到剪贴簿</string>
+    <string name="share_the_website">分享</string>
+    <string name="open_to_other_browser">用其他浏览器开启</string>
+    <string name="select_APP">选择APP</string>
+    <string name="select_browser">选择浏览器</string>
+    <string name="temperature">温度</string>
+    <string name="conversion_to_fah">转华氏</string>
+    <string name="conversion_to_celsius">转摄氏</string>
+    <string name="height">身高</string>
+    <string name="cm">公分</string>
+    <string name="weight">体重</string>
+    <string name="kg">公斤</string>
+    <string name="conversion">转换</string>
 
-        <string name="window_animation_speed_sec">视窗动画速度(秒):</string>
-        <string name="float_window_setting">浮动视窗设定</string>
-        <string name="window_color">视窗颜色:</string>
-        <string name="window_out_of_focus_color">视窗失焦颜色</string>
-        <string name="select_window_color">点选视窗设定颜色</string>
-        <string name="window_title">视窗标题</string>
-        <string name="select_window_out_of_focus_color">点选视窗设定失焦颜色</string>
-        <string name="select_color">选择颜色</string>
-        <string name="about">关于</string>
+    <string name="window_animation_speed_sec">视窗动画速度(秒):</string>
+    <string name="float_window_setting">浮动视窗设定</string>
+    <string name="window_color">视窗颜色:</string>
+    <string name="window_out_of_focus_color">视窗失焦颜色</string>
+    <string name="select_window_color">点选视窗设定颜色</string>
+    <string name="window_title">视窗标题</string>
+    <string name="select_window_out_of_focus_color">点选视窗设定失焦颜色</string>
+    <string name="select_color">选择颜色</string>
+    <string name="about">关于</string>
     <string name="web_url">網址</string>
     <string name="other_notes">其他便条纸</string>
     <string name="create_new_note">新增便条纸</string>
@@ -81,11 +81,10 @@
     <string name="window_buttons_height">视窗按钮高度</string>
     <string name="window_buttons_width">视窗按钮宽度</string>
     <string name="window_size_bar_height">视窗大小调整列高度</string>
-    <string name="close_notification_message">请先关闭所有视窗</string>
+    <string name="close_notification_message">还有未关闭的视窗！\n如果直接关闭FloatWindow，\n再次开启时，视窗会自动恢复。\n</string>
     <string name="close_notification">关闭通知</string>
     <string name="auto_execute_in_boot_after">开机后自动运行</string>
     <string name="resident_at_the_notification_center">常驻于通知中心</string>
-    <string name="what_is_new_title1">全萤幕窗口</string>
     <string name="help_string2">从通知中心可以快速开启浮动视窗的任意功能</string>
     <string name="watch_ad">这是广告</string>
     <string name="watched_ad">感謝您願意看廣告！謝謝！</string>
@@ -104,11 +103,9 @@
         <item>预设模式</item>
         <item>桌面模式</item>
     </string-array>
-    <string name="what_is_new_string1">当按下全萤幕按钮后，窗口将会像一般APP一样填满整个萤幕，如果要关闭窗口您可以按右上角的X按钮，如果系统版本大于等于5.0以上还可以使用系统的应用程式总览画面关闭窗口。</string>
+    <string name="what_is_new_title1">全萤幕窗口</string>
     <string name="default_browser_mode">预设浏览模式</string>
-    <string name="what_is_new_string2">若您将全萤幕视窗给隐藏了，您一样可以至通知中心按下浮动视窗的视窗清单按钮找回被隐藏的视窗。</string>
-    <string name="what_is_new_title2">网页文字剪下复制贴上</string>
-    <string name="what_is_new_string3">从此版本开始，您可以长按网页中的文字编辑区块径行剪下复制贴上，如果视窗是在全萤幕状态下，您还可以选取网页上的文字。</string>
-    <string name="what_is_new_title3">网页中的下拉式菜单</string>
-    <string name="what_is_new_string4">從此版本開始，點擊網頁中的下拉式選單不會在總是沒有反應了(不過部分網頁中可能還是無效)。</string>
+    <string name="what_is_new_string1">当按下全萤幕按钮后，窗口将会像一般APP一样填满整个萤幕，如果要关闭窗口您可以按右上角的X按钮，如果系统版本大于等于5.0以上还可以使用系统的应用程式总览画面关闭窗口。</string>
+    <string name="do_close">确认关闭</string>
+    <string name="view_open_windows">查看開啟中的窗口</string>
 </resources>

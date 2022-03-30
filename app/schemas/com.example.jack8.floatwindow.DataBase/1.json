@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "33530278ed78ba9d299e04b51b3aec5c",
+    "entities": [
+      {
+        "tableName": "WorkingWindow",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`windowId` INTEGER NOT NULL, `uri` TEXT, PRIMARY KEY(`windowId`))",
+        "fields": [
+          {
+            "fieldPath": "windowId",
+            "columnName": "windowId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "windowId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '33530278ed78ba9d299e04b51b3aec5c')"
+    ]
+  }
+}

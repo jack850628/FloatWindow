@@ -59,11 +59,14 @@ import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow {
+public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
+    public static final String WEB_LINK = "webLink", HIDDEN_CONTROLS_BAR = "hiddenControlsBar", BROWSER_MODE = "browser_mode";
+
     public Handler handler = new Handler(Looper.getMainLooper());
     WebView web;
 
@@ -78,7 +81,6 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
     private HistoryList historyList;
     private DataBaseForBrowser dataBaseForBrowser = null;
     private boolean desktopMode = false;
-    private int browserModeForOpen = -1;
     private String defaultUserAgentString;
     private String desktopModeUserAgentString;
     private boolean thisPageHaveIcon;
@@ -88,9 +90,12 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
     private View customView;
     private WebChromeClient.CustomViewCallback customViewCallback;
 
+    private Map<String, Object> args;
+
     private boolean canSendHistory = false;//因為onReceivedTitle會比doUpdateVisitedHistory慢調用，所以在doUpdateVisitedHistory送出紀錄的話標題會是上一個網頁的標題，但單純在onReceivedTitle送標題會導致只要網頁使用javascript改標題，就會送出一次歷史紀錄。
 
     public WebBrowser(){
+        super(WebBrowserLauncher.class);
         crashlytics = FirebaseCrashlytics.getInstance();
     }
 
@@ -101,27 +106,32 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
     }
 
     @Override
-    public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+    public void onCreate(Context context, Map<String, Object> args, WindowStruct windowStruct) {
+        super.onCreate(context, args, windowStruct);
+        JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
+        crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
+        windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent event) {
+                if (
+                        windowStruct.nowState != WindowStruct.State.CLOSE &&
+                                windowStruct.getCurrentPagePosition() == 0 &&
+                                event.getKeyCode() == KeyEvent.KEYCODE_BACK
+                ) {
+                    if (event.getAction() == KeyEvent.ACTION_UP) {
+                        web.goBack();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
         switch (position) {
             case 0:
-                JackLog.writeLog(context, String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
-                crashlytics.log(String.format("WebBrowser ID: \"%d\" Window Open\n", windowStruct.getNumber()));
-                windowStruct.getWindowFrom().setWindowKeyEvent(new WindowFrom.WindowKeyEvent() {
-                    @Override
-                    public boolean dispatchKeyEvent(KeyEvent event) {
-                    if(
-                        windowStruct.nowState != WindowStruct.State.CLOSE &&
-                        windowStruct.getCurrentPagePosition() == 0 &&
-                        event.getKeyCode() == KeyEvent.KEYCODE_BACK
-                    ){
-                        if(event.getAction() == KeyEvent.ACTION_UP) {
-                            web.goBack();
-                            return true;
-                        }
-                    }
-                    return false;
-                    }
-                });
                 page0(context, pageView, position, args, windowStruct);
                 break;
             case 1:
@@ -133,7 +143,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
         }
     }
 
-    private void page0(final Context context, final View pageView, final int position, final Object[] args, final WindowStruct windowStruct){
+    private void page0(final Context context, final View pageView, final int position, final Map<String, Object> args, final WindowStruct windowStruct){
         path = (EditText)pageView.findViewById(R.id.webpath);
         go = (Button)pageView.findViewById(R.id.go);
         goBack = (Button)pageView.findViewById(R.id.goback);
@@ -161,6 +171,8 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                 if (customView == null)
                     controlsBar.setVisibility(View.VISIBLE);
                 v.setVisibility(View.GONE);
+                WebBrowser.super.querys.remove(HIDDEN_CONTROLS_BAR);
+                WebBrowser.super.updateUri(windowStruct);
             }
         });
         ((ViewGroup)pageView.getRootView().findViewById(R.id.micro_max_button_background)).addView(showControlsBar, 0);
@@ -170,10 +182,6 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                 .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
                 .addMigrations(DataBaseForBrowser.MIGRATION_3_4)
                 .build();
-
-        if(args.length >= 2){
-            browserModeForOpen = (int)args[1];
-        }
 
         web.setWebViewClient(new WebViewClient(){
             @Override
@@ -259,6 +267,8 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
             @Override
             public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
                 path.setText(url);
+                WebBrowser.super.querys.put(WEB_LINK, url);
+                WebBrowser.super.updateUri(windowStruct);
                 canSendHistory = true;
             }
         });
@@ -300,28 +310,13 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                            public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         ws.close();
                                     }
                                 });
-                            }
-
-                            @Override
-                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-
-                            }
-
-                            @Override
-                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                            }
-
-                            @Override
-                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                             }
                         })
                         .windowAction(new WindowStruct.WindowAction() {
@@ -383,7 +378,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                            public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -397,21 +392,6 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                         ws.close();
                                     }
                                 });
-                            }
-
-                            @Override
-                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-
-                            }
-
-                            @Override
-                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                            }
-
-                            @Override
-                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                             }
                         })
                         .windowAction(new WindowStruct.WindowAction() {
@@ -474,7 +454,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void Construction(Context context, final View pageView, int position, Object[] args, final WindowStruct ws) {
+                            public void Construction(Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -488,21 +468,6 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                         ws.close();
                                     }
                                 });
-                            }
-
-                            @Override
-                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-
-                            }
-
-                            @Override
-                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                            }
-
-                            @Override
-                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                             }
                         })
                         .windowAction(new WindowStruct.WindowAction() {
@@ -604,18 +569,10 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                     web.loadUrl(result.getExtra());
                                     break;
                                 case 1:
-                                    FloatServer.wm_count++;
-                                    new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                            .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
-                                            .windowPageTitles(new String[]{context.getString(R.string.web_browser), context.getString(R.string.bookmarks), context.getString(R.string.history)})
-                                            .windowInitArgs(new Object[][]{new String[]{result.getExtra()}})
-                                            .windowAction(((FloatServer)context).windowAction)
-                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                                            .constructionAndDeconstructionWindow(new WebBrowser())
-                                            .show();
+                                    Intent intent = new Intent(context, WebBrowserLauncher.class);
+                                    intent.putExtra(Intent.EXTRA_TEXT, result.getExtra());
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent);
                                     break;
                                 case 2:
                                     clipboard.copyToClipboard(result.getExtra());
@@ -698,7 +655,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
-                            public void Construction(final Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                            public void Construction(final Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
                                 TextView tv = ((TextView)pageView.findViewById(R.id.file_type));
                                 tv.setText(tv.getText() + ": " + mimetype);
                                 tv = ((TextView)pageView.findViewById(R.id.file_size));
@@ -720,21 +677,6 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                         windowStruct.close();
                                     }
                                 });
-                            }
-
-                            @Override
-                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                            }
-
-                            @Override
-                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                            }
-
-                            @Override
-                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                             }
                         })
                         .show();
@@ -760,16 +702,25 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                 Mozilla/5.0 (X11; U; Linux i686; Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Safari/537.36
                  */
                 if(
-                        browserModeForOpen == WebBrowserSetting.BrowserMode.DESKTOP.getId()
+                        (args.containsKey(BROWSER_MODE) && (int)args.get(BROWSER_MODE) == WebBrowserSetting.BrowserMode.DESKTOP.getId())
                         ||
-                        (browserModeForOpen == -1 && webBrowserSetting.getSetting().browserMode == WebBrowserSetting.BrowserMode.DESKTOP.getId())
+                        webBrowserSetting.getSetting().browserMode == WebBrowserSetting.BrowserMode.DESKTOP.getId()
                 ){
                     desktopMode = true;
                     web.getSettings().setUserAgentString(desktopModeUserAgentString);
+                    WebBrowser.super.querys.put(BROWSER_MODE, String.valueOf(WebBrowserSetting.BrowserMode.DESKTOP.getId()));
+                }else{
+                    WebBrowser.super.querys.put(BROWSER_MODE, String.valueOf(WebBrowserSetting.BrowserMode.DEFAULT.getId()));
+                }
+                if(args.containsKey(HIDDEN_CONTROLS_BAR) && (boolean)args.get(HIDDEN_CONTROLS_BAR)){
+                    hiddenControlsBar = true;
+                    controlsBar.setVisibility(View.GONE);
+                    showControlsBar.setVisibility(View.VISIBLE);
+                    WebBrowser.super.querys.put(HIDDEN_CONTROLS_BAR, String.valueOf(hiddenControlsBar));
                 }
                 String url = webBrowserSetting.getSetting().homeLink;
-                if(args != null && args.length != 0 && args[0] instanceof String) {
-                    url = (String) args[0];
+                if(args.containsKey(WEB_LINK)) {
+                    url = (String) args.get(WEB_LINK);
                     Matcher matcher = Pattern.compile("https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)").matcher(url);
                     if(matcher.find())
                         url = matcher.group();
@@ -778,6 +729,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
 //                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) web.setWebContentsDebuggingEnabled(true);
                 path.setText(url);
                 web.loadUrl(url);
+                WebBrowser.super.updateUri(windowStruct);
             }
         });
 
@@ -867,7 +819,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                                 .height((int)(context.getResources().getDisplayMetrics().density*(130 + WindowParameter.getWindowButtonsHeight(context))))
                                                 .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                                     @Override
-                                                    public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                                                    public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
                                                         final EditText title_box = pageView.findViewById(R.id.title);
                                                         final EditText url_box = pageView.findViewById(R.id.home_link);
 
@@ -928,6 +880,8 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                 hiddenControlsBar = true;
                                 controlsBar.setVisibility(View.GONE);
                                 showControlsBar.setVisibility(View.VISIBLE);
+                                WebBrowser.super.querys.put(HIDDEN_CONTROLS_BAR, String.valueOf(hiddenControlsBar));
+                                WebBrowser.super.updateUri(windowStruct);
                                 break;
                             }
                             case 3: {
@@ -942,9 +896,13 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                             }
                             case 4: {
                                 desktopMode = !desktopMode;
-                                web.getSettings().setUserAgentString(
-                                        desktopMode ? desktopModeUserAgentString : defaultUserAgentString
-                                );
+                                if(desktopMode){
+                                    web.getSettings().setUserAgentString(desktopModeUserAgentString);
+                                    WebBrowser.super.querys.put(BROWSER_MODE, String.valueOf(WebBrowserSetting.BrowserMode.DESKTOP.getId()));
+                                }else{
+                                    web.getSettings().setUserAgentString(defaultUserAgentString);
+                                    WebBrowser.super.querys.put(BROWSER_MODE, String.valueOf(WebBrowserSetting.BrowserMode.DEFAULT.getId()));
+                                }
                                 web.reload();
                                 break;
                             }
@@ -973,7 +931,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
                                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                             @Override
-                                            public void Construction(final Context context, final View pageView, int position, Object[] args, final WindowStruct ws) {
+                                            public void Construction(final Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
@@ -982,7 +940,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                                             Intent shortcutIntent = new Intent("com.android.launcher.action.INSTALL_SHORTCUT"),
                                                                     launcher = new Intent(context , WebBrowserLauncher.class);
                                                             launcher.putExtra(Intent.EXTRA_TEXT, web.getUrl());
-                                                            launcher.putExtra(FloatServer.BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
+                                                            launcher.putExtra(BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
                                                             Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser_icon);
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
@@ -992,7 +950,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                                         }else{
                                                             Intent shortcutIntent = new Intent(context, WebBrowserLauncher.class);
                                                             shortcutIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
-                                                            shortcutIntent.putExtra(FloatServer.BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
+                                                            shortcutIntent.putExtra(BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
                                                             shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                                                             ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
                                                             ShortcutInfo shortcut = new ShortcutInfo.Builder(context, UUID.randomUUID().toString())
@@ -1013,21 +971,6 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                                                         ws.close();
                                                     }
                                                 });
-                                            }
-
-                                            @Override
-                                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-
-                                            }
-
-                                            @Override
-                                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                            }
-
-                                            @Override
-                                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                                             }
                                         })
                                         .windowAction(new WindowStruct.WindowAction() {
@@ -1059,6 +1002,10 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
                 });
             }
         });
+    }
+
+    private void doHiddenControlsBar(){
+
     }
 
     @Override
@@ -1093,6 +1040,7 @@ public class WebBrowser extends WindowStruct.constructionAndDeconstructionWindow
 
     @Override
     public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+        super.onResume(context, pageView, position, windowStruct);
         switch (position){
             case 0:
                 if(hiddenControlsBar)

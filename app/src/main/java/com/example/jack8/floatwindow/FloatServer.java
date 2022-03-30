@@ -9,9 +9,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -40,6 +42,9 @@ import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 浮動視窗服務
@@ -59,11 +64,11 @@ public class FloatServer extends Service {
     public static final int OPEN_WATCHED_AD = 0x0400;
     public static final String LAUNCHER = "launcher";
     public static final String INTENT = "intent";
-    public static final String EXTRA_URL = "extra_url";
-    public static final String BROWSER_MODE = "browser_mode";
 
     private static final String BCAST_CONFIGCHANGED ="android.intent.action.CONFIGURATION_CHANGED";
     private static final String WHAT_IS_NEW_VERSION_REGEX = "\\.\\d+$";
+
+    private boolean workPhaseRestored = false;
 
     static int wm_count=0;//計算FloatServer總共開了多少次
 
@@ -74,6 +79,7 @@ public class FloatServer extends Service {
     WindowStruct windowManager = null;//視窗管理員
     WindowStruct help = null;
     Handler handler = new Handler();
+    boolean closeFloatWindow = false;
     WindowStruct.WindowAction windowAction = new WindowStruct.WindowAction() {
         @Override
         public void goHide(WindowStruct windowStruct) {
@@ -83,7 +89,7 @@ public class FloatServer extends Service {
         @Override
         public void goClose(WindowStruct windowStruct) {
             if (--wm_count == 0) {
-                if(!WindowParameter.isPermanent(FloatServer.this))
+                if(closeFloatWindow || !WindowParameter.isPermanent(FloatServer.this))
                     closeFloatWindow();
             }
         }
@@ -229,13 +235,32 @@ public class FloatServer extends Service {
         int initCode = (intent != null)
                 ? intent.getIntExtra(INTENT,OPEN_NONE)
                 : OPEN_NONE;
+        if(!workPhaseRestored){
+            workPhaseRestored = true;
+            JTools.threadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    List<DataBase.WorkingWindow> workingWindows = DataBase.getInstance(FloatServer.this).workingWindowDao().getAllWorkingWindow();
+                    DataBase.getInstance(FloatServer.this).workingWindowDao().deleteAllWorkingWindow();
+                    final String[] uris = new String[workingWindows.size()];
+                    for(int i = 0; i < uris.length; i++) {
+                        uris[i] = workingWindows.get(i).uri;
+                    }
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            JTools.workPhaseRecover(FloatServer.this, uris);
+                        }
+                    });
+                }
+            });
+        }
         if((initCode & OPEN_MAIN_MENU) == OPEN_MAIN_MENU) {
             wm_count++;
             new WindowStruct.Builder(this,wm)
                     .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MAX_BUTTON | WindowStruct.MINI_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                     .windowPages(new int[]{R.layout.main_menu})
                     .windowPageTitles(new String[]{getResources().getString(R.string.app_name)})
-                    .windowInitArgs(new Object[1][0])
                     .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
                     .heightAndTopAutoCenter((int)(getResources().getDisplayMetrics().density * 320))
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
@@ -245,7 +270,7 @@ public class FloatServer extends Service {
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         AdView adView;
                         @Override
-                        public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                        public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
                             View.OnClickListener onClickListener = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -384,7 +409,22 @@ public class FloatServer extends Service {
                     .show();
         }else if((initCode & OPEN_WEB_BROWSER) == OPEN_WEB_BROWSER) {
             wm_count++;
-            WindowStruct.Builder window = new WindowStruct.Builder(this,wm)
+            Map<String, Object> args = AutoRecordConstructionAndDeconstructionWindow.createArgs(intent);
+            if(intent.hasExtra(Intent.EXTRA_TEXT)){
+                args.put(WebBrowser.WEB_LINK, intent.getStringExtra(Intent.EXTRA_TEXT));
+            }else if(intent.hasExtra(WebBrowser.WEB_LINK)){
+                args.put(WebBrowser.WEB_LINK, intent.getStringExtra(WebBrowser.WEB_LINK));
+            }
+            if(intent.hasExtra(WebBrowser.BROWSER_MODE)){
+                int browserMode = intent.getStringExtra(WebBrowser.BROWSER_MODE) == null
+                        ?intent.getIntExtra(WebBrowser.BROWSER_MODE, WebBrowserSetting.BrowserMode.DEFAULT.getId())
+                        :Integer.valueOf(intent.getStringExtra(WebBrowser.BROWSER_MODE));
+                args.put(WebBrowser.BROWSER_MODE, browserMode);
+            }
+            if(intent.hasExtra(WebBrowser.HIDDEN_CONTROLS_BAR)){
+                args.put(WebBrowser.HIDDEN_CONTROLS_BAR, Boolean.valueOf(intent.getStringExtra(WebBrowser.HIDDEN_CONTROLS_BAR)));
+            }
+            new JTools.WindowBuilderByIntent(intent).create(this, wm)
                     .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                     .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})
                     .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
@@ -392,18 +432,25 @@ public class FloatServer extends Service {
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .windowAction(windowAction)
-                    .constructionAndDeconstructionWindow(new WebBrowser());
-            if((initCode & OPEN_EXTRA_URL) == OPEN_EXTRA_URL){
-                window.windowInitArgs(new Object[][]{new Object[]{
-                        intent.getStringExtra(EXTRA_URL),
-                        intent.getIntExtra(BROWSER_MODE, -1)
-                }});
-            }
-            window.show();
+                    .constructionAndDeconstructionWindow(new WebBrowser())
+                    .windowInitArgs(args)
+                    .show();
         }else if((initCode & OPEN_NOTE_PAGE) == OPEN_NOTE_PAGE) {
-            wm_count++;
-            if((initCode & OPEN_EXTRA_URL) != OPEN_EXTRA_URL)
-                new WindowStruct.Builder(this,wm)
+            String path = JTools.popPathFirstDirectoryNameFromIntent(intent);
+            if(path.equals(NotePage.NODE_LIST)){
+                NotePage.openNodeList(this, intent);
+            }else{
+                wm_count++;
+                Map<String, Object> args = AutoRecordConstructionAndDeconstructionWindow.createArgs(intent);
+                if(intent.getStringExtra(Intent.EXTRA_TEXT) != null) {
+                    args.put(NotePage.EXTRA_TEXT, intent.getStringExtra(Intent.EXTRA_TEXT));
+                }else if(!path.equals("")){
+                    args.put(NotePage.NOTE_ID, path);
+                }
+                if(intent.getStringExtra(NotePage.HIDE_FRAME) != null){
+                    args.put(NotePage.HIDE_FRAME, Boolean.valueOf(intent.getStringExtra(NotePage.HIDE_FRAME)));
+                }
+                new JTools.WindowBuilderByIntent(intent).create(this, wm)
                         .windowPages(new int[]{R.layout.note_page})
                         .windowPageTitles(new String[]{getResources().getString(R.string.note)})
                         .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
@@ -412,34 +459,24 @@ public class FloatServer extends Service {
                         .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
-                        .show();
-            else{
-                String extra_url = intent.getStringExtra(EXTRA_URL);
-                new WindowStruct.Builder(this,wm)
-                        .windowPages(new int[]{R.layout.note_page})
-                        .windowPageTitles(new String[]{getResources().getString(R.string.note)})
-                        .windowInitArgs(new Object[][]{new Object[]{NotePage.ADD_NOTE,extra_url}})
-                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
-                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
-                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
-                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
-                        .windowAction(windowAction)
-                        .constructionAndDeconstructionWindow(new NotePage())
+                        .windowInitArgs(args)
                         .show();
             }
         }else if((initCode & OPEN_CALCULATOR) == OPEN_CALCULATOR) {
             wm_count++;
-            new WindowStruct.Builder(this,wm)
+            new JTools.WindowBuilderByIntent(intent)
+                    .setHeight((int)(getResources().getDisplayMetrics().density * (269 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this))))
+                    .create(this, wm)
                     .windowPages(new int[]{R.layout.calculator, R.layout.window_context, R.layout.window_conetxt2})
                     .windowPageTitles(new String[]{getResources().getString(R.string.calculator), getResources().getString(R.string.temperature_conversion), getResources().getString(R.string.BMI_conversion)})
                     .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
-                    .height((int)(getResources().getDisplayMetrics().density * (269 + WindowParameter.getWindowButtonsHeight(this) + WindowParameter.getWindowSizeBarHeight(this))))
                     //.width((int)(getResources().getDisplayMetrics().density * 200))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
+                    .windowInitArgs(AutoRecordConstructionAndDeconstructionWindow.createArgs(intent))
                     .show();
         }else if((initCode & OPEN_WATCHED_AD) == OPEN_WATCHED_AD) {
             View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
@@ -460,28 +497,13 @@ public class FloatServer extends Service {
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         @Override
-                        public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
+                        public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                             pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     ws.close();
                                 }
                             });
-                        }
-
-                        @Override
-                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
-
-                        }
-
-                        @Override
-                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                        }
-
-                        @Override
-                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                         }
                     })
                     .windowAction(windowAction)
@@ -526,10 +548,31 @@ public class FloatServer extends Service {
                             .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
                             .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                 @Override
-                                public void Construction(Context context, View pageView, int position, Object[] args, final WindowStruct ws) {
-                                    pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                                public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
+                                    Button closeAllWindow = pageView.findViewById(R.id.confirm);
+                                    closeAllWindow.setText(getString(R.string.do_close));
+                                    closeAllWindow.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
+                                            ws.close();
+                                            closeFloatWindow = true;
+                                            FloatServer.this.stopForeground(true);
+                                            for(int id: com.jack8.floatwindow.Window.WindowManager.getAllWindowNumber()){
+                                                WindowStruct windowStruct = com.jack8.floatwindow.Window.WindowManager.getWindowStruct(id);
+                                                if(windowStruct.getConstructionAndDeconstructionWindow() instanceof AutoRecordConstructionAndDeconstructionWindow){
+                                                    ((AutoRecordConstructionAndDeconstructionWindow)windowStruct.getConstructionAndDeconstructionWindow()).doNotDeleteUri = true;
+                                                }
+                                                windowStruct.close();
+                                            }
+                                        }
+                                    });
+                                    Button checkAllWindow = pageView.findViewById(R.id.cancel);
+                                    checkAllWindow.setVisibility(View.VISIBLE);
+                                    checkAllWindow.setText(R.string.view_open_windows);
+                                    checkAllWindow.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            shohWindowManager();
                                             ws.close();
                                         }
                                     });
@@ -628,27 +671,8 @@ public class FloatServer extends Service {
                             windowAction.goClose(windowStruct);
                         }
                     })
-                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                        @Override
-                        public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
-
-                        }
-
-                        @Override
-                        public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                        }
-
-                        @Override
-                        public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                        }
-
-                        @Override
-                        public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                        }
-                    }).show();
+                    .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow())
+                    .show();
             JTools.threadPool.execute(new Runnable() {
                 @Override
                 public void run() {

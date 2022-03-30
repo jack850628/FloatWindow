@@ -7,19 +7,21 @@ import android.widget.ImageView;
 
 import com.jack8.floatwindow.Window.WindowStruct;
 
+import java.util.Map;
+
 public class Help extends WindowStruct.constructionAndDeconstructionWindow  {
     @Override
-    public void Construction(Context context, View pageView, int position, Object[] args, WindowStruct windowStruct) {
+    public void Construction(Context context, View pageView, int position, Map<String, Object> args, WindowStruct windowStruct) {
         switch (position){
             case 0:{
-                if(context.getResources().getConfiguration().locale.getCountry().equals("TW") ||
-                        context.getResources().getConfiguration().locale.getCountry().equals("HK") ||
-                        context.getResources().getConfiguration().locale.getCountry().equals("CN")){
-                    ((ImageView)pageView.findViewById(R.id.what_is_new_image1)).setImageResource(R.drawable.notify_image2);
-                }
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
-                    pageView.findViewById(R.id.works_greater_SDK_18).setVisibility(View.GONE);
-                }
+//                if(context.getResources().getConfiguration().locale.getCountry().equals("TW") ||
+//                        context.getResources().getConfiguration().locale.getCountry().equals("HK") ||
+//                        context.getResources().getConfiguration().locale.getCountry().equals("CN")){
+//                    ((ImageView)pageView.findViewById(R.id.what_is_new_image1)).setImageResource(R.drawable.notify_image2);
+//                }
+//                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+//                    pageView.findViewById(R.id.works_greater_SDK_18).setVisibility(View.GONE);
+//                }
                 break;
             }
             case 1:{

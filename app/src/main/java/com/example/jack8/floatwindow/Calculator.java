@@ -23,22 +23,27 @@ import com.google.android.gms.ads.RequestConfiguration;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 初始化視窗內容
  */
-public class Calculator extends WindowStruct.constructionAndDeconstructionWindow {
+public class Calculator extends AutoRecordConstructionAndDeconstructionWindow {
     private AdRequest adRequest = new AdRequest.Builder().build();
+
+    public Calculator(){
+        super(CalculatorLauncher.class);
+    }
 
     /**
      * 初始化視窗子頁面內容
      * @param context 視窗所在的Activity或Service的Context
      * @param pageView 子頁面的View
      * @param position 表示是第幾個子頁面
-     * @param  args 初始化視窗用的參數
+     * @param args 初始化視窗用的參數
      * @param windowStruct  子頁面所在的視窗本體
      */
-    public void Construction(Context context, View pageView, int position,Object[] args, WindowStruct windowStruct){
+    public void Construction(Context context, View pageView, int position, Map<String, Object> args, WindowStruct windowStruct){
         switch (position){
             case 0:
                 calculator(context,pageView,windowStruct);
@@ -214,6 +219,7 @@ public class Calculator extends WindowStruct.constructionAndDeconstructionWindow
 
     @Override
     public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+        super.onResume(context, pageView, position, windowStruct);
         if(position == 0)
             adView1.resume();
         else if(position == 1)

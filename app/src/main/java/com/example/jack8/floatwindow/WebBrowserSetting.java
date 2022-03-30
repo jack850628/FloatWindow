@@ -27,6 +27,7 @@ import com.google.android.gms.ads.MobileAds;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class WebBrowserSetting {
@@ -233,7 +234,7 @@ public class WebBrowserSetting {
                         private AdView mAdView;
 
                         @Override
-                        public void Construction(final Context context, final View pageView, int position, Object[] args, final WindowStruct windowStruct) {
+                        public void Construction(final Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
                             mAdView = pageView.findViewById(R.id.adView);
                             mAdView.loadAd(new AdRequest.Builder().build());
                             ((EditText)pageView.findViewById(R.id.home_link)).setText(setting.homeLink);

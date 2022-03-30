@@ -25,7 +25,8 @@ public class CalculatorLauncher extends AppCompatActivity {
         }).resultPermission();
     }
     private void startFloatWindow(){
-        Intent intent=new Intent(this, FloatServer.class);
+        Intent intent = new Intent(this, FloatServer.class);
+        JTools.intentExtraCopyToIntent(getIntent(), intent);
 
         intent.putExtra(FloatServer.INTENT,FloatServer.OPEN_CALCULATOR);
 
