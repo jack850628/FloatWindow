@@ -43,6 +43,18 @@
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string1" />
 
+        <ImageView
+            android:id="@+id/what_is_new_image1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/what_is_new_image1" />
+
+        <TextView
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_new_string2" />
+
 <!--        <LinearLayout-->
 <!--            android:id="@+id/works_greater_SDK_18"-->
 <!--            android:layout_width="match_parent"-->

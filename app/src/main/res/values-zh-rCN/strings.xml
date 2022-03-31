@@ -103,9 +103,10 @@
         <item>预设模式</item>
         <item>桌面模式</item>
     </string-array>
-    <string name="what_is_new_title1">全萤幕窗口</string>
     <string name="default_browser_mode">预设浏览模式</string>
-    <string name="what_is_new_string1">当按下全萤幕按钮后，窗口将会像一般APP一样填满整个萤幕，如果要关闭窗口您可以按右上角的X按钮，如果系统版本大于等于5.0以上还可以使用系统的应用程式总览画面关闭窗口。</string>
+    <string name="what_is_new_title1">恢复上一次开启的窗口</string>
+    <string name="what_is_new_string1">从此版本开始，在有窗口未关闭的情况下关闭浮动视窗(例如，按通知中心的关闭按钮或重新启动手机)，</string>
+    <string name="what_is_new_string2">再次开启浮动视窗，原本开启的视窗将会回到原本的位置。</string>
     <string name="do_close">确认关闭</string>
     <string name="view_open_windows">查看開啟中的窗口</string>
 </resources>
