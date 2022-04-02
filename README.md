@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             String helloString = "";
                             @Override
-                            public void Construction(Context context, final View view, int i, Object[] objects, final WindowStruct windowStruct) {
+                            public void Construction(Context context, final View view, int i, Map<String, Object> args, final WindowStruct windowStruct) {
                                 switch (i){
                                     case 0:
                                         view.findViewById(R.id.get_hello).setOnClickListener(new View.OnClickListener() {
