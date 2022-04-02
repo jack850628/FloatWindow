@@ -47,7 +47,7 @@ WindowStruct windowStruct = new WindowStruct.Builder(this,(WindowManager) getSys
 ```
 這將會為您創建出一個具有內容與標題的Window。
 
-如果想在見識視窗時，帶點參數使用的話，可以這樣做
+如果想在建立視窗時，帶點參數使用的話，可以這樣做
 ```
 Map<String, Object> args = new HashMap<String, Object>();
 args.put("字串參數", "abc");
