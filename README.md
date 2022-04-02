@@ -15,7 +15,7 @@ Floating Window app for Android\
 
 ## 使用FloatWindoew在自己的APP裡
 
-1.下載[FloatWindow模組](/release_module/floatwindow-release.aar)
+1.下載[FloatWindow模組](https://github.com/jack850628/FloatWindow/releases/)
 
 2.引入aar檔到專案中 \
 <img src="說明1.png" width="500"></img>
@@ -45,7 +45,28 @@ WindowStruct windowStruct = new WindowStruct.Builder(this,(WindowManager) getSys
 ```
 WindowStruct windowStruct = new WindowStruct.Builder(this,(WindowManager) getSystemService(Context.WINDOW_SERVICE)).windowPages(new int[]{R.layout.my_layout}).windowPageTitles(new String[]{"My Title"}).show();
 ```
-這將會為您創建出一個具有內容與標題的Window
+這將會為您創建出一個具有內容與標題的Window。
+
+如果想在見識視窗時，帶點參數使用的話，可以這樣做
+```
+Map<String, Object> args = new HashMap<String, Object>();
+args.put("字串參數", "abc");
+args.put("數字參數", 123);
+
+windowStruct.Builder builder = new WindowStruct.Builder(this,(WindowManager) getSystemService(Context.WINDOW_SERVICE));
+builder.windowInitArgs(args);//放入參數
+builder.constructionAndDeconstructionWindow(new constructionAndDeconstructionWindow(){
+    @Override
+    public void onCreate(Context context, Map<String, Object> args, WindowStruct windowStruct){
+        //可以在這裡
+    }
+    @Override
+    public void Construction(Context context, View pageView, int position, Map<String, Object> args, WindowStruct windowStruct){
+        //和這裡接收到參數
+    }
+});
+builder.show();
+```
 
 使用WindowColor可以設定或取得視窗顏色
 ```
@@ -55,6 +76,14 @@ int windowBackgroundColor = windowColor.getWindowBackground();//取得視窗背�
 windowColor.setTitleBar(0x79afe47a);//ARGB
 windowColor.save();//儲存顏色設定
 ```
+## WindowStruct Lifecycle (constructionAndDeconstructionWindow)
+<img src="WindowStruct_Lifecycle.jpg" width="500"></img>
+
+## WindowStruet中可監聽的事件
+> - OnWindowTitleChange    當視窗標題改變
+> - OnWindowStateChange    當視窗狀態改變，例如：最大化、最小化、關閉
+> - OnWindowSizeChange     當視窗大小改變
+> - OnWindowPositionChange 當視窗位置改變
 ## Hello World
 #### MainActivity.java
 ```
