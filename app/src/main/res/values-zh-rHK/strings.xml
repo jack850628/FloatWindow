@@ -109,4 +109,5 @@
     <string name="what_is_new_string2">再次開啟浮動視窗，原本開啟的視窗將會回到原本的位置。</string>
     <string name="do_close">確認關閉</string>
     <string name="view_open_windows">查看開啟中的視窗</string>
+    <string name="notes">便條紙</string>
 </resources>

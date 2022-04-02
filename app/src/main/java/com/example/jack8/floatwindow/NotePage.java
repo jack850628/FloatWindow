@@ -392,7 +392,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
             otherNoteList = new JTools.WindowBuilderByIntent(intent)
                     .create(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                     .windowPages(new View[]{nodeList})
-                    .windowPageTitles(new String[]{context.getString(R.string.other_notes)})
+                    .windowPageTitles(new String[]{context.getString(R.string.notes)})
                     .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.MINI_BUTTON | WindowStruct.MAX_BUTTON | WindowStruct.FULLSCREEN_BUTTON | WindowStruct.CLOSE_BUTTON | WindowStruct.SIZE_BAR)
                     .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
                     .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))

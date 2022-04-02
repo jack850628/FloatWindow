@@ -108,4 +108,5 @@
     <string name="what_is_new_string2">open the FloatWindow app again, and the originally opened windows will return to its original position.</string>
     <string name="do_close">Do close</string>
     <string name="view_open_windows">View opened windows</string>
+    <string name="notes">notes</string>
 </resources>
