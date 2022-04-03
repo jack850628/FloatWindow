@@ -42,7 +42,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
     static WindowStruct otherNoteList = null;//其他便條紙清單視窗
     static class OtherNodeListAdapter extends BaseAdapter {//其他便條紙清單所使用的Adapter
 
-        public ArrayList<String[]> noteList = null;
+        public final ArrayList<String[]> noteList = new ArrayList();
 
         Context context;
 
@@ -57,10 +57,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
         }
 
         public void updateNodeList(LinkedList<String> showingNoteIdList){
-            if(noteList == null)
-                noteList = new ArrayList();
-            else
-                noteList.clear();
+            noteList.clear();
             noteList.add(new String[]{"ADD_NEW",context.getString(R.string.create_new_note)});
             try {
                 JSONObject notes = new JSONObject(context.getSharedPreferences(NOTE,0).getString(NOTES, "{}"));
@@ -338,6 +335,8 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
         showFrame.setOnClickListener(copy_paste);
         close.setOnClickListener(copy_paste);
 
+        if(otherNodeListAdapter == null)
+            otherNodeListAdapter = new OtherNodeListAdapter(context,showingNoteIdList);
         if(args.size() == 0) {
             noteId = String.valueOf(dNow.getTime());//formatter.format(dNow);
             showingNoteIdList.add(noteId);
@@ -351,10 +350,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
             try {
                 JSONObject notes = new JSONObject(noteSpf.getString(NOTES, "{}"));
                 note.setText(notes.getString(noteId));
-                if(otherNodeListAdapter == null)
-                    otherNodeListAdapter = new OtherNodeListAdapter(context,showingNoteIdList);
-                else
-                    otherNodeListAdapter.update(showingNoteIdList);
+                otherNodeListAdapter.update(showingNoteIdList);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
