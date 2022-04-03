@@ -116,19 +116,6 @@ public class FloatServer extends Service {
     public void onCreate() {
         super.onCreate();
         crashlytics = FirebaseCrashlytics.getInstance();
-        JackLog.setWriteLogDrive(this,
-                "d936f0197b7e6c67"
-        );
-        wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(
-                Arrays.asList(
-                        "6B58CCD0570D93BA1317A64BEB8BA677",
-                        "1E461A352AC1E22612B2470A43ADADBA",
-                        "F4734F4691C588DB93799277888EA573"
-                )
-        ).build());
-        MobileAds.initialize(this);
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -197,14 +184,27 @@ public class FloatServer extends Service {
             NFB.setSmallIcon(R.drawable.mini_window).
                     setContentTitle(getString(R.string.app_name)).
                     setCustomContentView(remoteViews);
-                    //addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    //addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
-                    //setContentText(getString(R.string.runing))
-                    //setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
+            //addAction(new Notification.Action.Builder(R.drawable.settings, getString(R.string.setting), PendingIntent.getActivity(this, 0, toSetup, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+            //addAction(new Notification.Action.Builder(R.drawable.menu, getString(R.string.windows_list), PendingIntent.getService(this, 1, showWindowManager, PendingIntent.FLAG_UPDATE_CURRENT)).build()).
+            //setContentText(getString(R.string.runing))
+            //setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
             startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }
-        Log.i("WMStrver","Create");
+
+        JackLog.setWriteLogDrive(this,
+                "d936f0197b7e6c67"
+        );
+        wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+
+        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(
+                Arrays.asList(
+                        "6B58CCD0570D93BA1317A64BEB8BA677",
+                        "1E461A352AC1E22612B2470A43ADADBA",
+                        "F4734F4691C588DB93799277888EA573"
+                )
+        ).build());
+        MobileAds.initialize(this);
 
         //---------------註冊翻轉事件廣播接收---------------
         IntentFilter filter = new IntentFilter();
