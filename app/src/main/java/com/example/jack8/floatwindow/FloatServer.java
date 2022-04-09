@@ -193,7 +193,7 @@ public class FloatServer extends Service {
         }
 
         JackLog.setWriteLogDrive(this,
-                "d936f0197b7e6c67"
+                "e77e084bb5155afb"
         );
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
 

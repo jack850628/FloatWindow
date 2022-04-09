@@ -20,11 +20,11 @@ public class JackLog {
     private static boolean canWriteLog;
     public static void setWriteLogDrive(Context context, String... ids){
         String driveId = Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);
-        Log.i("裝置id", driveId);
-        Log.i("JackLog", context.getFilesDir().getPath());
+        Log.d("裝置id", driveId);
+        Log.d("JackLog", context.getFilesDir().getPath());
         for(String id : ids){
             if(driveId.equals(id)) {
-                Log.i("JackLog", "On");
+                Log.d("JackLog", "On");
                 canWriteLog = true;
             }
         }
