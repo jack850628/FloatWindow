@@ -34,7 +34,7 @@ import java.util.Map;
 
 
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
-    private static int Index = 0;//計算視窗開啟數量
+//    private static int Index = 0;//計算視窗開啟數量
 
     final int Number;//視窗編號
 
@@ -345,7 +345,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Map<String, Object> windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber, State openState){
         if(WindowManager.windowList.containsKey(WindowManager.focusedWindowNumber))
             WindowManager.getWindowStruct(WindowManager.focusedWindowNumber).unFocusWindow();
-        WindowManager.focusedWindowNumber = this.Number = Index++;
+        WindowManager.focusedWindowNumber = this.Number = WindowManager.getMiniFreeNumber();
+        Log.d("new window id", String.valueOf(this.Number));
+        WindowManager.addWindowStruct(this);
         this.context = context;
         this.wm = wm;
         this.winconPage = windowPages;
@@ -358,7 +360,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         this.buttonsWidth = buttonsWidth;
         this.buttonsHeight = buttonsHeight;
         this.sizeBarHeight = sizeBarHeight;
-        WindowManager.addWindowStruct(this);
         topMini = new Scroller(context);
         heightMini = new Scroller(context);
         Top = Math.max(Top, 0);
@@ -806,9 +807,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     CDAW.onDestroy(context, WindowStruct.this);
                     windowAction.goClose(WindowStruct.this);
                     wm.removeView(winform);
-                    WindowManager.removeWindowStruct(WindowStruct.this);
                     if(WindowManager.focusedWindowNumber == Number)
                         WindowManager.focusedWindowNumber = WindowManager.NON_FOCUSED_WINDOW;
+                    WindowManager.removeWindowStruct(WindowStruct.this);
+                    Log.d("closed window id", String.valueOf(Number));
                 }
             }
         }

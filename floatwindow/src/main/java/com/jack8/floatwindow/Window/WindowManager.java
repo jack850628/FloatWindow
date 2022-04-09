@@ -9,6 +9,35 @@ public class WindowManager {
     static final HashMap<Integer,WindowStruct> windowList = new HashMap<>();
     static int focusedWindowNumber = NON_FOCUSED_WINDOW;//現在焦點視窗
 
+    public static int getMiniFreeNumber(){
+        return getMiniFreeNumber(getAllWindowNumber());
+    }
+
+    public static int getMiniFreeNumber(Integer[] numbers){
+        int offset = 0, l = 0, n = numbers.length, u = n -1;
+        while (n > 0){
+            int m = (l + u) / 2;
+            int left = 0, right = 0;
+            for(; right < n; right++){
+                if(numbers[offset + right] <= m){
+                    int temp = numbers[offset + left];
+                    numbers[offset + left] = numbers[offset + right];
+                    numbers[offset + right] = temp;
+                    left++;
+                }
+            }
+            if(left == m - l + 1){
+                offset += left;
+                n -= left;
+                l = m + 1;
+            }else{
+                n = left;
+                u = m;
+            }
+        }
+        return l;
+    }
+
     public static WindowStruct getWindowStruct(int number){
         return windowList.get(number);
     }
