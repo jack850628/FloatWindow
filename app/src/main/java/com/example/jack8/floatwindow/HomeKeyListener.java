@@ -15,22 +15,7 @@ public class HomeKeyListener extends BroadcastReceiver {
 
     private static HomeKeyListener instance = null;
 
-//    private HashMap<Integer, WindowStruct> windowList;
-//    private Field nowFocusNumber;
-
-    private  HomeKeyListener(Context context){
-//        try {//用反射取得所有視窗清單
-//            Field field = WindowStruct.class.getDeclaredField("windowList");
-//            field.setAccessible(true);
-//            windowList = (HashMap<Integer,WindowStruct>)field.get(WindowStruct.class);
-//            nowFocusNumber = WindowStruct.class.getDeclaredField("NOW_FOCUS_NUMBER");
-//            nowFocusNumber.setAccessible(true);
-//        } catch (NoSuchFieldException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-    }
+    private HomeKeyListener(Context context){}
 
     public static HomeKeyListener getInstance(Context context){
         if(instance == null)
@@ -40,7 +25,7 @@ public class HomeKeyListener extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(WindowManager.getFocusedWindowNumber() != -1 && intent.getAction().equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)){
+        if(WindowManager.getFocusedWindowNumber() != -1){
             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
             if(reason != null && reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)){
                 for(Map.Entry<Integer, WindowStruct> entry : WindowManager.entrySet()){
