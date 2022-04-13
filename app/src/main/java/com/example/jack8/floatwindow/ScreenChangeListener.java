@@ -16,8 +16,11 @@ import java.util.Map;
  */
 public class ScreenChangeListener extends BroadcastReceiver {
     private static ScreenChangeListener instance = null;
+    private int screenOrientation;
 
-    private ScreenChangeListener(Context context){}
+    private ScreenChangeListener(Context context){
+        screenOrientation = context.getResources().getConfiguration().orientation;
+    }
 
     public static ScreenChangeListener getInstance(Context context){
         if(instance == null)
@@ -27,23 +30,26 @@ public class ScreenChangeListener extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        for(Map.Entry<Integer,WindowStruct> entry : WindowManager.entrySet()){
-            WindowStruct windowStruct = entry.getValue();
-            windowStruct.setPosition(
-                    windowStruct.getPositionY(),
-                    windowStruct.getPositionX()
-            );
-            if(windowStruct.nowState == WindowStruct.State.MINI){
-                windowStruct.setGeneralPosition(
-                        windowStruct.getGeneralPositionY(),
-                        windowStruct.getGeneralPositionX()
+        if(screenOrientation != context.getResources().getConfiguration().orientation) {
+            screenOrientation = context.getResources().getConfiguration().orientation;
+            for (Map.Entry<Integer, WindowStruct> entry : WindowManager.entrySet()) {
+                WindowStruct windowStruct = entry.getValue();
+                windowStruct.setPosition(
+                        windowStruct.getPositionY(),
+                        windowStruct.getPositionX()
                 );
-            }else if(windowStruct.nowState == WindowStruct.State.MAX){
-                int transitionsDuration = windowStruct.getTransitionsDuration();
-                windowStruct.setTransitionsDuration(0);
-                windowStruct.nowState = WindowStruct.State.GENERAL;
-                windowStruct.max();
-                windowStruct.setTransitionsDuration(transitionsDuration);
+                if (windowStruct.nowState == WindowStruct.State.MINI) {
+                    windowStruct.setGeneralPosition(
+                            windowStruct.getGeneralPositionY(),
+                            windowStruct.getGeneralPositionX()
+                    );
+                } else if (windowStruct.nowState == WindowStruct.State.MAX) {
+                    int transitionsDuration = windowStruct.getTransitionsDuration();
+                    windowStruct.setTransitionsDuration(0);
+                    windowStruct.nowState = WindowStruct.State.GENERAL;
+                    windowStruct.max();
+                    windowStruct.setTransitionsDuration(transitionsDuration);
+                }
             }
         }
     }
