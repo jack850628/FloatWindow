@@ -98,7 +98,6 @@ public class FloatServer extends Service {
     private FirebaseCrashlytics crashlytics;
 
     private void closeFloatWindow(){
-        this.stopForeground(true);
         try {
             unregisterReceiver(ScreenChangeListener.getInstance(this));
         }catch (IllegalArgumentException e){
@@ -109,13 +108,13 @@ public class FloatServer extends Service {
         }catch (IllegalArgumentException e){
             crashlytics.recordException(e);
         }
+        stopForeground(true);
         stopSelf();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        crashlytics = FirebaseCrashlytics.getInstance();
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -163,7 +162,6 @@ public class FloatServer extends Service {
                         flags
                 )
         );
-
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             NotificationCompat.Builder NFB = new NotificationCompat.Builder(this);
             NFB.setSmallIcon(R.drawable.mini_window).
@@ -174,7 +172,6 @@ public class FloatServer extends Service {
 //                    setContentText(getString(R.string.runing)).
 //                    setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
-            startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }else{
             NotificationChannel NC = new NotificationChannel(NOTIFY_CHANNEL_ID,getString(R.string.app_name),NotificationManager.IMPORTANCE_LOW);
             NC.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -189,8 +186,10 @@ public class FloatServer extends Service {
             //setContentText(getString(R.string.runing))
             //setContentIntent(PendingIntent.getService(this, 0, showFloatWindowMenu, PendingIntent.FLAG_UPDATE_CURRENT));
             NF = NFB.build();
-            startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
         }
+        startForeground(NOTIFY_ID, NF);//將服務升級至前台等級，這樣就不會突然被系統回收
+
+        crashlytics = FirebaseCrashlytics.getInstance();
 
         JackLog.setWriteLogDrive(this,
                 "e77e084bb5155afb"
@@ -207,9 +206,7 @@ public class FloatServer extends Service {
         MobileAds.initialize(this);
 
         //---------------註冊翻轉事件廣播接收---------------
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BCAST_CONFIGCHANGED);
-        this.registerReceiver(ScreenChangeListener.getInstance(this), filter);
+        this.registerReceiver(ScreenChangeListener.getInstance(this), new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
         //-------------------------------------------------
         //---------------註冊Home鍵廣播接收---------------
         this.registerReceiver(HomeKeyListener.getInstance(this), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
