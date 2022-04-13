@@ -83,7 +83,7 @@ public class BookmarkList {
                     popupWindow.setFocusable(true);
                     int anchorLoc[] = new int[2];
                     v.getLocationInWindow(anchorLoc);
-                    popupWindow.showAtLocation(v, Gravity.LEFT | Gravity.TOP,0, anchorLoc[1]);
+                    popupWindow.showAtLocation(v, Gravity.START | Gravity.TOP,0, anchorLoc[1]);
                     menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -138,7 +138,7 @@ public class BookmarkList {
                                                                     }
                                                                 }
                                                             });
-                                                            BookmarkListAdapter.this.notifyDataSetChanged();
+                                                            BookmarkListAdapter.this.notifyItemChanged(index);
                                                             windowStruct.close();
                                                         }
                                                     });
@@ -149,21 +149,6 @@ public class BookmarkList {
                                                             windowStruct.close();
                                                         }
                                                     });
-                                                }
-
-                                                @Override
-                                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                                }
-
-                                                @Override
-                                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
-
-                                                }
-
-                                                @Override
-                                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
-
                                                 }
                                             })
                                             .show();

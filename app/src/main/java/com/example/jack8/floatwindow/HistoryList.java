@@ -86,7 +86,7 @@ public class HistoryList {
                     popupWindow.setFocusable(true);
                     int anchorLoc[] = new int[2];
                     v.getLocationInWindow(anchorLoc);
-                    popupWindow.showAtLocation(v,Gravity.LEFT | Gravity.TOP,0, anchorLoc[1]);
+                    popupWindow.showAtLocation(v,Gravity.START | Gravity.TOP,0, anchorLoc[1]);
                     menu_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -163,7 +163,7 @@ public class HistoryList {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                removeHistory(viewHolder.getAdapterPosition());
+                removeHistory(viewHolder.getBindingAdapterPosition());
             }
         }).attachToRecyclerView(recyclerView);
     }
