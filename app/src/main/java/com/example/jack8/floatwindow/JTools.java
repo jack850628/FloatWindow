@@ -113,8 +113,8 @@ public final class JTools {
         for(String p: path){
             builder.appendEncodedPath(p);
         }
-        builder.appendQueryParameter(WindowParameter.TOP, String.valueOf(windowStruct.getPositionY()));
-        builder.appendQueryParameter(WindowParameter.LEFT, String.valueOf(windowStruct.getPositionX()));
+        builder.appendQueryParameter(WindowParameter.TOP, String.valueOf(windowStruct.getGeneralPositionY()));
+        builder.appendQueryParameter(WindowParameter.LEFT, String.valueOf(windowStruct.getGeneralPositionX()));
         builder.appendQueryParameter(WindowParameter.WIDTH, String.valueOf(windowStruct.getWidth()));
         builder.appendQueryParameter(WindowParameter.HEIGHT, String.valueOf(windowStruct.getHeight()));
         builder.appendQueryParameter(WindowParameter.STATE, String.valueOf(windowStruct.nowState.getType()));
