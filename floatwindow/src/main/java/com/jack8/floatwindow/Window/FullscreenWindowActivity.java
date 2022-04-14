@@ -1,6 +1,5 @@
 package com.jack8.floatwindow.Window;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityManager;

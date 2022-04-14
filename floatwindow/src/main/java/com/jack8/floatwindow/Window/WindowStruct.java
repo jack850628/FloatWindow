@@ -1057,6 +1057,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             }else if(previousState == State.FULLSCREEN){
                 if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
                     fullscreenWindowActivity.exitFullscreen();
+                }
+                if(winform.getParent() == null){
+                    //當執行視窗恢復時，會在短時間內連續快速開啟多個Activity，有機會讓啟動一個Activity的Intent被另一個Intent給取代掉，導致在多工畫面中不會顯示全部的全螢幕視窗，
+                    //而那些沒有啟動到Activity的視窗，他們的fullscreenWindowActivity就會是null，但是他們卻已經執行了wm.removeView(winform);，
+                    //所以如果使用者沒有從視窗清單中把視窗找回，然後直接按下通知中心的關閉FloatWindow按鈕，就會引發
+                    //Fatal Exception: java.lang.IllegalArgumentException: View=com.jack8.floatwindow.Window.WindowFrom{1c51e66 V.E...... ......ID 0,0-1080,1936 #7f09023c app:id/window} not attached to window manager
+                    //因此這邊才需要判斷winform的父層是否存在
                     wm.addView(winform, wmlp);
                 }
                 topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
