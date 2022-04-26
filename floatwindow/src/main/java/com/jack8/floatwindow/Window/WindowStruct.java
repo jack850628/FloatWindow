@@ -745,7 +745,10 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         } else if (i == R.id.hide) {//隱藏視窗
             hide();
         } else if (i == R.id.fullscreen){//全螢幕
-            fullscreen();
+            if(nowState == State.FULLSCREEN)
+                max();
+            else
+                fullscreen();
         }
     }
 
@@ -870,10 +873,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
                 max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
-            else
+                fullscreen.setBackground(context.getResources().getDrawable(R.drawable.fullscreen_window));
+            } else {
                 max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
+                fullscreen.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.fullscreen_window));
+            }
             if (previousState == State.GENERAL) {
                 topMini.startScroll(left, top, -left, -top, transitionsDuration);
                 heightMini.startScroll(width, height, screenSize.getWidth() - width,
@@ -911,10 +917,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+            if (Build.VERSION.SDK_INT>Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
                 max.setBackground(context.getResources().getDrawable(R.drawable.max_window));
-            else
+                fullscreen.setBackground(context.getResources().getDrawable(R.drawable.fullscreen_window));
+            } else {
                 max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
+                fullscreen.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.fullscreen_window));
+            }
             if(previousState == State.MAX) {
                 int dy;
                 topMini.startScroll(0, 0, left, top, transitionsDuration);
@@ -998,10 +1007,13 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
                 heightMini.abortAnimation();
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
                 max.setBackground(context.getResources().getDrawable(R.drawable.mini_window));
-            else
+                fullscreen.setBackground(context.getResources().getDrawable(R.drawable.max_window));
+            } else {
                 max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.mini_window));
+                max.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.max_window));
+            }
             if (previousState == State.GENERAL) {
                 topMini.startScroll(left, top, -left, -top, transitionsDuration);
                 heightMini.startScroll(width, height, screenSize.getWidth() - width,
@@ -1164,7 +1176,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             sizeBar.setVisibility(View.GONE);
         else
             sizeBar.setVisibility(View.VISIBLE);
-        if((display_object & FULLSCREEN_BUTTON) != FULLSCREEN_BUTTON || nowState == State.FULLSCREEN)
+        if((display_object & FULLSCREEN_BUTTON) != FULLSCREEN_BUTTON)
             fullscreen.setVisibility(View.GONE);
         else
             fullscreen.setVisibility(View.VISIBLE);
