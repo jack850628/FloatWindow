@@ -813,7 +813,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         Intent intent = new Intent(context, FullscreenWindowActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT /*| Intent.FLAG_ACTIVITY_MULTIPLE_TASK*/);//因為當FullscreenWindowActivity沒有成功啟動時，被檢查到再次起動時，如果有FLAG_ACTIVITY_MULTIPLE_TASK的話，Android系統會無條件在新的task上建立Activity，但是原本沒有啟動的Activity還在系統中被記著，因此如果使用者沒有觸發找回沒啟動成功的Activity(例如：進到多工畫面)的話，關閉因為檢查到沒開啟成功而再次開啟的Activity時，原本沒啟動成功被系統記著的Activity就會嘗試啟動，但那時候該Number的WindowStruct早已關閉並從WindowManager中移除了。
         }else{
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
