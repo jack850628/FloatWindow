@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
@@ -75,8 +77,6 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private int sizeBarHeight;
 
     private MenuList menuList;
-
-    private final Handler runUi= new Handler(Looper.getMainLooper());
 
     private constructionAndDeconstructionWindow CDAW;
 
@@ -506,7 +506,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         //---------------------------視窗開啟動畫------------------------------------------------------
 //        topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 ,left - screenSize.getWidth() / 2, top - screenSize.getHeight() / 2, transitionsDuration);
 //        heightMini.startScroll(0, 0, width, height, transitionsDuration);
-//        runUi.post(new runTransitions(nowState));
+//        Utilities.uiThread.post(new runTransitions(nowState));
         switch (openState){
             case HIDE:
                 hide();
@@ -650,12 +650,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         public void showMenu(){
             isOpen = true;
             scroller.startScroll(0,0,-menu.getLayoutParams().width,0);
-            runUi.post(this);
+            Utilities.uiThread.post(this);
         }
         public void closeMenu(){
             isOpen = false;
             scroller.startScroll(-menu.getLayoutParams().width,0,menu.getLayoutParams().width,0);
-            runUi.post(this);
+            Utilities.uiThread.post(this);
         }
         public void showPage(int position){
             CDAW.onPause(context,winconPage[currentWindowPagePosition],currentWindowPagePosition,WindowStruct.this);
@@ -684,7 +684,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         public void run() {
             if(scroller.computeScrollOffset()) {
                 menuListAndContext.scrollTo(scroller.getCurrX(), scroller.getCurrY());
-                runUi.post(this);
+                Utilities.uiThread.post(this);
             }else
                 menuListAndContext.invalidate();
         }
@@ -784,7 +784,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     winform.getLayoutParams().height = heightMini.getCurrY();
                 }
                 wm.updateViewLayout(winform, wmlp);
-                runUi.post(this);
+                Utilities.uiThread.post(this);
             } else {
                 invokeWindowStateChangeListener();
                 if (state == State.HIDE) {
@@ -792,17 +792,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     wm.updateViewLayout(winform, wmlp);
                 } else if (state == State.FULLSCREEN) {
                     wm.removeView(winform);
-                    Intent intent = new Intent(context, FullscreenWindowActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                    }else{
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    }
-//                intent.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
-                    intent.setData(Uri.parse(String.valueOf(getNumber())));//一定要setData，這樣才能在要叫回這個Activity時成功找到
-                    context.startActivity(intent);
+                    toFullscreenActivity();
                 } else if (state == State.CLOSE) {
                     CDAW.onPause(context, winconPage[currentWindowPagePosition], currentWindowPagePosition, WindowStruct.this);
                     for (int i = 0; i < winconPage.length; i++)
@@ -817,6 +807,38 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 }
             }
         }
+    }
+
+    private void toFullscreenActivity(){
+        Intent intent = new Intent(context, FullscreenWindowActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }else{
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
+//                intent.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
+        intent.setData(Uri.parse(String.valueOf(getNumber())));//一定要setData，這樣才能在要叫回這個Activity時成功找到
+        context.startActivity(intent);
+        Utilities.threadPool.execute(new Runnable() {//在短時間內大量以FLAG_ACTIVITY_MULTIPLE_TASK以及FLAG_ACTIVITY_NEW_DOCUMENT啟動多個Activity，有很大的機率會有幾個Activity沒有啟動，因此這邊另位開個執行續做檢查
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);//1秒其實沒有特別意義，只是因為覺得開啟Activity應該在1秒內就會做完
+                    Utilities.uiThread.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(nowState == State.FULLSCREEN && fullscreenWindowActivity == null) {
+                                toFullscreenActivity();
+                            }
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -858,7 +880,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha = 1.0f;
             wm.updateViewLayout(winform, wmlp);
             hideButtons();
-            runUi.post(new RunTransitions(nowState));
+            Utilities.uiThread.post(new RunTransitions(nowState));
         }
     }
 
@@ -902,7 +924,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
             setDisplayObject();
-            runUi.post(new RunTransitions(nowState));
+            Utilities.uiThread.post(new RunTransitions(nowState));
         }
     }
 
@@ -953,7 +975,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
             setDisplayObject();
-            runUi.post(new RunTransitions(nowState));
+            Utilities.uiThread.post(new RunTransitions(nowState));
         }
     }
 
@@ -992,7 +1014,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.flags = NO_FOCUS_FLAGE;
             wm.updateViewLayout(winform, wmlp);
             windowAction.goHide(this);
-            runUi.post(new RunTransitions(nowState));
+            Utilities.uiThread.post(new RunTransitions(nowState));
         }
     }
 
@@ -1034,7 +1056,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             wmlp.alpha =1.0f;
             wm.updateViewLayout(winform, wmlp);
             setDisplayObject();
-            runUi.post(new RunTransitions(nowState));
+            Utilities.uiThread.post(new RunTransitions(nowState));
         }
     }
 
@@ -1076,13 +1098,15 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     //所以如果使用者沒有從視窗清單中把視窗找回，然後直接按下通知中心的關閉FloatWindow按鈕，就會引發
                     //Fatal Exception: java.lang.IllegalArgumentException: View=com.jack8.floatwindow.Window.WindowFrom{1c51e66 V.E...... ......ID 0,0-1080,1936 #7f09023c app:id/window} not attached to window manager
                     //因此這邊才需要判斷winform的父層是否存在
+                    //-------------------------------------
+                    //目前已經增加toFullscreenActivity函數會在啟動Activity後的一段時間檢查Activity是否成功啟動，但以防萬一，wm.addView(winform, wmlp)就不移回if(winform.getParent() == null)內了
                     wm.addView(winform, wmlp);
                 }
                 topMini.startScroll(0, 0, screenSize.getWidth() / 2, screenSize.getHeight() / 2, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight()
                         , -screenSize.getWidth(), -(screenSize.getHeight()), transitionsDuration);
             }
-            runUi.post(new RunTransitions(nowState));
+            Utilities.uiThread.post(new RunTransitions(nowState));
         }
     }
 
