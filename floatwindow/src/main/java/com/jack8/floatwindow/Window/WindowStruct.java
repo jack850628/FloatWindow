@@ -821,24 +821,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         intent.putExtra(FullscreenWindowActivity.WINDOW_NUMBER_EXTRA_NAME, getNumber());
         intent.setData(Uri.parse(String.valueOf(getNumber())));//一定要setData，這樣才能在要叫回這個Activity時成功找到
         context.startActivity(intent);
-        Utilities.threadPool.execute(new Runnable() {//在短時間內大量以FLAG_ACTIVITY_MULTIPLE_TASK以及FLAG_ACTIVITY_NEW_DOCUMENT啟動多個Activity，有很大的機率會有幾個Activity沒有啟動，因此這邊另位開個執行續做檢查
+        Utilities.uiThread.postDelayed(new Runnable() {//在短時間內大量以FLAG_ACTIVITY_MULTIPLE_TASK以及FLAG_ACTIVITY_NEW_DOCUMENT啟動多個Activity，有很大的機率會有幾個Activity沒有啟動，因此這邊另位開個執行續做檢查
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1000);//1秒其實沒有特別意義，只是因為覺得開啟Activity應該在1秒內就會做完
-                    Utilities.uiThread.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(nowState == State.FULLSCREEN && fullscreenWindowActivity == null) {
-                                toFullscreenActivity();
-                            }
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if(nowState == State.FULLSCREEN && fullscreenWindowActivity == null) {
+                    toFullscreenActivity();
                 }
             }
-        });
+        }, 1000);//1秒其實沒有特別意義，只是因為覺得開啟Activity應該在1秒內就會做完
     }
 
     /**
