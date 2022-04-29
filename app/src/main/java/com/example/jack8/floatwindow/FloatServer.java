@@ -149,16 +149,16 @@ public class FloatServer extends Service {
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.window_list,
-                PendingIntent.getService(this,
+                PendingIntent.getActivity(this,
                         4,
-                        new Intent(this,FloatServer.class).putExtra(INTENT,OPEN_WINDOW_MANAGER),
+                        new Intent(this, MainActivity.class).putExtra(LAUNCHER,OPEN_WINDOW_MANAGER),
                         flags
                 )
         );
         remoteViews.setOnClickPendingIntent(R.id.close,
-                PendingIntent.getService(this,
+                PendingIntent.getActivity(this,
                         5,
-                        new Intent(this,FloatServer.class).putExtra(INTENT,CLOSE_FLOAT_WINDOW),
+                        new Intent(this, MainActivity.class).putExtra(LAUNCHER,CLOSE_FLOAT_WINDOW),
                         flags
                 )
         );
@@ -505,94 +505,77 @@ public class FloatServer extends Service {
                     })
                     .windowAction(windowAction)
                     .show();
-        }else{
-            //---------------------收起下拉選單-----------------------------
-            try {
-                Object statusBarManager = getSystemService("statusbar");
-                Method collapse;
-
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
-                    collapse = statusBarManager.getClass().getMethod("collapse");
-                } else {
-                    collapse = statusBarManager.getClass().getMethod("collapsePanels");
-                }
-                collapse.invoke(statusBarManager);
-            } catch (Exception localException) {
-                localException.printStackTrace();
-            }
-            //-----------------------------------------------------------------------
-            if((initCode & OPEN_WINDOW_MANAGER) == OPEN_WINDOW_MANAGER) {
-                shohWindowManager();
-            }else if((initCode & CLOSE_FLOAT_WINDOW) == CLOSE_FLOAT_WINDOW) {
-                if(com.jack8.floatwindow.Window.WindowManager.count() == 0)
-                    closeFloatWindow();
-                else{
-                    View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
-                    ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.close_notification_message));
-                    messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                    wm_count++;
-                    new WindowStruct.Builder(this, (WindowManager) this.getSystemService(Context.WINDOW_SERVICE))
-                            .windowPageTitles(new String[]{getString(R.string.close_notification)})
-                            .windowPages(new View[]{messageView})
-                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                            .left((getResources().getDisplayMetrics().widthPixels / 2) - messageView.getMeasuredWidth() / 2)
-                            .top((getResources().getDisplayMetrics().heightPixels / 2) - (messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))) / 2)
-                            .width(messageView.getMeasuredWidth())
-                            .height((messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))))
-                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
-                            .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
-                            .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
-                            .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
-                            .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                                @Override
-                                public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
-                                    Button closeAllWindow = pageView.findViewById(R.id.confirm);
-                                    closeAllWindow.setText(getString(R.string.do_close));
-                                    closeAllWindow.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            ws.close();
-                                            closeFloatWindow = true;
-                                            FloatServer.this.stopForeground(true);
-                                            for(int id: com.jack8.floatwindow.Window.WindowManager.getAllWindowNumber()){
-                                                WindowStruct windowStruct = com.jack8.floatwindow.Window.WindowManager.getWindowStruct(id);
-                                                if(windowStruct.getConstructionAndDeconstructionWindow() instanceof AutoRecordConstructionAndDeconstructionWindow){
-                                                    ((AutoRecordConstructionAndDeconstructionWindow)windowStruct.getConstructionAndDeconstructionWindow()).doNotDeleteUri = true;
-                                                }
-                                                windowStruct.close();
+        }else if((initCode & OPEN_WINDOW_MANAGER) == OPEN_WINDOW_MANAGER) {
+            shohWindowManager();
+        }else if((initCode & CLOSE_FLOAT_WINDOW) == CLOSE_FLOAT_WINDOW) {
+            if(com.jack8.floatwindow.Window.WindowManager.count() == 0)
+                closeFloatWindow();
+            else{
+                View messageView = LayoutInflater.from(this).inflate(R.layout.alert, null);
+                ((TextView)messageView.findViewById(R.id.message)).setText(getString(R.string.close_notification_message));
+                messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                wm_count++;
+                new WindowStruct.Builder(this, (WindowManager) this.getSystemService(Context.WINDOW_SERVICE))
+                        .windowPageTitles(new String[]{getString(R.string.close_notification)})
+                        .windowPages(new View[]{messageView})
+                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                        .left((getResources().getDisplayMetrics().widthPixels / 2) - messageView.getMeasuredWidth() / 2)
+                        .top((getResources().getDisplayMetrics().heightPixels / 2) - (messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))) / 2)
+                        .width(messageView.getMeasuredWidth())
+                        .height((messageView.getMeasuredHeight() + (int)(getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this))))
+                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(this))
+                        .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
+                        .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
+                        .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                            @Override
+                            public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
+                                Button closeAllWindow = pageView.findViewById(R.id.confirm);
+                                closeAllWindow.setText(getString(R.string.do_close));
+                                closeAllWindow.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ws.close();
+                                        closeFloatWindow = true;
+                                        FloatServer.this.stopForeground(true);
+                                        for(int id: com.jack8.floatwindow.Window.WindowManager.getAllWindowNumber()){
+                                            WindowStruct windowStruct = com.jack8.floatwindow.Window.WindowManager.getWindowStruct(id);
+                                            if(windowStruct.getConstructionAndDeconstructionWindow() instanceof AutoRecordConstructionAndDeconstructionWindow){
+                                                ((AutoRecordConstructionAndDeconstructionWindow)windowStruct.getConstructionAndDeconstructionWindow()).doNotDeleteUri = true;
                                             }
+                                            windowStruct.close();
                                         }
-                                    });
-                                    Button checkAllWindow = pageView.findViewById(R.id.cancel);
-                                    checkAllWindow.setVisibility(View.VISIBLE);
-                                    checkAllWindow.setText(R.string.view_open_windows);
-                                    checkAllWindow.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            shohWindowManager();
-                                            ws.close();
-                                        }
-                                    });
-                                }
+                                    }
+                                });
+                                Button checkAllWindow = pageView.findViewById(R.id.cancel);
+                                checkAllWindow.setVisibility(View.VISIBLE);
+                                checkAllWindow.setText(R.string.view_open_windows);
+                                checkAllWindow.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        shohWindowManager();
+                                        ws.close();
+                                    }
+                                });
+                            }
 
-                                @Override
-                                public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+                            @Override
+                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
 
-                                }
+                            }
 
-                                @Override
-                                public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+                            @Override
+                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                                }
+                            }
 
-                                @Override
-                                public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+                            @Override
+                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                                }
-                            })
-                            .windowAction(windowAction)
-                            .show();
-                }
+                            }
+                        })
+                        .windowAction(windowAction)
+                        .show();
             }
         }
 
