@@ -905,6 +905,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2 , -(screenSize.getWidth() / 2), -(screenSize.getHeight() / 2) , transitionsDuration);
                 heightMini.startScroll(0,0, screenSize.getWidth(),screenSize.getHeight(), transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
+                //topMini不需要，因為在進入全螢幕時就已經跑過視窗左上角座標變成(0, 0)的動畫了
+                heightMini.startScroll(screenSize.getWidth(), screenSize.getHeight(), 0, 0, transitionsDuration);
                 if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
                     fullscreenWindowActivity.exitFullscreen();
                     wm.addView(winform, wmlp);
