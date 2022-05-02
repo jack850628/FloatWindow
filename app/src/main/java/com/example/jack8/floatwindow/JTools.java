@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
@@ -107,6 +109,7 @@ public final class JTools {
     }
 
     public static final ExecutorService threadPool = Executors.newCachedThreadPool();
+    public static Handler uiThread = new Handler(Looper.getMainLooper());
 
     public static String createAppUri(String[] path, WindowStruct windowStruct, Map<String, String> outerParameter){
         Uri.Builder builder = new Uri.Builder();

@@ -198,7 +198,7 @@ public class WebBrowserSetting {
                 else
                     adServerListStatus = AdServerListStatus.NOT_USE;
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                JTools.uiThread.post(new Runnable() {
                     @Override
                     public void run() {
                         while(!operatedStack.empty())
@@ -301,7 +301,7 @@ public class WebBrowserSetting {
             public void run() {
                 settingDao.updateSetting(setting);
                 if(operated != null)
-                    new Handler(Looper.getMainLooper()).post(operated);
+                    JTools.uiThread.post(operated);
             }
         });
         for(int id : webBrowserWindowList){

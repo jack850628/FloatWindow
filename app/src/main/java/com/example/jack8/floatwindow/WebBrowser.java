@@ -67,7 +67,6 @@ import java.util.regex.Pattern;
 public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
     public static final String WEB_LINK = "webLink", HIDDEN_CONTROLS_BAR = "hiddenControlsBar", BROWSER_MODE = "browser_mode";
 
-    public Handler handler = new Handler(Looper.getMainLooper());
     WebView web;
 
     private EditText path;

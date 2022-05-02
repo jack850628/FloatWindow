@@ -125,7 +125,7 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         public Date browserDate;
 
         public History(long id, String title, String url, Date browserDate){
-            this.id= id;
+            this.id = id;
             this.title = title;
             this.url = url;
             this.browserDate = browserDate;
@@ -142,6 +142,8 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
     public interface HistoryDao{
         @Query("select * from "+History.TABLE_NAME+" order by browser_date desc")
         List<History> getAllHistory();
+        @Query("select * from "+History.TABLE_NAME+" where browser_date < :from order by browser_date desc limit :length")
+        List<History> getHistory(Date from, int length);
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         long addHistory(History history);
         @Delete

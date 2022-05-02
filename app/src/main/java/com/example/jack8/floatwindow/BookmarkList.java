@@ -24,15 +24,14 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class BookmarkList {
+    private DataBaseForBrowser.BookmarksDao bookmarksDao;
+    private ArrayList<DataBaseForBrowser.Bookmark> bookmarkList = new ArrayList<DataBaseForBrowser.Bookmark>();
+    private Context context;
+    private WebBrowser iw;
+    private RecyclerView recyclerView;
+    private BookmarkList.BookmarkListAdapter bookmarkListAdapter;
 
-    DataBaseForBrowser.BookmarksDao bookmarksDao;
-    ArrayList<DataBaseForBrowser.Bookmark> bookmarkList = new ArrayList<DataBaseForBrowser.Bookmark>();
-    Context context;
-    WebBrowser iw;
-    RecyclerView recyclerView;
-    BookmarkList.BookmarkListAdapter bookmarkListAdapter;
-
-    class BookmarkListAdapter extends RecyclerView.Adapter<BookmarkList.BookmarkListAdapter.ViewHolder>{
+    private class BookmarkListAdapter extends RecyclerView.Adapter<BookmarkList.BookmarkListAdapter.ViewHolder>{
 
         WindowStruct windowStruct;
 
@@ -129,7 +128,7 @@ public class BookmarkList {
                                                                         BookmarkList.this.bookmarksDao.upDataBookmark(bookmarkList.get(index).id, title_box.getText().toString(), url_box.getText().toString());
                                                                         bookmarkList.clear();
                                                                         bookmarkList.addAll(BookmarkList.this.bookmarksDao.getBookmarks());
-                                                                        BookmarkList.this.iw.handler.post(new Runnable() {
+                                                                        JTools.uiThread.post(new Runnable() {
                                                                             @Override
                                                                             public void run() {
                                                                                 BookmarkListAdapter.this.notifyDataSetChanged();
@@ -216,7 +215,7 @@ public class BookmarkList {
             @Override
             public void run() {
                 bookmarkList.addAll(bookmarksDao.getBookmarks());
-                iw.handler.post(new Runnable() {
+                JTools.uiThread.post(new Runnable() {
                     @Override
                     public void run() {
                         bookmarkListAdapter.notifyDataSetChanged();
@@ -239,7 +238,7 @@ public class BookmarkList {
             @Override
             public void run() {
                 bookmarksDao.deleteBookmark(bookmarkList.get(index));
-                iw.handler.post(new Runnable() {
+                JTools.uiThread.post(new Runnable() {
                     @Override
                     public void run() {
                         bookmarkList.remove(index);
