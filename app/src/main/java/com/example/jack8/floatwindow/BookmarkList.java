@@ -198,10 +198,10 @@ public class BookmarkList {
 //        }
     }
 
-    public BookmarkList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.BookmarksDao bookmarksDao, WindowStruct windowStruct){
+    public BookmarkList(Context context, View pageView, WebBrowser iw, WindowStruct windowStruct){
         this.context = context;
         this.iw = iw;
-        this.bookmarksDao = bookmarksDao;
+        this.bookmarksDao = DataBaseForBrowser.getInstance(context).bookmarksDao();
 
         recyclerView = (RecyclerView) pageView.findViewById(R.id.bookmark_list);
         bookmarkListAdapter = new BookmarkList.BookmarkListAdapter(windowStruct);

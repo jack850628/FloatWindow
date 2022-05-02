@@ -79,7 +79,6 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
     private ProgressBar PB;
     private BookmarkList bookmarkList;
     private HistoryList historyList;
-    private DataBaseForBrowser dataBaseForBrowser = null;
     private boolean desktopMode = false;
     private String defaultUserAgentString;
     private String desktopModeUserAgentString;
@@ -135,10 +134,10 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 page0(context, pageView, position, args, windowStruct);
                 break;
             case 1:
-                bookmarkList = new BookmarkList(context, pageView, this, dataBaseForBrowser.bookmarksDao(), windowStruct);
+                bookmarkList = new BookmarkList(context, pageView, this, windowStruct);
                 break;
             case 2:
-                historyList = new HistoryList(context, pageView, this, dataBaseForBrowser.historyDao(), windowStruct);
+                historyList = new HistoryList(context, pageView, this, windowStruct);
                 break;
         }
     }
@@ -176,12 +175,6 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
             }
         });
         ((ViewGroup)pageView.getRootView().findViewById(R.id.micro_max_button_background)).addView(showControlsBar, 0);
-
-        dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
-                .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
-                .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
-                .addMigrations(DataBaseForBrowser.MIGRATION_3_4)
-                .build();
 
         web.setWebViewClient(new WebViewClient(){
             @Override
@@ -509,7 +502,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                     JTools.threadPool.execute(new Runnable() {
                         @Override
                         public void run() {
-                            dataBaseForBrowser.historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
+                            DataBaseForBrowser.getInstance(context).historyDao().addHistory(new DataBaseForBrowser.History(title, url, new Date()));
                         }
                     });
                 }
@@ -683,7 +676,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
             }
         });
 
-        WebBrowserSetting.init(dataBaseForBrowser, windowStruct.getNumber(), new WebBrowserSetting.Operated() {
+        WebBrowserSetting.init(context, windowStruct.getNumber(), new WebBrowserSetting.Operated() {
             @Override
             public void operated(WebBrowserSetting webBrowserSetting) {
                 web.getSettings().setJavaScriptEnabled(webBrowserSetting.getSetting().javaScriptEnabled);
@@ -794,9 +787,9 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
 
                                     @Override
                                     protected DataBaseForBrowser.Bookmark doInBackground(DataBaseForBrowser.Bookmark... bookmark) {
-                                        List<DataBaseForBrowser.Bookmark> oldBookmark = dataBaseForBrowser.bookmarksDao().getBookmark(bookmark[0].url);
+                                        List<DataBaseForBrowser.Bookmark> oldBookmark = DataBaseForBrowser.getInstance(context).bookmarksDao().getBookmark(bookmark[0].url);
                                         if(oldBookmark.size() == 0){
-                                            bookmark[0].id = dataBaseForBrowser.bookmarksDao().addBookmark(bookmark[0]);
+                                            bookmark[0].id = DataBaseForBrowser.getInstance(context).bookmarksDao().addBookmark(bookmark[0]);
                                             return bookmark[0];
                                         }else
                                             return oldBookmark.get(0);
@@ -832,10 +825,10 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                     @Override
                                                                     public void run() {
                                                                         try {
-                                                                            dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                            DataBaseForBrowser.getInstance(context).bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }catch (SQLiteConstraintException e){
-                                                                            dataBaseForBrowser.bookmarksDao().deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
-                                                                            dataBaseForBrowser.bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                            DataBaseForBrowser.getInstance(context).bookmarksDao().deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
+                                                                            DataBaseForBrowser.getInstance(context).bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
                                                                         }
                                                                     }
                                                                 });
@@ -848,7 +841,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                 JTools.threadPool.execute(new Runnable() {
                                                                     @Override
                                                                     public void run() {
-                                                                        dataBaseForBrowser.bookmarksDao().deleteBookmark(result);
+                                                                        DataBaseForBrowser.getInstance(context).bookmarksDao().deleteBookmark(result);
                                                                     }
                                                                 });
                                                                 windowStruct.close();

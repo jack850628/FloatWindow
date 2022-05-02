@@ -1,5 +1,8 @@
 package com.example.jack8.floatwindow;
 
+import android.content.Context;
+
+import androidx.room.Room;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.room.ColumnInfo;
 import androidx.room.Dao;
@@ -215,5 +218,22 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         void addAdServerDataList(List<AdServerData> adServerData);
         @Query("delete from "+AdServerData.TABLE_NAME)
         void deleteAll();
+    }
+
+    private static DataBaseForBrowser dataBaseForBrowser;
+
+    public static DataBaseForBrowser getInstance(Context context){
+        if(dataBaseForBrowser == null){
+            dataBaseForBrowser = Room.databaseBuilder(context, DataBaseForBrowser.class, DataBaseForBrowser.DATABASE_NAME)
+                    .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
+                    .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
+                    .addMigrations(DataBaseForBrowser.MIGRATION_3_4)
+                    .build();
+        }
+        return dataBaseForBrowser;
+    }
+    public static void removeInstance(){
+        dataBaseForBrowser.close();
+        dataBaseForBrowser = null;
     }
 }

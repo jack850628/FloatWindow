@@ -72,7 +72,8 @@ public class WebBrowserSetting {
 
 
     private final LinkedHashSet<Integer> webBrowserWindowList = new LinkedHashSet<>();
-    private DataBaseForBrowser dataBaseForBrowser;
+    private DataBaseForBrowser.SettingDao settingDao;
+    private DataBaseForBrowser.AdServerDataDao adServerDataDao;
     private DataBaseForBrowser.Setting setting;
     private WindowStruct settingPage = null;
 
@@ -99,7 +100,7 @@ public class WebBrowserSetting {
                     JTools.threadPool.execute(new Runnable() {
                         @Override
                         public void run() {
-                            dataBaseForBrowser.settingDao().updateSetting(setting);
+                            settingDao.updateSetting(setting);
                         }
                     });
                 }else{
@@ -113,7 +114,7 @@ public class WebBrowserSetting {
                         public void run() {
                             if(!adServerDatas.isEmpty())
                                 adServerDatas.clear();
-                            adServerDatas.addAll(dataBaseForBrowser.adServerDataDao().getAdServerDataList());
+                            adServerDatas.addAll(adServerDataDao.getAdServerDataList());
                             for(DataBaseForBrowser.AdServerData adServerData : adServerDatas)
                                 Log.i("adsBlock", adServerData.adServer);
                             adServerListStatus = AdServerListStatus.COMPLETE;
@@ -131,8 +132,8 @@ public class WebBrowserSetting {
                             Log.i("adsBlock", childData.getValue().toString());
                             adServerDatas.add(new DataBaseForBrowser.AdServerData(childData.getValue().toString()));
                         }
-                        dataBaseForBrowser.adServerDataDao().deleteAll();
-                        dataBaseForBrowser.adServerDataDao().addAdServerDataList(adServerDatas);
+                        adServerDataDao.deleteAll();
+                        adServerDataDao.addAdServerDataList(adServerDatas);
                         databaseReference.removeEventListener(valueEventListener);
                         databaseReference.onDisconnect();
                         firebaseDatabase.goOffline();
@@ -154,13 +155,13 @@ public class WebBrowserSetting {
         void operated(WebBrowserSetting webBrowserSetting);
     }
 
-     static WebBrowserSetting init(DataBaseForBrowser dataBaseForBrowser, int windoiwId, Operated operated){
+     static WebBrowserSetting init(final Context context, final int windowId, final Operated operated){
          if(webBrowserStatus == WebBrowserStatus.CLOSE){
              synchronized (WebBrowserSetting.class){
                  if(webBrowserStatus == WebBrowserStatus.CLOSE){
                      webBrowserStatus = WebBrowserStatus.INIT;
                      operatedStack.push(operated);
-                     webBrowserSetting = new WebBrowserSetting(dataBaseForBrowser, operated);
+                     webBrowserSetting = new WebBrowserSetting(context, operated);
                  }else if(webBrowserStatus == WebBrowserStatus.INIT)
                      operatedStack.push(operated);
                  else
@@ -170,7 +171,7 @@ public class WebBrowserSetting {
              operatedStack.push(operated);
          else
              operated.operated(webBrowserSetting);
-         webBrowserSetting.webBrowserWindowList.add(windoiwId);
+         webBrowserSetting.webBrowserWindowList.add(windowId);
          return webBrowserSetting;
     }
 
@@ -178,17 +179,18 @@ public class WebBrowserSetting {
          return webBrowserSetting;
     }
 
-    private WebBrowserSetting(final DataBaseForBrowser dataBaseForBrowser, final Operated operated){
-        this.dataBaseForBrowser = dataBaseForBrowser;
+    private WebBrowserSetting(final Context context, final Operated operated){
+        settingDao = DataBaseForBrowser.getInstance(context).settingDao();
+        adServerDataDao = DataBaseForBrowser.getInstance(context).adServerDataDao();
         JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                List<DataBaseForBrowser.Setting> list = dataBaseForBrowser.settingDao().getSetting();
+                List<DataBaseForBrowser.Setting> list = settingDao.getSetting();
                 if (list.size() == 0) {
                     setting = new DataBaseForBrowser.Setting("https://www.google.com", true, true, false, false, 0, BrowserMode.DEFAULT.getId());
-                    setting.id = dataBaseForBrowser.settingDao().setSetting(setting);
+                    setting.id = settingDao.setSetting(setting);
                 } else
-                    setting = dataBaseForBrowser.settingDao().getSetting().get(0);
+                    setting = settingDao.getSetting().get(0);
                 setting.displayZoomControls = false;
 
                 if(setting.adsBlock)
@@ -297,7 +299,7 @@ public class WebBrowserSetting {
         JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                dataBaseForBrowser.settingDao().updateSetting(setting);
+                settingDao.updateSetting(setting);
                 if(operated != null)
                     new Handler(Looper.getMainLooper()).post(operated);
             }
@@ -313,6 +315,7 @@ public class WebBrowserSetting {
     private void onDestroy(){
         webBrowserSetting = null;
         adServerDatas.clear();
+        DataBaseForBrowser.removeInstance();
         webBrowserStatus = WebBrowserStatus.CLOSE;
         Log.i("WebBrowserSetting", "onDestroy");
     }

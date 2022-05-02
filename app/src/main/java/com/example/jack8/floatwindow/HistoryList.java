@@ -142,10 +142,10 @@ public class HistoryList {
 //        }
     }
 
-    public HistoryList(Context context, View pageView, WebBrowser iw, DataBaseForBrowser.HistoryDao historyDao, WindowStruct windowStruct){
+    public HistoryList(Context context, View pageView, WebBrowser iw, WindowStruct windowStruct){
         this.context = context;
         this.iw = iw;
-        this.historyDao = historyDao;
+        this.historyDao = DataBaseForBrowser.getInstance(context).historyDao();
 
 
         recyclerView = (RecyclerView) pageView.findViewById(R.id.history_list);
