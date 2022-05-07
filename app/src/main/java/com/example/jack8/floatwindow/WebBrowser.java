@@ -785,91 +785,92 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 loadUrl(WebBrowserSetting.getInit().getSetting().homeLink);
                                 break;
                             case 1:{
-                                final String title = web.getTitle(), url = web.getUrl();
-                                new AsyncTask<DataBaseForBrowser.Bookmark, Void, DataBaseForBrowser.Bookmark>(){
-
+                                final DataBaseForBrowser.Bookmark tempBookmark = new DataBaseForBrowser.Bookmark(web.getTitle(), web.getUrl());
+                                JTools.threadPool.execute(new Runnable() {
                                     @Override
-                                    protected DataBaseForBrowser.Bookmark doInBackground(DataBaseForBrowser.Bookmark... bookmark) {
-                                        List<DataBaseForBrowser.Bookmark> oldBookmark = DataBaseForBrowser.getInstance(context).bookmarksDao().getBookmark(bookmark[0].url);
+                                    public void run() {
+                                        final DataBaseForBrowser.Bookmark bookmark;
+                                        List<DataBaseForBrowser.Bookmark> oldBookmark = DataBaseForBrowser.getInstance(context).bookmarksDao().getBookmark(tempBookmark.url);
                                         if(oldBookmark.size() == 0){
-                                            bookmark[0].id = DataBaseForBrowser.getInstance(context).bookmarksDao().addBookmark(bookmark[0]);
-                                            return bookmark[0];
+                                            tempBookmark.id = DataBaseForBrowser.getInstance(context).bookmarksDao().addBookmark(tempBookmark);
+                                            bookmark = tempBookmark;
                                         }else
-                                            return oldBookmark.get(0);
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(final DataBaseForBrowser.Bookmark result){
-                                        new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                                .parentWindow(windowStruct)
-                                                .windowPageTitles(new String[]{context.getString(R.string.bookmark_added)})
-                                                .windowPages(new int[]{R.layout.add_to_bookmark})
-                                                .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                                .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                                                .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                                                .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                                                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                                                .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
-                                                .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*130 + WindowParameter.getWindowButtonsHeight(context)) / 2)
-                                                .width((int)(context.getResources().getDisplayMetrics().density*280))
-                                                .height((int)(context.getResources().getDisplayMetrics().density*(130 + WindowParameter.getWindowButtonsHeight(context))))
-                                                .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                                                    @Override
-                                                    public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
-                                                        final EditText title_box = pageView.findViewById(R.id.title);
-                                                        final EditText url_box = pageView.findViewById(R.id.home_link);
-
-                                                        title_box.setText(result.title);
-                                                        url_box.setText(result.url);
-                                                        pageView.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
+                                            bookmark = oldBookmark.get(0);
+                                        JTools.uiThread.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                                        .parentWindow(windowStruct)
+                                                        .windowPageTitles(new String[]{context.getString(R.string.bookmark_added)})
+                                                        .windowPages(new int[]{R.layout.add_to_bookmark})
+                                                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                                        .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                                        .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                                        .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                                                        .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
+                                                        .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*130 + WindowParameter.getWindowButtonsHeight(context)) / 2)
+                                                        .width((int)(context.getResources().getDisplayMetrics().density*280))
+                                                        .height((int)(context.getResources().getDisplayMetrics().density*(130 + WindowParameter.getWindowButtonsHeight(context))))
+                                                        .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                                             @Override
-                                                            public void onClick(View v) {
-                                                                JTools.threadPool.execute(new Runnable() {
+                                                            public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
+                                                                final EditText title_box = pageView.findViewById(R.id.title);
+                                                                final EditText url_box = pageView.findViewById(R.id.home_link);
+
+                                                                title_box.setText(bookmark.title);
+                                                                url_box.setText(bookmark.url);
+                                                                pageView.findViewById(R.id.add).setOnClickListener(new View.OnClickListener() {
                                                                     @Override
-                                                                    public void run() {
-                                                                        try {
-                                                                            DataBaseForBrowser.getInstance(context).bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
-                                                                        }catch (SQLiteConstraintException e){
-                                                                            DataBaseForBrowser.getInstance(context).bookmarksDao().deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
-                                                                            DataBaseForBrowser.getInstance(context).bookmarksDao().upDataBookmark(result.id, title_box.getText().toString(), url_box.getText().toString());
-                                                                        }
+                                                                    public void onClick(View v) {
+                                                                        JTools.threadPool.execute(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                try {
+                                                                                    DataBaseForBrowser.getInstance(context).bookmarksDao().upDataBookmark(bookmark.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                                }catch (SQLiteConstraintException e){
+                                                                                    DataBaseForBrowser.getInstance(context).bookmarksDao().deleteBookmark(url_box.getText().toString());//因為url是唯一的，當upDataBookmark的url在資料庫已經存在時就會發生錯誤，因此將原有的url刪除
+                                                                                    DataBaseForBrowser.getInstance(context).bookmarksDao().upDataBookmark(bookmark.id, title_box.getText().toString(), url_box.getText().toString());
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                        windowStruct.close();
                                                                     }
                                                                 });
-                                                                windowStruct.close();
-                                                            }
-                                                        });
-                                                        pageView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                JTools.threadPool.execute(new Runnable() {
+                                                                pageView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
                                                                     @Override
-                                                                    public void run() {
-                                                                        DataBaseForBrowser.getInstance(context).bookmarksDao().deleteBookmark(result);
+                                                                    public void onClick(View v) {
+                                                                        JTools.threadPool.execute(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                DataBaseForBrowser.getInstance(context).bookmarksDao().deleteBookmark(bookmark);
+                                                                            }
+                                                                        });
+                                                                        windowStruct.close();
                                                                     }
                                                                 });
-                                                                windowStruct.close();
                                                             }
-                                                        });
-                                                    }
 
-                                                    @Override
-                                                    public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
+                                                            @Override
+                                                            public void Deconstruction(Context context, View pageView, int position, WindowStruct windowStruct1) {
 
-                                                    }
+                                                            }
 
-                                                    @Override
-                                                    public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                            @Override
+                                                            public void onResume(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                                                    }
+                                                            }
 
-                                                    @Override
-                                                    public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
+                                                            @Override
+                                                            public void onPause(Context context, View pageView, int position, WindowStruct windowStruct) {
 
-                                                    }
-                                                })
-                                                .show();
+                                                            }
+                                                        })
+                                                        .show();
+                                            }
+                                        });
                                     }
-                                }.execute(new DataBaseForBrowser.Bookmark(title,url));
+                                });
                                 break;
                             }
                             case 2:{
