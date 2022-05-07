@@ -24,15 +24,20 @@ public class FullscreenWindowActivity extends AppCompatActivity {
         getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN, android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         windowNumber = getIntent().getIntExtra(WINDOW_NUMBER_EXTRA_NAME, -1);
         WindowStruct ws = WindowManager.getWindowStruct(windowNumber);
+        if(ws == null){//雖然當Android版本大於等於5時，每次啟動FullscreenWindowActivity時理論上一定都會對應的WindowStruct，但是總是有很小的機會發生意想不到的事情導致ws == null，所以還是預防一下
+            finish();
+            return;
+        }
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
-            if(ws == null){
-                finish();
-                return;
-            }else if(ws.nowState != WindowStruct.State.FULLSCREEN){
+            if(ws.nowState != WindowStruct.State.FULLSCREEN){
                 ws.fullscreen();
                 return;
             }
         }else{
+            if(ws.nowState != WindowStruct.State.FULLSCREEN){//防止一些極端操作，例如在進入全螢幕的動畫剛跑完時，馬上按關閉視窗的按鈕
+                finish();
+                return;
+            }
             onWindowTitleChangeListener = new WindowStruct.OnWindowTitleChangeListener() {
                 @Override
                 public void onTitleChanged(Context context, WindowStruct windowStruct, String title) {
