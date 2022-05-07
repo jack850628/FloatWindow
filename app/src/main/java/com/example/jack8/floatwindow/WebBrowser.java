@@ -686,12 +686,16 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 web.getSettings().setDomStorageEnabled(true);
                 web.getSettings().setDatabaseEnabled(true);
                 defaultUserAgentString = web.getSettings().getUserAgentString();
-                desktopModeUserAgentString = Pattern.compile("^(.*?)Linux; Android (?:[0-9.]+);.+?( Build\\/.+?\\))(.+?)(?:Mobile )?(Safari.*)$").matcher(defaultUserAgentString).replaceAll("$1X11; U; Linux i686;$2$3$4");
+                desktopModeUserAgentString = Pattern.compile("^(.*?)Linux;(?: [UIN];)? Android (?:[0-9.]+);.+?( Build\\/.+?\\))(.+?)(?:Mobile )?(Safari.*)$").matcher(defaultUserAgentString).replaceAll("$1X11; U; Linux i686;$2$3$4");
                 /*
                 以U12+為例
                 Mozilla/5.0 (Linux; Android 9; HTC 2Q55100 Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Mobile Safari/537.36
                 將會取代成
                 Mozilla/5.0 (X11; U; Linux i686; Build/PQ2A.190205.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.86 Safari/537.36
+                以One X為例
+                Mozilla/5.0 (Linux; U; Android 4.2.2; zh-tw; HTC One X Build/JDQ39) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30
+                將會取代成
+                Mozilla/5.0 (X11; U; Linux i686; Build/JDQ39) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30
                  */
                 if(
                         (args.containsKey(BROWSER_MODE) && (int)args.get(BROWSER_MODE) == WebBrowserSetting.BrowserMode.DESKTOP.getId())
