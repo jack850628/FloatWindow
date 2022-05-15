@@ -95,16 +95,9 @@
     <string name="delete_msg">are you sure delete?</string>
     <string name="delete_note">delete note</string>
     <string name="desktop_mode">desktop mode</string>
-    <string name="shortcut_title">shortcut title</string>
+    <string name="shortcut_title">shortcut title:</string>
     <string name="hidden_controls_bar">hidden address bar</string>
-    
-    <string-array name="browser_mode">
-        <item>defailt mode</item>
-        <item>desktop mode</item>
-    </string-array>
     <string name="default_browser_mode">default browser mode</string>
-    <string name="what_is_new_title1">Do you like FlotWindow?</string>
-    <string name="what_is_new_string1">In this update we have caught some bugs and two new features, and if you want to sponsor us, we have added a sponsor link in the main menu, welcome to sponsor us.</string>
     <string name="do_close">Do close</string>
     <string name="view_open_windows">View opened windows</string>
     <string name="notes">notes</string>
@@ -113,8 +106,23 @@
     <string name="button_width_for_mini_state">button width for mini state</string>
     <string name="button_height_for_mini_state">button height for mini state</string>
     <string name="window_mini_state_color">window mini state color:</string>
+    <string name="what_is_new_title1">Do you like FlotWindow?</string>
+    <string name="what_is_new_string1">In this update we have caught some bugs and three new features, and if you want to sponsor us, we have added a sponsor link in the main menu, welcome to sponsor us.</string>
     <string name="what_is_new_title2">Shortcuts for remembering states</string>
     <string name="what_is_new_string2">Starting from this version, when creating a shortcut to the home screen, you can choose whether to open it with the current window position, size, mode, and style of the hidden address bar.</string>
     <string name="what_is_new_title3">Customize minimized size</string>
     <string name="what_is_new_string3">Starting with this version, you can customize the size of the window when it is minimized in the settings.</string>
+    <string name="what_is_new_title4">Independent js switch for web browser</string>
+    <string name="what_is_new_string4">Starting with this version, javascript can be individually disabled or enabled for each browser window from the menu.</string>
+
+
+    <string-array name="browser_mode">
+        <item>default mode</item>
+        <item>desktop mode</item>
+    </string-array>
+    <string-array name="enable_javascript_select">
+        <item>default</item>
+        <item>disable</item>
+        <item>enable</item>
+    </string-array>
 </resources>

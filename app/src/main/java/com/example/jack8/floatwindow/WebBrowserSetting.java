@@ -247,7 +247,7 @@ public class WebBrowserSetting {
 //                            ((Switch)pageView.findViewById(R.id.enable_ads_block)).setChecked(setting.adsBlock);
 //                            ((Switch)pageView.findViewById(R.id.display_zoom_buttom)).setChecked(setting.displayZoomControls);//無法提供顯示縮放按鈕，因為切換視窗時WebView會出現嚴重錯誤signal 4 (SIGILL), code 2 (ILL_ILLOPC), fault addr 0xd878e0d0
                             final Spinner browserMode = (Spinner) pageView.findViewById(R.id.browser_mode);
-                            browserMode.setAdapter(ArrayAdapter.createFromResource(context, R.array.browser_mode, android.R.layout.simple_list_item_1));
+                            browserMode.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.browser_mode)));
                             browserMode.setSelection(setting.browserMode);
                             pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
                                 @Override

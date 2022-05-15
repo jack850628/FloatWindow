@@ -96,16 +96,9 @@
     <string name="delete_msg">確定要刪除?</string>
     <string name="delete_note">刪除便條紙</string>
     <string name="desktop_mode">桌面模式</string>
-    <string name="shortcut_title">捷徑標題</string>
+    <string name="shortcut_title">捷徑標題:</string>
     <string name="hidden_controls_bar">隱藏網址列</string>
-
-    <string-array name="browser_mode">
-        <item>預設模式</item>
-        <item>桌面模式</item>
-    </string-array>
     <string name="default_browser_mode">預設瀏覽模式</string>
-    <string name="what_is_new_title1">你喜歡FlotWindow嗎？</string>
-    <string name="what_is_new_string1">這次的更新我們又抓到了一些臭蟲以及兩個新功能，還有如果願意贊助我們的話，在主選單中我們增加了贊助連結，歡迎贊助我們。</string>
     <string name="do_close">確認關閉</string>
     <string name="view_open_windows">查看開啟中的視窗</string>
     <string name="notes">便條紙</string>
@@ -114,8 +107,22 @@
     <string name="button_width_for_mini_state">最小化狀態的按鈕寬度</string>
     <string name="button_height_for_mini_state">最小化狀態的按鈕高</string>
     <string name="window_mini_state_color">視窗最小化狀態的顏色</string>
+    <string name="what_is_new_title1">你喜歡FlotWindow嗎？</string>
+    <string name="what_is_new_string1">這次的更新我們又抓到了一些臭蟲以及三個新功能，還有如果願意贊助我們的話，在主選單中我們增加了贊助連結，歡迎贊助我們。</string>
     <string name="what_is_new_title2">記住狀態的捷徑</string>
     <string name="what_is_new_string2">從這個版本開始，在建立捷徑到主畫面時，可以選擇是否要以現在視窗的位置、大小、模式，以及隱藏網址列的樣式來開啟。</string>
     <string name="what_is_new_title3">自訂最小化時的大小</string>
     <string name="what_is_new_string3">從這個版本開始，您可以在設定裡自訂視窗最小化時的大小。</string>
+    <string name="what_is_new_title4">網頁瀏覽器的獨立js開關</string>
+    <string name="what_is_new_string4">從這個版本開始，每個瀏覽器視窗都可以從選單中各自停用或啟用javascript。</string>
+
+    <string-array name="browser_mode">
+        <item>預設模式</item>
+        <item>桌面模式</item>
+    </string-array>
+    <string-array name="enable_javascript_select">
+        <item>預設</item>
+        <item>停用</item>
+        <item>啟用</item>
+    </string-array>
 </resources>

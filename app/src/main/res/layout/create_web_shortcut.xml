@@ -12,13 +12,14 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/message"
-            style="@style/AppTheme.WindiowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:shadowColor="#cefffefe"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="15"
             android:text="@string/shortcut_title"
-            android:textSize="18sp" />
+            android:textColor="#313131" />
 
         <com.example.jack8.floatwindow.FwEditView
             android:id="@+id/input_text"
@@ -42,6 +43,21 @@
             android:layout_height="wrap_content"
             style="@style/AppTheme.WindiowText"
             android:text="@string/remember_current_window_state" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:shadowColor="#cefffefe"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="15"
+            android:text="JavaScript:"
+            android:textColor="#313131" />
+
+        <Spinner
+            android:id="@+id/enable_js"
+            android:layout_width="match_parent"
+            android:layout_height="50sp" />
     </LinearLayout>
 
     <LinearLayout

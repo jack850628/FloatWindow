@@ -430,6 +430,12 @@ public class FloatServer extends Service {
             if(intent.hasExtra(WebBrowser.HIDDEN_CONTROLS_BAR)){
                 args.put(WebBrowser.HIDDEN_CONTROLS_BAR, Boolean.valueOf(intent.getStringExtra(WebBrowser.HIDDEN_CONTROLS_BAR)));
             }
+            if(intent.hasExtra(WebBrowser.ENABLE_JS)){
+                int enableJS = intent.getStringExtra(WebBrowser.ENABLE_JS) == null
+                        ?intent.getIntExtra(WebBrowser.ENABLE_JS, -1)
+                        :Integer.valueOf(intent.getStringExtra(WebBrowser.ENABLE_JS));
+                args.put(WebBrowser.ENABLE_JS, enableJS);
+            }
             new JTools.WindowBuilderByIntent(intent).create(this, wm)
                     .windowPages(new int[]{R.layout.webpage, R.layout.bookmark_page, R.layout.history_page})
                     .windowPageTitles(new String[]{getResources().getString(R.string.web_browser), getResources().getString(R.string.bookmarks), getResources().getString(R.string.history)})

@@ -46,6 +46,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,7 +66,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
-    public static final String WEB_LINK = "webLink", HIDDEN_CONTROLS_BAR = "hiddenControlsBar", BROWSER_MODE = "browser_mode";
+    public static final String WEB_LINK = "webLink", HIDDEN_CONTROLS_BAR = "hiddenControlsBar", BROWSER_MODE = "browser_mode", ENABLE_JS = "enable_js";
+    //ENABLE_JS的值： -1 = 依照瀏覽器設定(default)、0 = 停用、1 = 啟用，若沒定義就相當於-1
 
     WebView web;
 
@@ -83,6 +85,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
     private String desktopModeUserAgentString;
     private boolean thisPageHaveIcon;
     private boolean hiddenControlsBar = false;
+    private boolean enableJS = true;
 
     private final FirebaseCrashlytics crashlytics;
     private View customView;
@@ -680,13 +683,21 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
         WebBrowserSetting.init(context, windowStruct.getNumber(), new WebBrowserSetting.Operated() {
             @Override
             public void operated(WebBrowserSetting webBrowserSetting) {
-                web.getSettings().setJavaScriptEnabled(webBrowserSetting.getSetting().javaScriptEnabled);
                 web.getSettings().setSupportZoom(webBrowserSetting.getSetting().supportZoom);
                 web.getSettings().setBuiltInZoomControls(true);
                 web.getSettings().setDisplayZoomControls(webBrowserSetting.getSetting().displayZoomControls);
                 web.getSettings().setUseWideViewPort(true);
                 web.getSettings().setDomStorageEnabled(true);
                 web.getSettings().setDatabaseEnabled(true);
+
+                enableJS = args.containsKey(ENABLE_JS) && (int)args.get(ENABLE_JS) == 1
+                        ||
+                        (!args.containsKey(ENABLE_JS) || args.containsKey(ENABLE_JS) && (int)args.get(ENABLE_JS) == -1)
+                                && webBrowserSetting.getSetting().javaScriptEnabled
+                ;
+                web.getSettings().setJavaScriptEnabled(enableJS);
+                WebBrowser.super.querys.put(ENABLE_JS, String.valueOf(enableJS? 1: 0));
+
                 defaultUserAgentString = web.getSettings().getUserAgentString();
                 desktopModeUserAgentString = Pattern.compile("^(.*?)Linux;(?: [UIN];)? Android (?:[0-9.]+);.+?( Build\\/.+?\\))(.+?)(?:Mobile )?(Safari.*)$").matcher(defaultUserAgentString).replaceAll("$1X11; U; Linux i686;$2$3$4");
                 /*
@@ -710,6 +721,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 }else{
                     WebBrowser.super.querys.put(BROWSER_MODE, String.valueOf(WebBrowserSetting.BrowserMode.DEFAULT.getId()));
                 }
+
                 if(args.containsKey(HIDDEN_CONTROLS_BAR) && (boolean)args.get(HIDDEN_CONTROLS_BAR)){
                     hiddenControlsBar = true;
                     controlsBar.setVisibility(View.GONE);
@@ -717,6 +729,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                     WebBrowser.super.querys.put(HIDDEN_CONTROLS_BAR, String.valueOf(hiddenControlsBar));
                 }else
                     showControlsBar.setVisibility(View.GONE);
+
                 String url = webBrowserSetting.getSetting().homeLink;
                 if(args.containsKey(WEB_LINK)) {
                     url = (String) args.get(WEB_LINK);
@@ -769,6 +782,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                         new MenuAdapter.Item(context.getString(R.string.hidden_controls_bar)),
                         new MenuAdapter.Item(context.getString(R.string.share_the_website)),
                         new MenuAdapter.Item(context.getString(R.string.desktop_mode), desktopMode? 1 : 0),
+                        new MenuAdapter.Item(context.getString(R.string.enable_javascript), enableJS? 1 : 0),
                         new MenuAdapter.Item(context.getString(R.string.add_to_home_screen)),
                         new MenuAdapter.Item(context.getString(R.string.open_to_other_browser)),
                         new MenuAdapter.Item(context.getString(R.string.web_browser_setting)),
@@ -906,9 +920,17 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                     WebBrowser.super.querys.put(BROWSER_MODE, String.valueOf(WebBrowserSetting.BrowserMode.DEFAULT.getId()));
                                 }
                                 web.reload();
+                                //因為網頁重整完就會觸發updateUri，所以這裡用不用加updateUri
                                 break;
                             }
                             case 5: {
+                                enableJS = !enableJS;
+                                web.getSettings().setJavaScriptEnabled(enableJS);
+                                WebBrowser.super.querys.put(ENABLE_JS, String.valueOf(enableJS? 1: 0));
+                                WebBrowser.super.updateUri(windowStruct, context);
+                                break;
+                            }
+                            case 6: {
                                 String title = web.getTitle();
                                 if(desktopMode)
                                     title += String.format("(%s)", context.getString(R.string.desktop_mode));
@@ -933,6 +955,9 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                             @Override
                                             public void Construction(final Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
+                                                Spinner enableJsSelect = (Spinner)pageView.findViewById(R.id.enable_js);
+                                                enableJsSelect.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.enable_javascript_select)));
+                                                enableJsSelect.setSelection(0);
                                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
@@ -942,6 +967,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                     launcher = new Intent(context , WebBrowserLauncher.class);
                                                             launcher.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                                             launcher.putExtra(BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
+                                                            launcher.putExtra(ENABLE_JS, enableJsSelect.getSelectedItemPosition() -1);//因為ENABLE_JS值分別是-1 0 1，所以-1
                                                             if(((CheckBox)pageView.findViewById(R.id.hidden_controls_bar_checkBox)).isChecked())
                                                                 launcher.putExtra(HIDDEN_CONTROLS_BAR, "true");
                                                             if(((CheckBox)pageView.findViewById(R.id.remember_current_window_state_checkBox)).isChecked()){
@@ -960,6 +986,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                             Intent shortcutIntent = new Intent(context, WebBrowserLauncher.class);
                                                             shortcutIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                                             shortcutIntent.putExtra(BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
+                                                            shortcutIntent.putExtra(ENABLE_JS, enableJsSelect.getSelectedItemPosition() -1);//因為ENABLE_JS值分別是-1 0 1，所以-1
                                                             if(((CheckBox)pageView.findViewById(R.id.hidden_controls_bar_checkBox)).isChecked())
                                                                 shortcutIntent.putExtra(HIDDEN_CONTROLS_BAR, "true");
                                                             if(((CheckBox)pageView.findViewById(R.id.remember_current_window_state_checkBox)).isChecked()){
@@ -1002,7 +1029,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                         .show();
                                 break;
                             }
-                            case 6: {
+                            case 7: {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1010,7 +1037,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                     context.startActivity(chooser);
                                 break;
                             }
-                            case 7:
+                            case 8:
                                 WebBrowserSetting.getInit().showSettingWindow(context, null);
                                 break;
                         }

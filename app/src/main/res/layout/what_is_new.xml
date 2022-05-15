@@ -94,6 +94,21 @@
             android:layout_height="wrap_content"
             android:src="@drawable/what_is_new_image5" />
 
+        <TextView
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/what_is_new_title4"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/what_is_new_string4" />
+
 <!--        <LinearLayout-->
 <!--            android:id="@+id/works_greater_SDK_18"-->
 <!--            android:layout_width="match_parent"-->
