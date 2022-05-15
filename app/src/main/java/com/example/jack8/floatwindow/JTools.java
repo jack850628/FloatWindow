@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -31,6 +32,7 @@ public final class JTools {
         public static final String TOP = "top";
         public static final String LEFT = "left";
         public static final String STATE = "state";
+        public static final String ORIENTATION = "orientation";
         public static final Set<String> parametersSet;
         static {
             parametersSet = new HashSet<>();
@@ -39,6 +41,7 @@ public final class JTools {
             parametersSet.add(TOP);
             parametersSet.add(LEFT);
             parametersSet.add(STATE);
+            parametersSet.add(ORIENTATION);
         }
 
         private WindowParameter(){}
@@ -84,15 +87,7 @@ public final class JTools {
 
         public WindowStruct.Builder create(Context context, WindowManager windowManager){
             WindowStruct.Builder builder = new WindowStruct.Builder(context, windowManager);
-            int intParam = intent.getIntExtra(WindowParameter.TOP, top);
-            if(intParam != Integer.MAX_VALUE){
-                builder.top(intParam);
-            }
-            intParam = intent.getIntExtra(WindowParameter.LEFT, left);
-            if(intParam != Integer.MAX_VALUE){
-                builder.left(intParam);
-            }
-            intParam = intent.getIntExtra(WindowParameter.WIDTH, width);
+            int intParam = intent.getIntExtra(WindowParameter.WIDTH, width);
             if(intParam != Integer.MAX_VALUE){
                 builder.width(intParam);
             }
@@ -104,6 +99,20 @@ public final class JTools {
             if(intParam != Integer.MAX_VALUE){
                 builder.openState(WindowStruct.State.getStateByTypeNumber(intParam));
             }
+            int _top = intent.getIntExtra(WindowParameter.TOP, top);
+            int _left = intent.getIntExtra(WindowParameter.LEFT, left);
+            int _orientation = intent.getIntExtra(WindowParameter.ORIENTATION, -1);
+            if(_orientation != Integer.MAX_VALUE && _orientation != context.getResources().getConfiguration().orientation){
+                int temp = _top;
+                _top = _left;
+                _left = temp;
+            }
+            if(_top != Integer.MAX_VALUE){
+                builder.top(_top);
+            }
+            if(_left != Integer.MAX_VALUE){
+                builder.left(_left);
+            }
             return builder;
         }
     }
@@ -111,7 +120,7 @@ public final class JTools {
     public static final ExecutorService threadPool = Executors.newCachedThreadPool();
     public static Handler uiThread = new Handler(Looper.getMainLooper());
 
-    public static String createAppUri(String[] path, WindowStruct windowStruct, Map<String, String> outerParameter){
+    public static String createAppUri(String[] path, WindowStruct windowStruct, Context context, Map<String, String> outerParameter){
         Uri.Builder builder = new Uri.Builder();
         for(String p: path){
             builder.appendEncodedPath(p);
@@ -121,6 +130,7 @@ public final class JTools {
         builder.appendQueryParameter(WindowParameter.WIDTH, String.valueOf(windowStruct.getWidth()));
         builder.appendQueryParameter(WindowParameter.HEIGHT, String.valueOf(windowStruct.getHeight()));
         builder.appendQueryParameter(WindowParameter.STATE, String.valueOf(windowStruct.nowState.getType()));
+        builder.appendQueryParameter(WindowParameter.ORIENTATION, String.valueOf(context.getResources().getConfiguration().orientation));
         for(String k: outerParameter.keySet()){
             builder.appendQueryParameter(k, outerParameter.get(k));
         }
@@ -198,6 +208,10 @@ public final class JTools {
     public static void addWindowsPosition(WindowStruct windowStruct, Intent intent){
         intent.putExtra(WindowParameter.TOP, windowStruct.getGeneralPositionY());
         intent.putExtra(WindowParameter.LEFT, windowStruct.getGeneralPositionX());
+    }
+
+    public static void addScreenOrientation(Context context, Intent intent){
+        intent.putExtra(WindowParameter.ORIENTATION, context.getResources().getConfiguration().orientation);
     }
 
     private JTools(){}

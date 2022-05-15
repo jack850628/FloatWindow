@@ -285,7 +285,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
                                 showFrame.setVisibility(View.VISIBLE);
                                 note.setOnTouchListener(moveWindow);
                                 NotePage.super.querys.put(HIDE_FRAME, String.valueOf(true));
-                                NotePage.super.updateUri(windowStruct);
+                                NotePage.super.updateUri(windowStruct, context);
                                 break;
                         }
                         popupWindow.dismiss();
@@ -326,7 +326,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
                         showFrame.setVisibility(View.GONE);
                         note.setOnTouchListener(null);
                         NotePage.super.querys.remove(HIDE_FRAME);
-                        NotePage.super.updateUri(windowStruct);
+                        NotePage.super.updateUri(windowStruct, context);
                         break;
                 }
                 toolsBar.setVisibility(View.GONE);
@@ -366,7 +366,7 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
             NotePage.super.querys.put(HIDE_FRAME, String.valueOf(true));
         }
 
-        super.updateUri(windowStruct);
+        super.updateUri(windowStruct, context);
     }
 
     public static void openNodeList(Context context, Intent intent){

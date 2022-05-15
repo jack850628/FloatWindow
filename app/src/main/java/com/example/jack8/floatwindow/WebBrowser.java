@@ -164,7 +164,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                     controlsBar.setVisibility(View.VISIBLE);
                 v.setVisibility(View.GONE);
                 WebBrowser.super.querys.remove(HIDDEN_CONTROLS_BAR);
-                WebBrowser.super.updateUri(windowStruct);
+                WebBrowser.super.updateUri(windowStruct, context);
             }
         });
         ((ViewGroup)pageView.getRootView().findViewById(R.id.micro_max_button_background)).addView(showControlsBar, 0);
@@ -254,7 +254,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
             public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
                 path.setText(url);
                 WebBrowser.super.querys.put(WEB_LINK, url);
-                WebBrowser.super.updateUri(windowStruct);
+                WebBrowser.super.updateUri(windowStruct, context);
                 canSendHistory = true;
             }
         });
@@ -728,7 +728,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
 //                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) web.setWebContentsDebuggingEnabled(true);
                 path.setText(url);
                 web.loadUrl(url);
-                WebBrowser.super.updateUri(windowStruct);
+                WebBrowser.super.updateUri(windowStruct, context);
             }
         });
 
@@ -883,7 +883,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 controlsBar.setVisibility(View.GONE);
                                 showControlsBar.setVisibility(View.VISIBLE);
                                 WebBrowser.super.querys.put(HIDDEN_CONTROLS_BAR, String.valueOf(hiddenControlsBar));
-                                WebBrowser.super.updateUri(windowStruct);
+                                WebBrowser.super.updateUri(windowStruct, context);
                                 break;
                             }
                             case 3: {
@@ -948,6 +948,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                 JTools.addWindowsSize(windowStruct, launcher);
                                                                 JTools.addWindowsPosition(windowStruct, launcher);
                                                                 JTools.addWindowsState(windowStruct, launcher);
+                                                                JTools.addScreenOrientation(context, launcher);
                                                             }
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
                                                             Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser_icon);
@@ -965,6 +966,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                 JTools.addWindowsSize(windowStruct, shortcutIntent);
                                                                 JTools.addWindowsPosition(windowStruct, shortcutIntent);
                                                                 JTools.addWindowsState(windowStruct, shortcutIntent);
+                                                                JTools.addScreenOrientation(context, shortcutIntent);
                                                             }
                                                             shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                                                             ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);

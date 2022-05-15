@@ -41,6 +41,7 @@ public class JToolsTest extends TestCase {
         String uri = JTools.createAppUri(
                 new String[]{"poi"},
                 new WindowStruct.Builder(context, windowManager).show(),
+                context,
                 map
         );
         Log.d("jtest_createAppUri", uri);

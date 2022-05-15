@@ -29,14 +29,14 @@ public class AutoRecordConstructionAndDeconstructionWindow extends WindowStruct.
         this.appLauncherClass = appLauncherClass;
     }
 
-    public void updateUri(WindowStruct windowStruct){
+    public void updateUri(WindowStruct windowStruct, Context context){
         if(windowStruct.nowState == WindowStruct.State.CLOSE) return;
         this.finalPathLayers = new String[pathLayers.length + 1];
         this.finalPathLayers[0] = appLauncherClass.getName();
         for(int i = 0; i < pathLayers.length; i++){
             this.finalPathLayers[i + 1] = pathLayers[i];
         }
-        uriStr = JTools.createAppUri(this.finalPathLayers, windowStruct, querys);
+        uriStr = JTools.createAppUri(this.finalPathLayers, windowStruct, context, querys);
         Log.d("FloatWindow uri string", uriStr);
         JTools.threadPool.execute(new Runnable() {
             @Override
@@ -66,23 +66,23 @@ public class AutoRecordConstructionAndDeconstructionWindow extends WindowStruct.
     public void onCreate(Context context, Map<String, Object> args, WindowStruct windowStruct){
         this.args = args;
         this.context = context;
-        updateUri(windowStruct);
+        updateUri(windowStruct, context);
         windowStruct.addWindowSizeChangeListener(new WindowStruct.OnWindowSizeChangeListener() {
             @Override
             public void onSizeChanged(Context context, WindowStruct windowStruct) {
-                updateUri(windowStruct);
+                updateUri(windowStruct, context);
             }
         });
         windowStruct.addWindowPositionChangeListener(new WindowStruct.OnWindowPositionChangeListener() {
             @Override
             public void onPositionChanged(Context context, WindowStruct windowStruct) {
-                updateUri(windowStruct);
+                updateUri(windowStruct, context);
             }
         });
         windowStruct.addWindowStateChangeListener(new WindowStruct.OnWindowStateChangeListener() {
             @Override
             public void onStateChanged(Context context, WindowStruct windowStruct) {
-                updateUri(windowStruct);
+                updateUri(windowStruct, context);
             }
         });
     }
@@ -98,7 +98,7 @@ public class AutoRecordConstructionAndDeconstructionWindow extends WindowStruct.
     @Override
     public void onResume(Context context, View pageView, int position, WindowStruct windowStruct){
         querys.put(PAGE_POSITION, String.valueOf(position));
-        updateUri(windowStruct);
+        updateUri(windowStruct, context);
     }
 
     @Override
