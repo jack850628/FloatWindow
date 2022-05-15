@@ -18,6 +18,8 @@ public class Help extends WindowStruct.constructionAndDeconstructionWindow  {
                         context.getResources().getConfiguration().locale.getCountry().equals("HK") ||
                         context.getResources().getConfiguration().locale.getCountry().equals("CN")){
                     ((ImageView)pageView.findViewById(R.id.what_is_new_image1)).setImageResource(R.drawable.what_is_new_image2);
+                    ((ImageView)pageView.findViewById(R.id.what_is_new_image2)).setImageResource(R.drawable.what_is_new_image4);
+                    ((ImageView)pageView.findViewById(R.id.what_is_new_image3)).setImageResource(R.drawable.what_is_new_image6);
                 }
 //                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
 //                    pageView.findViewById(R.id.works_greater_SDK_18).setVisibility(View.GONE);

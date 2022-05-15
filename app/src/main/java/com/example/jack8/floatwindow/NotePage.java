@@ -119,6 +119,8 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
                                 .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                                 .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                                 .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                                .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                                 .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                     @Override
                                     public void Construction(final Context context, View pageView, int _, Map<String, Object> args, final WindowStruct ws) {
@@ -394,6 +396,8 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
                     .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                     .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                     .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                    .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                    .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                     .constructionAndDeconstructionWindow(new AutoRecordConstructionAndDeconstructionWindow(NotePageLauncher.class){
                         @Override
                         public void onCreate(Context context, Map<String, Object> args, WindowStruct windowStruct){

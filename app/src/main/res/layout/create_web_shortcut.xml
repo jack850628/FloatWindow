@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/message"
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/shortcut_title"
+            android:textSize="18sp" />
+
+        <com.example.jack8.floatwindow.FwEditView
+            android:id="@+id/input_text"
+            style="@style/AppTheme.WindiowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:visibility="visible" />
+
+        <CheckBox
+            android:id="@+id/hidden_controls_bar_checkBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.WindiowText"
+            android:text="@string/hidden_controls_bar" />
+
+        <CheckBox
+            android:id="@+id/remember_current_window_state_checkBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/AppTheme.WindiowText"
+            android:text="@string/remember_current_window_state" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/confirm"
+            style="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/confirm"
+            android:theme="@style/AppTheme.Button" />
+
+        <Button
+            android:id="@+id/cancel"
+            style="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:theme="@style/AppTheme.Button"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -263,6 +263,8 @@ public class FloatServer extends Service {
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                    .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         AdView adView;
@@ -271,30 +273,36 @@ public class FloatServer extends Service {
                             View.OnClickListener onClickListener = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    Class clazz = null;
+                                    Intent intent = null;
                                     switch (v.getId()){
                                         case R.id.web_browser:{
-                                            clazz = WebBrowserLauncher.class;
+                                            intent = new Intent(FloatServer.this, WebBrowserLauncher.class);
                                             break;
                                         }
                                         case R.id.note:{
-                                            clazz = NotePageLauncher.class;
+                                            intent = new Intent(FloatServer.this, NotePageLauncher.class);
                                             break;
                                         }
                                         case R.id.calculato:{
-                                            clazz = CalculatorLauncher.class;
+                                            intent = new Intent(FloatServer.this, CalculatorLauncher.class);
                                             break;
                                         }
                                         case R.id.setting:{
-                                            clazz = Setting.class;
+                                            intent = new Intent(FloatServer.this, Setting.class);
                                             break;
                                         }
                                         case R.id.watch_ad:{
-                                            clazz = HelpMeAd.class;
+                                            intent = new Intent(FloatServer.this, HelpMeAd.class);
+                                            break;
+                                        }
+                                        case R.id.donate:{
+                                            intent = Intent.createChooser(
+                                                    new Intent(Intent.ACTION_VIEW, Uri.parse("https://fwi.jack.origthatone.com/donate")),
+                                                    context.getString(R.string.select_browser)
+                                            );
                                             break;
                                         }
                                     }
-                                    Intent intent = new Intent(FloatServer.this, clazz);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     FloatServer.this.startActivity(intent);
                                     windowStruct.close();
@@ -305,6 +313,7 @@ public class FloatServer extends Service {
                             pageView.findViewById(R.id.calculato).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.setting).setOnClickListener(onClickListener);
                             pageView.findViewById(R.id.watch_ad).setOnClickListener(onClickListener);
+                            pageView.findViewById(R.id.donate).setOnClickListener(onClickListener);
                             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
                                 pageView.findViewById(R.id.tip).setVisibility(View.VISIBLE);
                                 View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
@@ -428,6 +437,8 @@ public class FloatServer extends Service {
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                    .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new WebBrowser())
                     .windowInitArgs(args)
@@ -454,6 +465,8 @@ public class FloatServer extends Service {
                         .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                         .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                         .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                        .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                        .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                         .windowAction(windowAction)
                         .constructionAndDeconstructionWindow(new NotePage())
                         .windowInitArgs(args)
@@ -470,6 +483,8 @@ public class FloatServer extends Service {
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                    .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                     //.width((int)(getResources().getDisplayMetrics().density * 200))
                     .windowAction(windowAction)
                     .constructionAndDeconstructionWindow(new Calculator())
@@ -492,6 +507,8 @@ public class FloatServer extends Service {
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                    .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                         @Override
                         public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -527,6 +544,8 @@ public class FloatServer extends Service {
                         .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                         .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                         .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                        .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                        .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -595,6 +614,8 @@ public class FloatServer extends Service {
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(FloatServer.this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(FloatServer.this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(FloatServer.this)))
+                    .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                    .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override
                         public void goHide(WindowStruct windowStruct) {
@@ -639,6 +660,8 @@ public class FloatServer extends Service {
                     .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                     .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                     .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                    .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                    .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                     .windowAction(new WindowStruct.WindowAction() {
                         @Override
                         public void goHide(WindowStruct windowStruct) {

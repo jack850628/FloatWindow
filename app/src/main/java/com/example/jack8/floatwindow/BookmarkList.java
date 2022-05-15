@@ -105,6 +105,11 @@ public class BookmarkList {
                                             .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*155) / 2)
                                             .width((int)(context.getResources().getDisplayMetrics().density*280))
                                             .height((int)(context.getResources().getDisplayMetrics().density*155))
+                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                            .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                                            .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                                             .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                                 @Override
                                                 public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {

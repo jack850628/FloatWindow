@@ -156,12 +156,6 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
         showControlsBar.setLayoutParams(new ViewGroup.LayoutParams(windowStruct.getWindowButtonsWidth(),windowStruct.getWindowButtonsHeight()));
         showControlsBar.setPadding(0,0,0,0);
         showControlsBar.setBackground(context.getResources().getDrawable(R.drawable.out_to_full_screen));
-        new Handler(Looper.getMainLooper()).post(new Runnable() {//在下一幀畫面時動作
-            @Override
-            public void run() {
-                showControlsBar.setVisibility(View.GONE);
-            }
-        });
         showControlsBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -300,6 +294,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                         .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                         .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -368,6 +364,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                         .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                         .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -444,6 +442,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                         .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                         .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -645,6 +645,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                         .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                         .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(final Context context, View pageView, int position, Map<String, Object> args, final WindowStruct windowStruct) {
@@ -713,7 +715,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                     controlsBar.setVisibility(View.GONE);
                     showControlsBar.setVisibility(View.VISIBLE);
                     WebBrowser.super.querys.put(HIDDEN_CONTROLS_BAR, String.valueOf(hiddenControlsBar));
-                }
+                }else
+                    showControlsBar.setVisibility(View.GONE);
                 String url = webBrowserSetting.getSetting().homeLink;
                 if(args.containsKey(WEB_LINK)) {
                     url = (String) args.get(WEB_LINK);
@@ -807,6 +810,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                         .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                                                         .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                                                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                                                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                                                         .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
                                                         .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - (int)(context.getResources().getDisplayMetrics().density*280) / 2)
                                                         .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*130 + WindowParameter.getWindowButtonsHeight(context)) / 2)
@@ -907,11 +912,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 String title = web.getTitle();
                                 if(desktopMode)
                                     title += String.format("(%s)", context.getString(R.string.desktop_mode));
-                                View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
-                                ((TextView)messageView.findViewById(R.id.message)).setText(context.getString(R.string.shortcut_title));
+                                View messageView = LayoutInflater.from(context).inflate(R.layout.create_web_shortcut, null);
                                 ((TextView)messageView.findViewById(R.id.input_text)).setText(title);
-                                messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
-                                messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
                                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                                 new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
                                         .parentWindow(windowStruct)
@@ -926,6 +928,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                         .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
                                         .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
                                         .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                             @Override
                                             public void Construction(final Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -938,6 +942,13 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                     launcher = new Intent(context , WebBrowserLauncher.class);
                                                             launcher.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                                             launcher.putExtra(BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
+                                                            if(((CheckBox)pageView.findViewById(R.id.hidden_controls_bar_checkBox)).isChecked())
+                                                                launcher.putExtra(HIDDEN_CONTROLS_BAR, "true");
+                                                            if(((CheckBox)pageView.findViewById(R.id.remember_current_window_state_checkBox)).isChecked()){
+                                                                JTools.addWindowsSize(windowStruct, launcher);
+                                                                JTools.addWindowsPosition(windowStruct, launcher);
+                                                                JTools.addWindowsState(windowStruct, launcher);
+                                                            }
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, launcher);
                                                             Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.browser_icon);
                                                             shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
@@ -948,6 +959,13 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                             Intent shortcutIntent = new Intent(context, WebBrowserLauncher.class);
                                                             shortcutIntent.putExtra(Intent.EXTRA_TEXT, web.getUrl());
                                                             shortcutIntent.putExtra(BROWSER_MODE, desktopMode? WebBrowserSetting.BrowserMode.DESKTOP.getId(): WebBrowserSetting.BrowserMode.DEFAULT.getId());
+                                                            if(((CheckBox)pageView.findViewById(R.id.hidden_controls_bar_checkBox)).isChecked())
+                                                                shortcutIntent.putExtra(HIDDEN_CONTROLS_BAR, "true");
+                                                            if(((CheckBox)pageView.findViewById(R.id.remember_current_window_state_checkBox)).isChecked()){
+                                                                JTools.addWindowsSize(windowStruct, shortcutIntent);
+                                                                JTools.addWindowsPosition(windowStruct, shortcutIntent);
+                                                                JTools.addWindowsState(windowStruct, shortcutIntent);
+                                                            }
                                                             shortcutIntent.setAction(Intent.ACTION_CREATE_SHORTCUT);
                                                             ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
                                                             ShortcutInfo shortcut = new ShortcutInfo.Builder(context, UUID.randomUUID().toString())

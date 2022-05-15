@@ -104,10 +104,18 @@
         <item>桌面模式</item>
     </string-array>
     <string name="default_browser_mode">预设浏览模式</string>
-    <string name="what_is_new_title1">恢复上一次开启的窗口</string>
-    <string name="what_is_new_string1">从此版本开始，在有窗口未关闭的情况下关闭浮动视窗(例如，按通知中心的关闭按钮或重新启动手机)，</string>
-    <string name="what_is_new_string2">再次开启浮动视窗，原本开启的视窗将会回到原本的位置。</string>
+    <string name="what_is_new_title1">你喜欢FlotWindow吗？</string>
+    <string name="what_is_new_string1">这次的更新我们又抓到了一些臭虫以及两个新功能，还有如果愿意赞助我们的话，在主选单中我们增加了赞助连结，欢迎赞助我们。</string>
     <string name="do_close">确认关闭</string>
     <string name="view_open_windows">查看開啟中的窗口</string>
     <string name="notes">便条纸</string>
+    <string name="donate">喜欢吗？欢迎赞助我们</string>
+    <string name="remember_current_window_state">记住当前的窗口状态</string>
+    <string name="button_width_for_mini_state">最小化状态的按钮宽度</string>
+    <string name="button_height_for_mini_state">最小化状态的按钮高度</string>
+    <string name="window_mini_state_color">口状最小化状态的颜色</string>
+    <string name="what_is_new_title2">记住状态的捷径</string>
+    <string name="what_is_new_string2">从这个版本开始，在建立捷径到主画面时，可以选择是否要以现在视窗的位置、大小、模式，以及隐藏网址列的样式来开启。</string>
+    <string name="what_is_new_title3">自订最小化时的大小</string>
+    <string name="what_is_new_string3">从这个版本开始，您可以在设定里自订视窗最小化时的大小。</string>
 </resources>

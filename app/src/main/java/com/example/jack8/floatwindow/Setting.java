@@ -31,12 +31,12 @@ public class Setting extends AppCompatActivity {
     private AdView mAdView;
 
     WindowColor wColor;
-    ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground,titleBarAndButtons;
+    ViewGroup windowsBackground,titleBar,sizeBar,microMaxButtonBackground,closeButtonBackground,titleBarAndButtons, miniStateWindow;
     ViewGroup windowsBackgroundNotFoucs,titleBarNotFoucs,sizeBarNotFoucs,microMaxButtonBackgroundNotFoucs,closeButtonBackgroundNotFoucs,titleBarAndButtonsNotFoucs;
     Button menu,close,mini,max,hide;
     Button menuNotFoucs,closeNotFoucs,miniNotFoucs,maxNotFoucs,hideNotFoucs;
     TextView title, titleNotFoucs;
-    SeekBar secondSet, buttonsHeight, buttonsWidth, sizeBarHeight;
+    SeekBar secondSet, buttonsHeight, buttonsWidth, sizeBarHeight, buttonWidthForMiniState, buttonHeightForMiniState;
     CheckBox isAutoRun, isPermanent;
     int adoutWindow = -1;
 
@@ -56,8 +56,12 @@ public class Setting extends AppCompatActivity {
             getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
         setTitle(getString(R.string.float_window_setting));
 
+        //-------------------------初始化最小化狀態視窗----------------------------
+        miniStateWindow = (ViewGroup) findViewById(R.id.mini_state_window);
+        miniStateWindow.setBackgroundColor(wColor.getTitleBar());
+        miniStateWindow.setOnClickListener(setColor);
+        //---------------------------------------------------------------------
         View FoucsWindow = findViewById(R.id.focus_winodw), NotFoucsWindow = findViewById(R.id.unfocus_winodw);
-
         //-------------------------初始化一般視窗設定畫面----------------------------
         TextView prompt=new TextView(this);
         prompt.setText(getString(R.string.select_window_color));
@@ -220,6 +224,54 @@ public class Setting extends AppCompatActivity {
         });
         buttonsWidth.setProgress(WindowParameter.getWindowButtonsWidth(this) - 20);
 
+        buttonWidthForMiniState = (SeekBar)findViewById(R.id.button_width_for_mini_state_set);
+        buttonWidthForMiniState.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView buttonWidthForMiniStateText = (TextView)findViewById(R.id.button_width_for_mini_state);
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ViewGroup.LayoutParams layoutParams = miniStateWindow.getLayoutParams();
+                progress += 20;
+                buttonWidthForMiniStateText.setText(String.valueOf(progress));
+                layoutParams.width = (int)(getResources().getDisplayMetrics().density*progress);
+                miniStateWindow.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        buttonWidthForMiniState.setProgress(WindowParameter.getButtonWidthForMiniState(this) - 20);
+
+        buttonHeightForMiniState = (SeekBar)findViewById(R.id.button_height_for_mini_state_set);
+        buttonHeightForMiniState.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView buttonHeightForMiniStateText = (TextView)findViewById(R.id.button_height_for_mini_state);
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ViewGroup.LayoutParams layoutParams = miniStateWindow.getLayoutParams();
+                progress += 20;
+                buttonHeightForMiniStateText.setText(String.valueOf(progress));
+                layoutParams.height = (int)(getResources().getDisplayMetrics().density*progress);
+                miniStateWindow.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        buttonHeightForMiniState.setProgress(WindowParameter.getButtonHeightForMiniState(this) - 20);
+
         sizeBarHeight=(SeekBar) findViewById(R.id.size_bar_height_set);
         sizeBarHeight.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             TextView sizeBarHeightText=(TextView) findViewById(R.id.size_bar_height);
@@ -259,6 +311,7 @@ public class Setting extends AppCompatActivity {
                 case R.id.title_bar:
                 case R.id.size:
                 case R.id.menu:
+                case R.id.mini_state_window:
                     dialog = new ColorPickerDialog(Setting.this, wColor.getTitleBar());
                     dialog.setTitle(getString(R.string.select_color));
                     dialog.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
@@ -268,6 +321,7 @@ public class Setting extends AppCompatActivity {
                             wColor.setSizeBar(color);
                             titleBar.setBackgroundColor(color);
                             sizeBar.setBackgroundColor(color);
+                            miniStateWindow.setBackgroundColor(color);
                             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(wColor.getTitleBar()));//設定標題列顏色
                             if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP)//判斷作業系統是否大於等於Android 5.0
                                 getWindow().setStatusBarColor(wColor.getTitleBar());//設定通知列顏色
@@ -341,7 +395,9 @@ public class Setting extends AppCompatActivity {
                 WindowParameter.setWindowTransitionsDuration(Setting.this,secondSet.getProgress());
                 WindowParameter.setWindowButtonsHeight(Setting.this,buttonsHeight.getProgress() + 20);
                 WindowParameter.setWindowButtonsWidth(Setting.this,buttonsWidth.getProgress() + 20);
-                WindowParameter.setWindowwSizeBarHeight(Setting.this,sizeBarHeight.getProgress() + 5);
+                WindowParameter.setWindowSizeBarHeight(Setting.this,sizeBarHeight.getProgress() + 5);
+                WindowParameter.setButtonWidthForMiniState(Setting.this,buttonWidthForMiniState.getProgress() + 20);
+                WindowParameter.setButtonHeightForMiniState(Setting.this,buttonHeightForMiniState.getProgress() + 20);
                 WindowParameter.setAutoRun(Setting.this, isAutoRun.isChecked());
                 WindowParameter.setPermanent(Setting.this, isPermanent.isChecked());
                 wColor.save();
@@ -397,6 +453,8 @@ public class Setting extends AppCompatActivity {
                             .windowButtonsHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(this)))
                             .windowButtonsWidth((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(this)))
                             .windowSizeBarHeight((int) (getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(this)))
+                            .windowButtonHeightForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(this)))
+                            .windowButtonWidthForMiniState((int) (getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(this)))
                             .windowAction(new WindowStruct.WindowAction() {
                                 @Override
                                 public void goHide(WindowStruct windowStruct) {

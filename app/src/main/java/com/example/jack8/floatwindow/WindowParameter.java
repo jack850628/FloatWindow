@@ -10,6 +10,8 @@ public class WindowParameter {
     private static final String BUTTONS_HEIGHT = "ButtonsHeight";
     private static final String BUTTONS_WIDTH = "ButtonsWidth";
     private static final String SIZE_BAR_HEIGHT = "SizeBarHeight";
+    private static final String BUTTON_WIDTH_FOR_MINI_STATE = "ButtonWidthForMiniState";
+    private static final String BUTTON_HEIGHT_FOR_MINI_STATE = "ButtonHeightForMiniState";
     private static final String AUTO_RUN = "autoRun";
     private static final String PERMANENT = "permanent";
     private static final String WHAT_IS_NEW_VERSION = "whatIsNewVersion";
@@ -18,6 +20,8 @@ public class WindowParameter {
     private static int BUTTONS_HEIGHT_TEMP = -1;
     private static int BUTTONS_WIDTH_TEMP = -1;
     private static int SIZE_BAR_HEIGHT_TEMP = -1;
+    private static int BUTTON_WIDTH_FOR_MINI_STATE_TEMP = -1;
+    private static int BUTTON_HEIGHT_FOR_MINI_STATE_TEMP = -1;
     private static int AUTO_RUN_TEMP = -1;
     private static int PERMANENT_TEMP = -1;
     private static String WHAT_IS_NEW_VERSION_TEMP = null;
@@ -112,12 +116,52 @@ public class WindowParameter {
      * @param context app context
      * @param sizeBarHeight 視窗大小調整高度，單位dp
      */
-    public static void setWindowwSizeBarHeight(Context context,@IntRange(from = 0) int sizeBarHeight){
+    public static void setWindowSizeBarHeight(Context context,@IntRange(from = 0) int sizeBarHeight){
         SIZE_BAR_HEIGHT_TEMP = sizeBarHeight;
         context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putInt(SIZE_BAR_HEIGHT,sizeBarHeight).apply();
     }
 
+    /**
+     * 取得最小化狀態視窗按鈕寬度
+     * @param context app context
+     * @return 最小化狀態視窗按鈕寬度，單位dp
+     */
+    public static int getButtonWidthForMiniState(Context context){
+        if(BUTTON_WIDTH_FOR_MINI_STATE_TEMP == -1)
+            BUTTON_WIDTH_FOR_MINI_STATE_TEMP = context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(BUTTON_WIDTH_FOR_MINI_STATE,30);
+        return BUTTON_WIDTH_FOR_MINI_STATE_TEMP;
+    }
 
+    /**
+     *
+     * @param context app context
+     * @param buttonWidthForMiniState 最小化狀態視窗按鈕寬度，單位dp
+     */
+    public static void setButtonWidthForMiniState(Context context,@IntRange(from = 0) int buttonWidthForMiniState){
+        BUTTON_WIDTH_FOR_MINI_STATE_TEMP = buttonWidthForMiniState;
+        context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putInt(BUTTON_WIDTH_FOR_MINI_STATE,buttonWidthForMiniState).apply();
+    }
+
+    /**
+     * 取得最小化狀態視窗按鈕高度
+     * @param context app context
+     * @return 最小化狀態視窗按鈕高度，單位dp
+     */
+    public static int getButtonHeightForMiniState(Context context){
+        if(BUTTON_HEIGHT_FOR_MINI_STATE_TEMP == -1)
+            BUTTON_HEIGHT_FOR_MINI_STATE_TEMP = context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).getInt(BUTTON_HEIGHT_FOR_MINI_STATE,30);
+        return BUTTON_HEIGHT_FOR_MINI_STATE_TEMP;
+    }
+
+    /**
+     *
+     * @param context app context
+     * @param buttonHeightForMiniState 最小化狀態視窗按鈕高度，單位dp
+     */
+    public static void setButtonHeightForMiniState(Context context,@IntRange(from = 0) int buttonHeightForMiniState){
+        BUTTON_HEIGHT_FOR_MINI_STATE_TEMP = buttonHeightForMiniState;
+        context.getSharedPreferences(WindowConfig.WINDOW_CONF,0).edit().putInt(BUTTON_HEIGHT_FOR_MINI_STATE,buttonHeightForMiniState).apply();
+    }
 
     /**
      * 設定是否開機後自動執行

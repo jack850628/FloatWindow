@@ -186,5 +186,19 @@ public final class JTools {
         }
     }
 
+    public static void addWindowsState(WindowStruct windowStruct, Intent intent){
+        intent.putExtra(WindowParameter.STATE, windowStruct.nowState.getType());
+    }
+
+    public static void addWindowsSize(WindowStruct windowStruct, Intent intent){
+        intent.putExtra(WindowParameter.WIDTH, windowStruct.getWidth());
+        intent.putExtra(WindowParameter.HEIGHT, windowStruct.getHeight());
+    }
+
+    public static void addWindowsPosition(WindowStruct windowStruct, Intent intent){
+        intent.putExtra(WindowParameter.TOP, windowStruct.getGeneralPositionY());
+        intent.putExtra(WindowParameter.LEFT, windowStruct.getGeneralPositionX());
+    }
+
     private JTools(){}
 }

@@ -75,6 +75,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     private int buttonsHeight;
     private int buttonsWidth;
     private int sizeBarHeight;
+    private int buttonWidthForMiniState;
+    private int buttonHeightForMiniState;
 
     private MenuList menuList;
 
@@ -162,6 +164,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         private int buttonsHeight;
         private int buttonsWidth;
         private int sizeBarHeight;
+        private int buttonWidthForMiniState;
+        private int buttonHeightForMiniState;
         private State openState = State.GENERAL;
         private WindowAction windowAction = new WindowAction() {
             @Override
@@ -200,7 +204,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         public Builder(Context context, final android.view.WindowManager windowManager){
             this.context = context;
             this.windowManager = windowManager;
-            this.buttonsHeight = this.buttonsWidth = (int)(context.getResources().getDisplayMetrics().density*30);
+            this.buttonsHeight = this.buttonsWidth = this.buttonHeightForMiniState = this.buttonWidthForMiniState = (int)(context.getResources().getDisplayMetrics().density*30);
             this.sizeBarHeight = (int)(context.getResources().getDisplayMetrics().density*10);
             this.windowPages = new View[]{new LinearLayout(context)};
             this.screenSize = new ScreenSize(context){
@@ -275,6 +279,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             this.sizeBarHeight = sizeBarHeight;
             return this;
         }
+        public Builder windowButtonWidthForMiniState(int buttonWidthForMiniState){
+            this.buttonWidthForMiniState = buttonWidthForMiniState;
+            return this;
+        }
+        public Builder windowButtonHeightForMiniState(int buttonHeightForMiniState){
+            this.buttonHeightForMiniState = buttonHeightForMiniState;
+            return this;
+        }
         public Builder displayObject(int displayObject){
             this.displayObject = displayObject;
             return this;
@@ -319,7 +331,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
             return this;
         }
         public WindowStruct show(){
-            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, buttonsHeight, buttonsWidth, sizeBarHeight, displayObject, transitionsDuration, screenSize, windowAction, constructionAndDeconstructionWindow, parentWindowNumber, openState);
+            return new WindowStruct(context, windowManager, windowPages, windowPageTitles, windowInitArgs, top, left, height, width, buttonsHeight, buttonsWidth, sizeBarHeight, buttonHeightForMiniState, buttonWidthForMiniState, displayObject, transitionsDuration, screenSize, windowAction, constructionAndDeconstructionWindow, parentWindowNumber, openState);
         }
     }
 
@@ -334,15 +346,17 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      * @param Left 浮動視窗一開始顯示的位置的Left
      * @param Height 浮動視窗一開始高度
      * @param Width 浮動視窗一開始寬度
-     * @param  buttonsHeight 視窗按鈕高度
-     * @param  buttonsWidth 視窗按鈕寬度
-     * @param  sizeBarHeight 視窗大小調整列高度
-     * @param  display_object 表示要顯示那些windows控制物件
-     * @param  transitionsDuration 過場動畫持續時間
+     * @param buttonsHeight 視窗按鈕高度
+     * @param buttonsWidth 視窗按鈕寬度
+     * @param sizeBarHeight 視窗大小調整列高度
+     * @param buttonHeightForMiniState 最小化狀態視窗按鈕高度
+     * @param buttonWidthForMiniState 最小化狀態視窗按鈕寬度
+     * @param display_object 表示要顯示那些windows控制物件
+     * @param transitionsDuration 過場動畫持續時間
      * @param windowAction 按下隱藏或關閉視窗按鈕時要處理的事件
      * @param CDAW 浮動視窗初始化與結束時的事件
      */
-    public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Map<String, Object> windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber, State openState){
+    public WindowStruct(Context context, android.view.WindowManager wm, View[] windowPages, String[] windowPageTitles , Map<String, Object> windowInitArgs , int Top, int Left, int Height, int Width, int buttonsHeight, int buttonsWidth, int sizeBarHeight, int buttonHeightForMiniState, int buttonWidthForMiniState, final int display_object, int transitionsDuration, ScreenSize screenSize, WindowAction windowAction, constructionAndDeconstructionWindow CDAW, int parentWindowNumber, State openState){
         if(WindowManager.windowList.containsKey(WindowManager.focusedWindowNumber))
             WindowManager.getWindowStruct(WindowManager.focusedWindowNumber).unFocusWindow();
         WindowManager.focusedWindowNumber = this.Number = WindowManager.getMiniFreeNumber();
@@ -360,6 +374,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         this.buttonsWidth = buttonsWidth;
         this.buttonsHeight = buttonsHeight;
         this.sizeBarHeight = sizeBarHeight;
+        this.buttonHeightForMiniState = buttonHeightForMiniState;
+        this.buttonWidthForMiniState = buttonWidthForMiniState;
         topMini = new Scroller(context);
         heightMini = new Scroller(context);
         Top = Math.max(Top, 0);
@@ -429,7 +445,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         microMaxButtonBackground = winform.findViewById(R.id.micro_max_button_background);
 
         //---------------------------設定視窗按鈕大小-------------------------------
-        setWindowButtonsSize();
+        setWindowDisplayObjectSize();
         //--------------------------------------------------------------------------
 
         //-------------------------建立視窗內容畫面----------------------------------------------------
@@ -838,6 +854,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if (nowState != State.CLOSE && nowState != State.MINI) {
             previousState = nowState;
             nowState = State.MINI;
+            setWindowButtonsSize(this.buttonHeightForMiniState, this.buttonsWidth);
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -847,14 +864,14 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(0, 0, (screenSize.getWidth() - buttonsWidth), 0, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(),
                         dy = screenSize.getHeight(),
-                        buttonsWidth - screenSize.getWidth(), -(dy - buttonsHeight), transitionsDuration);
+                        buttonWidthForMiniState - screenSize.getWidth(), -(dy - buttonHeightForMiniState), transitionsDuration);
             } else if (previousState == State.GENERAL) {
                 topMini.startScroll(left, top, (screenSize.getWidth() - buttonsWidth) - left, -top, transitionsDuration);
-                heightMini.startScroll(width, height, buttonsWidth - width, -(height - buttonsHeight), transitionsDuration);
+                heightMini.startScroll(width, height, buttonWidthForMiniState - width, -(height - buttonHeightForMiniState), transitionsDuration);
             } else if (previousState == State.HIDE) {
                 topMini.startScroll(screenSize.getWidth() / 2, screenSize.getHeight() / 2,
                         screenSize.getWidth() / 2 - buttonsWidth, -(screenSize.getHeight() / 2), transitionsDuration);
-                heightMini.startScroll(0, 0, buttonsWidth, buttonsHeight, transitionsDuration);
+                heightMini.startScroll(0, 0, buttonWidthForMiniState, buttonHeightForMiniState, transitionsDuration);
             }else if(previousState == State.FULLSCREEN){
                 if(fullscreenWindowActivity != null) {//如果最大化動畫還在播放中還沒進到Activity時，使用者就調用其他狀態時，fullscreenWindowActivity就會是null
                     fullscreenWindowActivity.exitFullscreen();
@@ -864,7 +881,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                 topMini.startScroll(0, 0, (screenSize.getWidth() - buttonsWidth), 0, transitionsDuration);
                 heightMini.startScroll(screenSize.getWidth(),
                         dy = screenSize.getHeight(),
-                        buttonsWidth - screenSize.getWidth(), -(dy - buttonsHeight), transitionsDuration);
+                        buttonWidthForMiniState - screenSize.getWidth(), -(dy - buttonHeightForMiniState), transitionsDuration);
             }
             wmlp.flags = NO_FOCUS_FLAGE_FOR_MINI_STATE;
             wmlp.alpha = 1.0f;
@@ -881,6 +898,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState != State.CLOSE && nowState != State.MAX) {
             previousState = nowState;
             nowState = State.MAX;
+            setWindowButtonsSize(this.buttonsHeight, this.buttonsWidth);
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -927,6 +945,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState != State.CLOSE && nowState != State.GENERAL){
             previousState = nowState;
             nowState = State.GENERAL;
+            setWindowButtonsSize(this.buttonsHeight, this.buttonsWidth);
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -978,6 +997,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState != State.CLOSE && nowState != State.HIDE) {
             previousState = nowState;
             nowState = State.HIDE;
+            setWindowButtonsSize(this.buttonsHeight, this.buttonsWidth);
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -1017,6 +1037,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState != State.CLOSE && nowState != State.FULLSCREEN) {
             previousState = nowState;
             nowState = State.FULLSCREEN;
+            setWindowButtonsSize(this.buttonsHeight, this.buttonsWidth);
             if(!topMini.isFinished())
                 topMini.abortAnimation();
             if(!heightMini.isFinished())
@@ -1059,6 +1080,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         if(nowState != State.CLOSE) {
             previousState = nowState;
             nowState = State.CLOSE;
+            titleBarAndButtons.getLayoutParams().height = buttonsHeight;
             if(parentWindowNumber != -1)
                 WindowManager.getWindowStruct(this.parentWindowNumber).subWindowNumbers.remove(Number);
             for(int key : this.subWindowNumbers.toArray(new Integer[this.subWindowNumbers.size()]))
@@ -1201,7 +1223,12 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
     /**
      * 設定視窗按鈕大小
      */
-    private void setWindowButtonsSize(){
+    private void setWindowDisplayObjectSize(){
+        setWindowButtonsSize(buttonsHeight, buttonsWidth);
+        setWindowSizeBarHeightSize(sizeBarHeight);
+
+    }
+    private void setWindowButtonsSize(int buttonsHeight, int buttonsWidth){
         titleBarAndButtons.getLayoutParams().height = buttonsHeight;
         menu.getLayoutParams().height = buttonsHeight;
         menu.getLayoutParams().width = buttonsWidth;
@@ -1216,6 +1243,8 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
         fullscreen.getLayoutParams().width = buttonsWidth;
         close_button.getLayoutParams().height = buttonsHeight;
         close_button.getLayoutParams().width = buttonsWidth;
+    }
+    private void setWindowSizeBarHeightSize(int sizeBarHeight){
         sizeBar.getLayoutParams().height = sizeBarHeight;
     }
 
@@ -1519,7 +1548,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void setWindowButtonsHeight(int buttonsHeight){
         this.buttonsHeight = buttonsHeight;
-        setWindowButtonsSize();
+        if(nowState != State.MINI){
+            setWindowButtonsSize(this.buttonsHeight, this.buttonsWidth);
+        }
     }
 
     /**
@@ -1536,7 +1567,9 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void setWindowButtonsWidth(int buttonsWidth){
         this.buttonsWidth = buttonsWidth;
-        setWindowButtonsSize();
+        if(nowState != State.MINI){
+            setWindowButtonsSize(this.buttonsHeight, this.buttonsWidth);
+        }
     }
 
     /**
@@ -1553,7 +1586,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public void setWindowSizeBarHeight(int sizeBarHeight){
         this.sizeBarHeight = buttonsHeight;
-        setWindowButtonsSize();
+        setWindowSizeBarHeightSize(this.sizeBarHeight);
     }
 
     /**
@@ -1562,6 +1595,44 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
      */
     public int getWindowSizeBarHeight(){
         return this.sizeBarHeight;
+    }
+
+    /**
+     * 設定最小化狀態視窗按鈕高度
+     */
+    public void setButtonHeightForMiniState(int buttonHeightForMiniState){
+        this.buttonHeightForMiniState = buttonHeightForMiniState;
+        if(nowState == State.HIDE){
+            winform.getLayoutParams().height = this.buttonHeightForMiniState;
+            wm.updateViewLayout(winform, wmlp);
+        }
+    }
+
+    /**
+     *  取得最小化狀態視窗按鈕高度
+     * @return 最小化狀態視窗按鈕高度
+     */
+    public int getButtonHeightForMiniState(){
+        return this.buttonHeightForMiniState;
+    }
+
+    /**
+     * 設定最小化狀態視窗按鈕高度
+     */
+    public void setButtonWidthForMiniState(int buttonWidthForMiniState){
+        this.buttonWidthForMiniState = buttonWidthForMiniState;
+        if(nowState == State.HIDE){
+            winform.getLayoutParams().width = this.buttonWidthForMiniState;
+            wm.updateViewLayout(winform, wmlp);
+        }
+    }
+
+    /**
+     *  取得最小化狀態視窗按鈕高度
+     * @return 最小化狀態視窗按鈕高度
+     */
+    public int getButtonWidthForMiniState(){
+        return this.buttonWidthForMiniState;
     }
 
     /**
