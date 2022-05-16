@@ -106,7 +106,7 @@
     <string name="button_width_for_mini_state">button width for mini state</string>
     <string name="button_height_for_mini_state">button height for mini state</string>
     <string name="window_mini_state_color">window mini state color:</string>
-    <string name="what_is_new_title1">Do you like FlotWindow?</string>
+    <string name="what_is_new_title1">Do you like FloatWindow?</string>
     <string name="what_is_new_string1">In this update we have caught some bugs and three new features, and if you want to sponsor us, we have added a sponsor link in the main menu, welcome to sponsor us.</string>
     <string name="what_is_new_title2">Shortcuts for remembering states</string>
     <string name="what_is_new_string2">Starting from this version, when creating a shortcut to the home screen, you can choose whether to open it with the current window position, size, mode, and style of the hidden address bar.</string>

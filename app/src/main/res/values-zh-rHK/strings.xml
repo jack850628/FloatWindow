@@ -107,7 +107,7 @@
     <string name="button_width_for_mini_state">最小化狀態的按鈕寬度</string>
     <string name="button_height_for_mini_state">最小化狀態的按鈕高度</string>
     <string name="window_mini_state_color">視窗最小化狀態的顏色</string>
-    <string name="what_is_new_title1">你喜歡FlotWindow嗎？</string>
+    <string name="what_is_new_title1">你喜歡FloatWindow嗎？</string>
     <string name="what_is_new_string1">這次的更新我們又抓到了一些臭蟲以及三個新功能，還有如果願意贊助我們的話，在主選單中我們增加了贊助連結，歡迎贊助我們。</string>
     <string name="what_is_new_title2">記住狀態的捷徑</string>
     <string name="what_is_new_string2">從這個版本開始，在建立捷徑到主畫面時，可以選擇是否要以現在視窗的位置、大小、模式，以及隱藏網址列的樣式來開啟。</string>
