@@ -1,10 +1,11 @@
 package com.example.jack8.floatwindow;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import androidx.room.Room;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.database.sqlite.SQLiteConstraintException;
@@ -12,23 +13,21 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
+
 import androidx.annotation.RequiresApi;
 
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.webkit.DownloadListener;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
@@ -58,6 +57,7 @@ import com.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +94,12 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
     private Map<String, Object> args;
 
     private boolean canSendHistory = false;//因為onReceivedTitle會比doUpdateVisitedHistory慢調用，所以在doUpdateVisitedHistory送出紀錄的話標題會是上一個網頁的標題，但單純在onReceivedTitle送標題會導致只要網頁使用javascript改標題，就會送出一次歷史紀錄。
+
+    //---------------權限請求----------------
+    private RequestPermission.Callback requestPermissionSuccess, requestPermissionRefuse;
+    public static final String WINDOW_NUMBER = "windowNumber";
+    public static final String PERMISSION_NAME = "permissionName";
+    //--------------------------------------
 
     public WebBrowser(){
         super(WebBrowserLauncher.class);
@@ -542,6 +548,76 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 super.onHideCustomView();
             }
             //----------------------------------------
+
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                int count = 0;
+                List<String> permissions = new ArrayList<>();
+                for(String permission: request.getResources()){
+                    if(WebBrowserRequestPermission.WEBKIT_PERMISSION_MAP.containsKey(permission)) {
+                        permissions.add(permission = WebBrowserRequestPermission.WEBKIT_PERMISSION_MAP.get(permission));
+                        if (context.checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+                            count++;
+                        }
+                    }
+                }
+                if(count == permissions.size()){
+                    request.grant(request.getResources());
+                    return;
+                }
+                requestPermissionSuccess = new RequestPermission.Callback() {
+                    @Override
+                    public void callback() {
+                        request.grant(request.getResources());
+                    }
+                };
+                requestPermissionRefuse = new RequestPermission.Callback() {
+                    @Override
+                    public void callback() {
+                        request.deny();
+                    }
+                };
+                String[] requestPermissionList = new String[permissions.size()];
+                permissions.toArray(requestPermissionList);
+                Intent intent = new Intent(context, WebBrowserRequestPermission.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(PERMISSION_NAME, requestPermissionList);
+                intent.putExtra(WINDOW_NUMBER, windowStruct.getNumber());
+                context.startActivity(intent);
+            }
+
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if(
+                        context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        &&
+                        context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                ){
+                    callback.invoke(origin, true, false);
+                    return;
+                }
+                requestPermissionSuccess = new RequestPermission.Callback() {
+                    @Override
+                    public void callback() {
+                        callback.invoke(origin, true, false);
+                    }
+                };
+                requestPermissionRefuse = new RequestPermission.Callback() {
+                    @Override
+                    public void callback() {
+                        callback.invoke(origin, false, false);
+                    }
+                };
+                Intent intent = new Intent(context, WebBrowserRequestPermission.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(PERMISSION_NAME, new String[]{
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                });
+                intent.putExtra(WINDOW_NUMBER, windowStruct.getNumber());
+                context.startActivity(intent);
+            }
         });
         web.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -689,6 +765,11 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 web.getSettings().setUseWideViewPort(true);
                 web.getSettings().setDomStorageEnabled(true);
                 web.getSettings().setDatabaseEnabled(true);
+                web.getSettings().setGeolocationDatabasePath(context.getFilesDir().getPath());
+                web.getSettings().setAllowContentAccess(true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    web.getSettings().setMediaPlaybackRequiresUserGesture(false);
+                }
 
                 enableJS = args.containsKey(ENABLE_JS) && (int)args.get(ENABLE_JS) == 1
                         ||
@@ -1112,6 +1193,13 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 historyList.onPause();
                 break;
         }
+    }
+
+    public RequestPermission.Callback getRequestPermissionSuccessCallback(){
+        return requestPermissionSuccess;
+    }
+    public RequestPermission.Callback getRequestPermissionRefuseCallback(){
+        return requestPermissionRefuse;
     }
 
     static class MenuAdapter extends BaseAdapter{

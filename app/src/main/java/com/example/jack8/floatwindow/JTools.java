@@ -4,18 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Switch;
 
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -212,6 +213,42 @@ public final class JTools {
 
     public static void addScreenOrientation(Context context, Intent intent){
         intent.putExtra(WindowParameter.ORIENTATION, context.getResources().getConfiguration().orientation);
+    }
+
+    public static Map<Integer, WindowStruct.State> toMiniStateForAllWindow(){
+        Map<Integer, WindowStruct.State> toMiniStateWindows = new HashMap<>();
+        for(Map.Entry<Integer, WindowStruct> entry : com.jack8.floatwindow.Window.WindowManager.entrySet()){
+            if(entry.getValue().nowState != WindowStruct.State.HIDE && entry.getValue().nowState != WindowStruct.State.FULLSCREEN) {
+                toMiniStateWindows.put(entry.getValue().getNumber(), entry.getValue().nowState);
+                entry.getValue().mini();
+            }
+        }
+        return toMiniStateWindows;
+    }
+
+    public static void setWindowsState(Map<Integer, WindowStruct.State> windows){
+        for(Map.Entry<Integer, WindowStruct.State> window : windows.entrySet()){
+            WindowStruct windowStruct = com.jack8.floatwindow.Window.WindowManager.getWindowStruct(window.getKey());
+            if(windowStruct == null)
+                continue;
+            switch(window.getValue()){
+                case HIDE:
+                    windowStruct.hide();
+                    break;
+                case GENERAL:
+                    windowStruct.general();
+                    break;
+                case MAX:
+                    windowStruct.max();
+                    break;
+                case FULLSCREEN:
+                    windowStruct.fullscreen();
+                    break;
+                case CLOSE:
+                    windowStruct.close();
+                    break;
+            }
+        }
     }
 
     private JTools(){}

@@ -1,9 +1,11 @@
 package com.example.jack8.floatwindow;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.webkit.PermissionRequest;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -12,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -63,6 +66,10 @@ public class RequestPermission {
     public void resultPermission(){
         activityResultLauncher.launch(new String[]{
 //                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.MODIFY_AUDIO_SETTINGS
         });
+    }
+    public void resultPermission(String[] permissions){
+        activityResultLauncher.launch(permissions);
     }
 }
