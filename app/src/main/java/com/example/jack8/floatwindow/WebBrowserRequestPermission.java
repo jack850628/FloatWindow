@@ -45,7 +45,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
             finish();
         }
 
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             miniWindow = JTools.toMiniStateForAllWindow();
         new RequestPermission(this, new RequestPermission.Callback() {
             @Override
@@ -53,7 +53,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
                 ((WebBrowser)windowStruct.getConstructionAndDeconstructionWindow())
                         .getRequestPermissionSuccessCallback()
                         .callback();
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                     JTools.setWindowsState(miniWindow);
                 windowStruct = null;
                 finish();
@@ -64,7 +64,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
                ((WebBrowser)windowStruct.getConstructionAndDeconstructionWindow())
                        .getRequestPermissionRefuseCallback()
                        .callback();
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                     JTools.setWindowsState(miniWindow);
                 windowStruct = null;
                 finish();
