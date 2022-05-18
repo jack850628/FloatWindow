@@ -276,8 +276,10 @@ public class NotePage extends AutoRecordConstructionAndDeconstructionWindow {
                                 sendIntent.setType("text/plain");
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_APP));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if (sendIntent.resolveActivity(context.getPackageManager()) != null)
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
                                     context.startActivity(chooser);
+                                    JTools.toMiniStateForAllWindow();
+                                }
                                 break;
                             }
                             case 2:

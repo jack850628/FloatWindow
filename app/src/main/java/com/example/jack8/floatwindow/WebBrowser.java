@@ -987,8 +987,10 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 sendIntent.setType("text/plain");
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_APP));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if (sendIntent.resolveActivity(context.getPackageManager()) != null)
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
                                     context.startActivity(chooser);
+                                    JTools.toMiniStateForAllWindow();
+                                }
                                 break;
                             }
                             case 4: {
@@ -1085,6 +1087,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                                                     .setIntent(shortcutIntent)
                                                                     .build();
                                                             shortcutManager.requestPinShortcut(shortcut, null);
+                                                            JTools.toMiniStateForAllWindow();
                                                         }
                                                         Toast.makeText(context, context.getString(R.string.added_to_the_home_screen),Toast.LENGTH_SHORT).show();
                                                         ws.close();
@@ -1114,8 +1117,10 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 Intent sendIntent = new Intent(Intent.ACTION_VIEW,Uri.parse(web.getUrl()));
                                 Intent chooser = Intent.createChooser(sendIntent, context.getString(R.string.select_browser));
                                 chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                if (sendIntent.resolveActivity(context.getPackageManager()) != null)
+                                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
                                     context.startActivity(chooser);
+                                    JTools.toMiniStateForAllWindow();
+                                }
                                 break;
                             }
                             case 8:

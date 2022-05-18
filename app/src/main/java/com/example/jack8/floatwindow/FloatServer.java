@@ -300,6 +300,7 @@ public class FloatServer extends Service {
                                                     new Intent(Intent.ACTION_VIEW, Uri.parse("https://fwi.jack.origthatone.com/donate")),
                                                     context.getString(R.string.select_browser)
                                             );
+                                            JTools.toMiniStateForAllWindow();
                                             break;
                                         }
                                     }
