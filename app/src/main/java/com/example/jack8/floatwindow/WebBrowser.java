@@ -57,6 +57,8 @@ import com.jack8.floatwindow.Window.WindowStruct;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -96,9 +98,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
     private boolean canSendHistory = false;//因為onReceivedTitle會比doUpdateVisitedHistory慢調用，所以在doUpdateVisitedHistory送出紀錄的話標題會是上一個網頁的標題，但單純在onReceivedTitle送標題會導致只要網頁使用javascript改標題，就會送出一次歷史紀錄。
 
     //---------------權限請求----------------
-    private RequestPermission.Callback requestPermissionSuccess, requestPermissionRefuse;
-    public static final String WINDOW_NUMBER = "windowNumber";
-    public static final String PERMISSION_NAME = "permissionName";
+    private WebBrowserRequestPermission.WebRequestPermission webRequestPermission;
     //--------------------------------------
 
     public WebBrowser(){
@@ -290,21 +290,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
                 ((TextView)messageView.findViewById(R.id.message)).setText(message);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                        .parentWindow(windowStruct)
+                JTools.createAlertWindow(context, messageView, windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
-                        .windowPages(new View[]{messageView})
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                        .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - messageView.getMeasuredWidth() / 2)
-                        .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))) / 2)
-                        .width(messageView.getMeasuredWidth())
-                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))))
-                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                        .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                        .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                        .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
-                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                             @Override
                             public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -315,14 +302,9 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                     }
                                 });
                             }
-                        })
-                        .windowAction(new WindowStruct.WindowAction() {
-                            @Override
-                            public void goHide(WindowStruct windowStruct) {
 
-                            }
                             @Override
-                            public void goClose(WindowStruct windowStruct) {
+                            public void onDestroy(Context context, WindowStruct windowStruct){
                                 result.cancel();
                             }
                         })
@@ -360,27 +342,16 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 ((TextView)messageView.findViewById(R.id.message)).setText(message);
                 messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                        .parentWindow(windowStruct)
+                JTools.createAlertWindow(context, messageView, windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
-                        .windowPages(new View[]{messageView})
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                        .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - messageView.getMeasuredWidth() / 2)
-                        .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))) / 2)
-                        .width(messageView.getMeasuredWidth())
-                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))))
-                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                        .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                        .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                        .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
-                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                            boolean isConfirm = false;
                             @Override
                             public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        isConfirm = true;
                                         result.confirm();
                                         ws.close();
                                     }
@@ -392,15 +363,10 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                     }
                                 });
                             }
-                        })
-                        .windowAction(new WindowStruct.WindowAction() {
-                            @Override
-                            public void goHide(WindowStruct windowStruct) {
 
-                            }
                             @Override
-                            public void goClose(WindowStruct windowStruct) {
-                                result.cancel();
+                            public void onDestroy(Context context, WindowStruct windowStruct){
+                                if(!isConfirm) result.cancel();
                             }
                         })
                         .show();
@@ -438,27 +404,16 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                 messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
                 messageView.findViewById(R.id.input_text).setVisibility(View.VISIBLE);
                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                        .parentWindow(windowStruct)
+                JTools.createAlertWindow(context, messageView, windowStruct)
                         .windowPageTitles(new String[]{context.getString(R.string.web_say)})
-                        .windowPages(new View[]{messageView})
-                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                        .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - messageView.getMeasuredWidth() / 2)
-                        .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))) / 2)
-                        .width(messageView.getMeasuredWidth())
-                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))))
-                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                        .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                        .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                        .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
-                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                            boolean isConfirm = false;
                             @Override
                             public void Construction(Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
                                 pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        isConfirm = true;
                                         result.confirm(((EditText)pageView.findViewById(R.id.input_text)).getText().toString());
                                         ws.close();
                                     }
@@ -470,15 +425,10 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                     }
                                 });
                             }
-                        })
-                        .windowAction(new WindowStruct.WindowAction() {
-                            @Override
-                            public void goHide(WindowStruct windowStruct) {
 
-                            }
                             @Override
-                            public void goClose(WindowStruct windowStruct) {
-                                result.cancel();
+                            public void onDestroy(Context context, WindowStruct windowStruct){
+                                if(!isConfirm) result.cancel();
                             }
                         })
                         .show();
@@ -552,71 +502,17 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onPermissionRequest(PermissionRequest request) {
-                int count = 0;
-                List<String> permissions = new ArrayList<>();
-                for(String permission: request.getResources()){
-                    if(WebBrowserRequestPermission.WEBKIT_PERMISSION_MAP.containsKey(permission)) {
-                        permissions.add(permission = WebBrowserRequestPermission.WEBKIT_PERMISSION_MAP.get(permission));
-                        if (context.checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
-                            count++;
-                        }
-                    }
-                }
-                if(count == permissions.size()){
-                    request.grant(request.getResources());
-                    return;
-                }
-                requestPermissionSuccess = new RequestPermission.Callback() {
-                    @Override
-                    public void callback() {
-                        request.grant(request.getResources());
-                    }
-                };
-                requestPermissionRefuse = new RequestPermission.Callback() {
-                    @Override
-                    public void callback() {
-                        request.deny();
-                    }
-                };
-                String[] requestPermissionList = new String[permissions.size()];
-                permissions.toArray(requestPermissionList);
-                Intent intent = new Intent(context, WebBrowserRequestPermission.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(PERMISSION_NAME, requestPermissionList);
-                intent.putExtra(WINDOW_NUMBER, windowStruct.getNumber());
-                context.startActivity(intent);
+                webRequestPermission = new WebBrowserRequestPermission.WebRequestPermission();
+                webRequestPermission.requestToUser(context, request, web.getTitle(), windowStruct);
             }
 
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                if(
-                        context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        &&
-                        context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                ){
-                    callback.invoke(origin, true, false);
-                    return;
+                try {
+                    webRequestPermission = new WebBrowserRequestPermission.WebRequestPermission();
+                    webRequestPermission.requestGeolocationPermissions(context, origin, new URL(origin).getHost(), windowStruct, callback);
+                } catch (MalformedURLException e) {
                 }
-                requestPermissionSuccess = new RequestPermission.Callback() {
-                    @Override
-                    public void callback() {
-                        callback.invoke(origin, true, false);
-                    }
-                };
-                requestPermissionRefuse = new RequestPermission.Callback() {
-                    @Override
-                    public void callback() {
-                        callback.invoke(origin, false, false);
-                    }
-                };
-                Intent intent = new Intent(context, WebBrowserRequestPermission.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(PERMISSION_NAME, new String[]{
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                });
-                intent.putExtra(WINDOW_NUMBER, windowStruct.getNumber());
-                context.startActivity(intent);
             }
         });
         web.setOnLongClickListener(new View.OnLongClickListener() {
@@ -866,6 +762,7 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                         new MenuAdapter.Item(context.getString(R.string.enable_javascript), enableJS? 1 : 0),
                         new MenuAdapter.Item(context.getString(R.string.add_to_home_screen)),
                         new MenuAdapter.Item(context.getString(R.string.open_to_other_browser)),
+                        new MenuAdapter.Item(context.getString(R.string.website_permission_setting)),
                         new MenuAdapter.Item(context.getString(R.string.web_browser_setting)),
                 };
                 menu_list.setAdapter(new MenuAdapter(context, items));
@@ -1020,21 +917,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 View messageView = LayoutInflater.from(context).inflate(R.layout.create_web_shortcut, null);
                                 ((TextView)messageView.findViewById(R.id.input_text)).setText(title);
                                 messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                                new WindowStruct.Builder(context,  (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                                        .parentWindow(windowStruct)
+                                JTools.createAlertWindow(context, messageView, windowStruct)
                                         .windowPageTitles(new String[]{context.getString(R.string.add_to_home_screen)})
-                                        .windowPages(new View[]{messageView})
-                                        .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
-                                        .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - messageView.getMeasuredWidth() / 2)
-                                        .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))) / 2)
-                                        .width(messageView.getMeasuredWidth())
-                                        .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context))))
-                                        .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
-                                        .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
-                                        .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
-                                        .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
-                                        .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
-                                        .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
                                         .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
                                             @Override
                                             public void Construction(final Context context, final View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
@@ -1123,7 +1007,31 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
                                 }
                                 break;
                             }
-                            case 8:
+                            case 8:{
+                                try {
+                                    new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                                            .parentWindow(windowStruct)
+                                            .windowPageTitles(new String[]{context.getString(R.string.website_permission_setting)})
+                                            .windowPages(new int[]{R.layout.web_browser_permission})
+                                            .transitionsDuration(WindowParameter.getWindowTransitionsDuration(context))
+                                            .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsHeight(context)))
+                                            .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowButtonsWidth(context)))
+                                            .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getWindowSizeBarHeight(context)))
+                                            .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonHeightForMiniState(context)))
+                                            .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * WindowParameter.getButtonWidthForMiniState(context)))
+                                            .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.SIZE_BAR | WindowStruct.CLOSE_BUTTON)
+                                            .left(windowStruct.getRealWidth() / 2 + windowStruct.getRealPositionX() - (int)(context.getResources().getDisplayMetrics().density*250) / 2)
+                                            .top(windowStruct.getRealHeight() / 2 + windowStruct.getRealPositionY() - (int)(context.getResources().getDisplayMetrics().density*330 + WindowParameter.getWindowButtonsHeight(context)) / 2)
+                                            .width((int)(context.getResources().getDisplayMetrics().density*250))
+                                            .height((int)(context.getResources().getDisplayMetrics().density*330 + WindowParameter.getWindowButtonsHeight(context)))
+                                            .constructionAndDeconstructionWindow(new WebBrowserPermission(new URL(web.getUrl()).getHost()))
+                                            .show();
+                                } catch (MalformedURLException e) {
+
+                                }
+                                break;
+                            }
+                            case 9:
                                 WebBrowserSetting.getInit().showSettingWindow(context, null);
                                 break;
                         }
@@ -1200,11 +1108,8 @@ public class WebBrowser extends AutoRecordConstructionAndDeconstructionWindow {
         }
     }
 
-    public RequestPermission.Callback getRequestPermissionSuccessCallback(){
-        return requestPermissionSuccess;
-    }
-    public RequestPermission.Callback getRequestPermissionRefuseCallback(){
-        return requestPermissionRefuse;
+    public WebBrowserRequestPermission.WebRequestPermission getWebRequestPermission(){
+        return webRequestPermission;
     }
 
     static class MenuAdapter extends BaseAdapter{

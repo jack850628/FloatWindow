@@ -108,13 +108,15 @@
     <string name="button_height_for_mini_state">最小化狀態的按鈕高度</string>
     <string name="window_mini_state_color">視窗最小化狀態的顏色</string>
     <string name="what_is_new_title1">你喜歡FloatWindow嗎？</string>
-    <string name="what_is_new_string1">這次的更新我們又抓到了一些臭蟲以及三個新功能，還有如果願意贊助我們的話，在主選單中我們增加了贊助連結，歡迎贊助我們。</string>
+    <string name="what_is_new_string1">這次的更新我們又抓到了一些臭蟲以及四個新功能，還有如果願意贊助我們的話，在主選單中我們增加了贊助連結，歡迎贊助我們。</string>
     <string name="what_is_new_title2">記住狀態的捷徑</string>
     <string name="what_is_new_string2">從這個版本開始，在建立捷徑到主畫面時，可以選擇是否要以現在視窗的位置、大小、模式，以及隱藏網址列的樣式來開啟。</string>
     <string name="what_is_new_title3">自訂最小化時的大小</string>
     <string name="what_is_new_string3">從這個版本開始，您可以在設定裡自訂視窗最小化時的大小。</string>
     <string name="what_is_new_title4">網頁瀏覽器的獨立js開關</string>
     <string name="what_is_new_string4">從這個版本開始，每個瀏覽器視窗都可以從選單中各自停用或啟用javascript。</string>
+    <string name="what_is_new_title5">網頁瀏覽器的權限管理</string>
+    <string name="what_is_new_string5">從這個版本開始，您瀏覽的網站可以向您請求一些權限(例如：相機)，如果您在給予權限後想將權限收回，可以在瀏覽器視窗的選單中找到"網站權限設定"進行更改。</string>
 
     <string-array name="browser_mode">
         <item>預設模式</item>
@@ -125,4 +127,14 @@
         <item>停用</item>
         <item>啟用</item>
     </string-array>
+    <string name="camera">相機</string>
+    <string name="microphone">麥克風</string>
+    <string name="MIDI_Sysex">MIDI 裝置</string>
+    <string name="protected_media">受保護的內容 ID</string>
+    <string name="permission_request">權限請求</string>
+    <string name="permission">權限</string>
+    <string name="request">請求</string>
+    <string name="website">網站</string>
+    <string name="location">位置</string>
+    <string name="website_permission_setting">網站權限設定</string>
 </resources>

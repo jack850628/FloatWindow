@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/domain_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:textColor="#313131"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/switch_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Switch
+                    android:id="@+id/location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:shadowColor="#cefffefe"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="15"
+                    android:text="@string/location"
+                    android:textColor="#313131" />
+
+                <Switch
+                    android:id="@+id/camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:shadowColor="#cefffefe"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="15"
+                    android:text="@string/camera"
+                    android:textColor="#313131" />
+
+                <Switch
+                    android:id="@+id/microphone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:shadowColor="#cefffefe"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="15"
+                    android:text="@string/microphone"
+                    android:textColor="#313131" />
+
+                <Switch
+                    android:id="@+id/protected_media"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:shadowColor="#cefffefe"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="15"
+                    android:text="@string/protected_media"
+                    android:textColor="#313131" />
+
+                <Switch
+                    android:id="@+id/MIDI_Sysex"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:shadowColor="#cefffefe"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="15"
+                    android:text="@string/MIDI_Sysex"
+                    android:textColor="#313131" />
+
+            </LinearLayout>
+
+            <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="ca-app-pub-4604853118314154/2712837750"></com.google.android.gms.ads.AdView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/confirm"
+            style="@style/AppTheme.Button"
+            android:theme="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/confirm" />
+
+        <Button
+            android:id="@+id/cancel"
+            style="@style/AppTheme.Button"
+            android:theme="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+    </LinearLayout>
+
+</LinearLayout>

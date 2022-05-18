@@ -107,13 +107,15 @@
     <string name="button_height_for_mini_state">button height for mini state</string>
     <string name="window_mini_state_color">window mini state color:</string>
     <string name="what_is_new_title1">Do you like FloatWindow?</string>
-    <string name="what_is_new_string1">In this update we have caught some bugs and three new features, and if you want to sponsor us, we have added a sponsor link in the main menu, welcome to sponsor us.</string>
+    <string name="what_is_new_string1">In this update we have caught some bugs and four new features, and if you want to sponsor us, we have added a sponsor link in the main menu, welcome to sponsor us.</string>
     <string name="what_is_new_title2">Shortcuts for remembering states</string>
     <string name="what_is_new_string2">Starting from this version, when creating a shortcut to the home screen, you can choose whether to open it with the current window position, size, mode, and style of the hidden address bar.</string>
     <string name="what_is_new_title3">Customize minimized size</string>
     <string name="what_is_new_string3">Starting with this version, you can customize the size of the window when it is minimized in the settings.</string>
     <string name="what_is_new_title4">Independent js switch for web browser</string>
     <string name="what_is_new_string4">Starting with this version, javascript can be individually disabled or enabled for each browser window from the menu.</string>
+    <string name="what_is_new_title5">Web Browser Permission Management</string>
+    <string name="what_is_new_string5">Starting from this version, the website you are browsing can request some permissions from you (eg camera). If you want to withdraw the permission after granting the permission, you can find "Website Permission Settings" in the menu of the browser window to change it.</string>
 
 
     <string-array name="browser_mode">
@@ -125,4 +127,14 @@
         <item>disable</item>
         <item>enable</item>
     </string-array>
+    <string name="camera">Camera</string>
+    <string name="microphone">Microphone</string>
+    <string name="MIDI_Sysex">MIDI device</string>
+    <string name="protected_media">protected content ID</string>
+    <string name="permission_request">Permission request</string>
+    <string name="permission">permission</string>
+    <string name="request">request</string>
+    <string name="website">Website</string>
+    <string name="location">Location</string>
+    <string name="website_permission_setting">website permission setting</string>
 </resources>

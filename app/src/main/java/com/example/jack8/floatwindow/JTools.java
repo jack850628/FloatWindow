@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Switch;
 
@@ -249,6 +250,23 @@ public final class JTools {
                     break;
             }
         }
+    }
+
+    public static WindowStruct.Builder createAlertWindow(Context context, View messageView, WindowStruct parent){
+        return new WindowStruct.Builder(context, (WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                .parentWindow(parent)
+                .windowPages(new View[]{messageView})
+                .displayObject(WindowStruct.TITLE_BAR_AND_BUTTONS | WindowStruct.CLOSE_BUTTON)
+                .left(parent.getRealWidth() / 2 + parent.getRealPositionX() - messageView.getMeasuredWidth() / 2)
+                .top(parent.getRealHeight() / 2 + parent.getRealPositionY() - (messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getWindowButtonsHeight(context))) / 2)
+                .width(messageView.getMeasuredWidth())
+                .height((messageView.getMeasuredHeight() + (int)(context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getWindowButtonsHeight(context))))
+                .transitionsDuration(com.example.jack8.floatwindow.WindowParameter.getWindowTransitionsDuration(context))
+                .windowButtonsHeight((int) (context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getWindowButtonsHeight(context)))
+                .windowButtonsWidth((int) (context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getWindowButtonsWidth(context)))
+                .windowSizeBarHeight((int) (context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getWindowSizeBarHeight(context)))
+                .windowButtonHeightForMiniState((int) (context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getButtonHeightForMiniState(context)))
+                .windowButtonWidthForMiniState((int) (context.getResources().getDisplayMetrics().density * com.example.jack8.floatwindow.WindowParameter.getButtonWidthForMiniState(context)));
     }
 
     private JTools(){}

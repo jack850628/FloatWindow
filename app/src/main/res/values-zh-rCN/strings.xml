@@ -108,13 +108,15 @@
     <string name="button_height_for_mini_state">最小化状态的按钮高度</string>
     <string name="window_mini_state_color">口状最小化状态的颜色</string>
     <string name="what_is_new_title1">你喜欢FloatWindow吗？</string>
-    <string name="what_is_new_string1">这次的更新我们又抓到了一些臭虫以及三个新功能，还有如果愿意赞助我们的话，在主选单中我们增加了赞助连结，欢迎赞助我们。</string>
+    <string name="what_is_new_string1">这次的更新我们又抓到了一些臭虫以及四个新功能，还有如果愿意赞助我们的话，在主选单中我们增加了赞助连结，欢迎赞助我们。</string>
     <string name="what_is_new_title2">记住状态的捷径</string>
     <string name="what_is_new_string2">从这个版本开始，在建立捷径到主画面时，可以选择是否要以现在视窗的位置、大小、模式，以及隐藏网址列的样式来开启。</string>
     <string name="what_is_new_title3">自订最小化时的大小</string>
     <string name="what_is_new_string3">从这个版本开始，您可以在设定里自订视窗最小化时的大小。</string>
     <string name="what_is_new_title4">网页浏览器的独立js开关</string>
     <string name="what_is_new_string4">从这个版本开始，每个浏览器视窗都可以从菜单中各自停用或启用javascript。</string>
+    <string name="what_is_new_title5">网页浏览器的权限管理</string>
+    <string name="what_is_new_string5">从这个版本开始，您浏览的网站可以向您请求一些权限(例如：相机)，如果您在给予权限后想将权限收回，可以在浏览器视窗的选单中找到"网站权限设定"进行更改。</string>
 
     <string-array name="browser_mode">
         <item>预设模式</item>
@@ -125,4 +127,14 @@
         <item>停用</item>
         <item>启用</item>
     </string-array>
+    <string name="microphone">麦克风</string>
+    <string name="camera">相机</string>
+    <string name="MIDI_Sysex">MIDI 装置</string>
+    <string name="protected_media">受保護的內容 ID</string>
+    <string name="permission_request">权限请求</string>
+    <string name="permission">请求</string>
+    <string name="request">权限</string>
+    <string name="website">网站</string>
+    <string name="location">位置</string>
+    <string name="website_permission_setting">网站权限设置</string>
 </resources>

@@ -12,13 +12,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         new RequestPermission(this, new RequestPermission.Callback() {
             @Override
-            public void callback() {
-                startFloatWindow();
-            }
-        }, new RequestPermission.Callback() {
-            @Override
-            public void callback() {
-                finish();
+            public void callback(String[] success, String[] refuse) {
+                if(refuse.length == 0)
+                    startFloatWindow();
+                else
+                    finish();
             }
         }).resultPermission();
     }

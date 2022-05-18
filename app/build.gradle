@@ -10,8 +10,8 @@ android {
         applicationId "com.jack850628.floatwindow"
         minSdkVersion 16
         targetSdkVersion 31
-        versionCode 59
-        versionName "1.7.0518"
+        versionCode 60
+        versionName "1.7.0519"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         javaCompileOptions {

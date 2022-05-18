@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import java.util.Date;
 import java.util.List;
 
-@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class, DataBaseForBrowser.AdServerData.class}, version = 4)
+@Database(entities = {DataBaseForBrowser.Bookmark.class, DataBaseForBrowser.History.class, DataBaseForBrowser.Setting.class, DataBaseForBrowser.AdServerData.class, DataBaseForBrowser.WebsitePermission.class}, version = 5)
 @TypeConverters({DataBaseForBrowser.Converters.class})
 public abstract class DataBaseForBrowser extends RoomDatabase {
     public static String DATABASE_NAME = "browser_data";
@@ -33,6 +33,7 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
     public abstract HistoryDao historyDao();
     public abstract SettingDao settingDao();
     public abstract AdServerDataDao adServerDataDao();
+    public abstract WebsitePermissionDao websitePermissionDao();
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
@@ -54,6 +55,12 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE "+Setting.TABLE_NAME+" ADD COLUMN browser_mode INTEGER DEFAULT 0  NOT NULL");
+        }
+    };
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE "+WebsitePermission.TABLE_NAME+" (id INTEGER NOT NULL, domain_name TEXT NOT NULL, permission INTEGER NOT NULL, PRIMARY KEY(id))");
         }
     };
 
@@ -222,6 +229,49 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
         void deleteAll();
     }
 
+    @Entity(tableName = WebsitePermission.TABLE_NAME)
+    public static class WebsitePermission{
+        public static final String TABLE_NAME = "WebsitePermission";
+
+        @PrimaryKey(autoGenerate = true)
+        public long id;
+        @ColumnInfo(name = "domain_name")
+        @NonNull
+        public String domainName;
+        @ColumnInfo(name = "permission")
+        @NonNull
+        public int permission;
+
+        public WebsitePermission(long id,@NonNull String domainName, int permission){
+            this.id = id;
+            this.domainName = domainName;
+            this.permission = permission;
+        }
+
+        @Ignore
+        public WebsitePermission(@NonNull String domainName, int permission){
+            this.domainName = domainName;
+            this.permission = permission;
+        }
+    }
+    @Dao
+    public interface WebsitePermissionDao{
+        @Query("select * from "+WebsitePermission.TABLE_NAME)
+        List<WebsitePermission> getAllWebsitePermission();
+        @Query("select * from "+WebsitePermission.TABLE_NAME+" where domain_name = :domainName")
+        List<WebsitePermission> getWebsitePermission(String domainName);
+        @Query("select * from "+WebsitePermission.TABLE_NAME+" where domain_name = :domainName and permission = :permission")
+        WebsitePermission getWebsitePermission(String domainName, int permission);
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        void addWebsitePermission(WebsitePermission websitePermission);
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        void addWebsitePermission(WebsitePermission... websitePermission);
+        @Update
+        void updateWebsitePermission(WebsitePermission websitePermission);
+        @Delete
+        void deleteWebsitePermission(WebsitePermission... websitePermissions);
+    }
+
     private static DataBaseForBrowser dataBaseForBrowser;
 
     public static DataBaseForBrowser getInstance(Context context){
@@ -230,6 +280,7 @@ public abstract class DataBaseForBrowser extends RoomDatabase {
                     .addMigrations(DataBaseForBrowser.MIGRATION_1_2)
                     .addMigrations(DataBaseForBrowser.MIGRATION_2_3)
                     .addMigrations(DataBaseForBrowser.MIGRATION_3_4)
+                    .addMigrations(DataBaseForBrowser.MIGRATION_4_5)
                     .build();
         }
         return dataBaseForBrowser;
