@@ -100,6 +100,7 @@
                 android:id="@+id/browser_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:popupBackground="#ffffffff"
                 android:minHeight="48dp" />
 
             <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"

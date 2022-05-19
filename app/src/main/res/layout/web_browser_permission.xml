@@ -40,6 +40,7 @@
                 android:id="@+id/location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:popupBackground="#ffffffff"
                 android:minHeight="48dp" />
 
             <TextView
@@ -56,6 +57,7 @@
                 android:id="@+id/camera"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:popupBackground="#ffffffff"
                 android:minHeight="48dp" />
 
             <TextView
@@ -72,6 +74,7 @@
                 android:id="@+id/microphone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:popupBackground="#ffffffff"
                 android:minHeight="48dp" />
 
             <TextView
@@ -88,6 +91,7 @@
                 android:id="@+id/protected_media"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:popupBackground="#ffffffff"
                 android:minHeight="48dp" />
 
             <TextView
@@ -104,6 +108,7 @@
                 android:id="@+id/MIDI_Sysex"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:popupBackground="#ffffffff"
                 android:minHeight="48dp" />
 
             <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
