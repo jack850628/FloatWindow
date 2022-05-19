@@ -140,6 +140,11 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
         public static final String PERMISSION_NAME = "permissionName";
 
         private RequestPermission.Callback requestPermissionResult;
+        FirebaseCrashlytics crashlytics;
+
+        public WebRequestPermission(){
+            crashlytics = FirebaseCrashlytics.getInstance();
+        }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void requestToUser(final Context context, final PermissionRequest request, final String webTitle, final WindowStruct webWindow){
@@ -155,8 +160,11 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
                     WebkitPermissionID webkitPermissionID = WebkitPermissionID.getWebkitPermissionID(request.getResources()[index]);
                     if(webkitPermissionID != WebkitPermissionID.UNKNOWN)
                         websitePermission = DataBaseForBrowser.getInstance(context).websitePermissionDao().getWebsitePermission(request.getOrigin().getHost(), webkitPermissionID.getId());
-                    else
+                    else {
+                        crashlytics.log(String.format("未知的權限出現了！ %s", request.getResources()[index]));
+                        JackLog.writeLog(context, String.format("未知的權限出現了！ %s", request.getResources()[index]));
                         websitePermission = null;
+                    }
                     JTools.uiThread.post(new Runnable() {
                         @Override
                         public void run() {
