@@ -183,7 +183,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
             else
                 permissionName = request.getResources()[index];
             View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
-            ((TextView)messageView.findViewById(R.id.message)).setText(String.format("%s: %s\n%s\"%s\"%s", context.getString(R.string.website), request.getOrigin().getHost(), context.getString(R.string.request), permissionName, context.getString(R.string.permission)));
+            ((TextView)messageView.findViewById(R.id.message)).setText(String.format("%s: %s\n%s\"%s\"%s\n", context.getString(R.string.website), request.getOrigin().getHost(), context.getString(R.string.request), permissionName, context.getString(R.string.permission)));
             messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
             messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             JTools.createAlertWindow(context, messageView, webWindow)
@@ -330,7 +330,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
 
         private void requestGeolocationPermissionsToUsr(Context context, String origin, String host, WindowStruct webWindow, GeolocationPermissions.Callback callback) {
             View messageView = LayoutInflater.from(context).inflate(R.layout.alert, null);
-            ((TextView)messageView.findViewById(R.id.message)).setText(String.format("%s: %s\n%s\"%s\"%s", context.getString(R.string.website), host, context.getString(R.string.request), context.getString(R.string.location), context.getString(R.string.permission)));
+            ((TextView)messageView.findViewById(R.id.message)).setText(String.format("%s: %s\n%s\"%s\"%s\n", context.getString(R.string.website), host, context.getString(R.string.request), context.getString(R.string.location), context.getString(R.string.permission)));
             messageView.findViewById(R.id.cancel).setVisibility(View.VISIBLE);
             messageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             JTools.createAlertWindow(context, messageView, webWindow)
