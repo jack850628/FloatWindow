@@ -66,4 +66,9 @@ public abstract class DataBase extends RoomDatabase {
         }
         return dataBase;
     }
+
+    public static void removeInstance(){
+        dataBase.close();
+        dataBase = null;
+    }
 }

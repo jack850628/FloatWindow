@@ -78,7 +78,6 @@ public class FloatServer extends Service {
     final String NOTIFY_CHANNEL_ID = "FloatWindow";
     WindowStruct windowManager = null;//視窗管理員
     WindowStruct help = null;
-    Handler handler = new Handler();
     boolean closeFloatWindow = false;
     WindowStruct.WindowAction windowAction = new WindowStruct.WindowAction() {
         @Override
@@ -689,7 +688,7 @@ public class FloatServer extends Service {
                     int windowListLength = 0;
                     while (windowManager != null) {
                         if (windowListLength != com.jack8.floatwindow.Window.WindowManager.count())
-                            handler.post(new Runnable() {
+                            JTools.uiThread.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     hma.updateWindowList();
@@ -762,5 +761,11 @@ public class FloatServer extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        DataBase.removeInstance();
     }
 }
