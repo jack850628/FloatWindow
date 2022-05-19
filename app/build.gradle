@@ -29,6 +29,8 @@ android {
 }
 
 dependencies {
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
+
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.firebase:firebase-database:20.0.5'
