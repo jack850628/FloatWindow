@@ -62,6 +62,7 @@ public class FullscreenWindowActivity extends AppCompatActivity {
 
     void exitFullscreen(){
         ((ViewGroup)winform.getParent()).removeView(winform);
+        winform = null;
         WindowManager.getWindowStruct(windowNumber).setFullscreenActivity(null);
         finish();
     }

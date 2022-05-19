@@ -21,18 +21,15 @@ public class WindowFrom extends LinearLayout {
             return false;
         }
     };
-    final android.view.WindowManager wm;
-    WindowStruct WS;
+    private WindowStruct WS;
     public boolean inited = false;//判斷視窗畫面是否初始化完成
     public WindowFrom(Context context) {
         super(context);
         wColor = new WindowColor(context);
-        wm = (android.view.WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
     public WindowFrom(Context context, AttributeSet attrs) {
         super(context, attrs);
         wColor = new WindowColor(context);
-        wm = (android.view.WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     }
     void setWindowStruct(WindowStruct WS){
         this.WS = WS;

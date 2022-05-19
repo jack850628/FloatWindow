@@ -816,6 +816,7 @@ public class WindowStruct implements View.OnClickListener,View.OnTouchListener{
                     CDAW.onDestroy(context, WindowStruct.this);
                     windowAction.goClose(WindowStruct.this);
                     wm.removeView(winform);
+                    ((WindowFrom)winform).setWindowStruct(null);
                     if(WindowManager.focusedWindowNumber == Number)
                         WindowManager.focusedWindowNumber = WindowManager.NON_FOCUSED_WINDOW;
                     WindowManager.removeWindowStruct(WindowStruct.this);
