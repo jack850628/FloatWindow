@@ -127,6 +127,11 @@
         <item>disable</item>
         <item>enable</item>
     </string-array>
+    <string-array name="permissions">
+        <item>refuse</item>
+        <item>default</item>
+        <item>allow</item>
+    </string-array>
     <string name="camera">Camera</string>
     <string name="microphone">Microphone</string>
     <string name="MIDI_Sysex">MIDI device</string>
@@ -137,4 +142,6 @@
     <string name="website">Website</string>
     <string name="location">Location</string>
     <string name="website_permission_setting">website permission setting</string>
+    <string name="allow">allow</string>
+    <string name="refuse">refuse</string>
 </resources>

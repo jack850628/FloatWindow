@@ -142,11 +142,11 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
         private RequestPermission.Callback requestPermissionResult;
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        public void requestToUser(Context context, PermissionRequest request, String webTitle, WindowStruct webWindow){
+        public void requestToUser(final Context context, final PermissionRequest request, final String webTitle, final WindowStruct webWindow){
             checkRequestFromDB(0, request, new ArrayList<>(), context, webTitle, webWindow);
         }
 
-        public void checkRequestFromDB(int index, PermissionRequest request, List<String> successPermissions, Context context, String webTitle, WindowStruct webWindow){
+        public void checkRequestFromDB(final int index, final PermissionRequest request, final List<String> successPermissions, final Context context, final String webTitle, final WindowStruct webWindow){
             JTools.threadPool.execute(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
@@ -160,8 +160,9 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
                     JTools.uiThread.post(new Runnable() {
                         @Override
                         public void run() {
-                            if(websitePermission != null){
-                                successPermissions.add(request.getResources()[index]);
+                            if(websitePermission != null && websitePermission.state != DataBaseForBrowser.WebsitePermission.State.DEFAULT){
+                                if(websitePermission.state == DataBaseForBrowser.WebsitePermission.State.ALLOW)
+                                    successPermissions.add(request.getResources()[index]);
                                 if(index + 1 < request.getResources().length)
                                     checkRequestFromDB(index + 1, request, successPermissions, context, webTitle, webWindow);
                                 else
@@ -175,7 +176,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private void requestToUser(int index, PermissionRequest request, List<String> successPermissions, Context context, String webTitle, WindowStruct webWindow){
+        private void requestToUser(final int index, final PermissionRequest request, final List<String> successPermissions, final Context context, final String webTitle, final WindowStruct webWindow){
             String permissionName;
             if(WEBKIT_PERMISSION_NAME_MAP.containsKey(request.getResources()[index]))
                 permissionName = context.getString(WEBKIT_PERMISSION_NAME_MAP.get(request.getResources()[index]));
@@ -188,30 +189,58 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
             JTools.createAlertWindow(context, messageView, webWindow)
                     .windowPageTitles(new String[]{context.getString(R.string.permission_request)})
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
+                        DataBaseForBrowser.WebsitePermissionDao dao = DataBaseForBrowser.getInstance(context).websitePermissionDao();
+                        boolean selected = false;
                         @Override
                         public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
-                            pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                            TextView textView = pageView.findViewById(R.id.confirm);
+                            textView.setText(R.string.allow);
+                            textView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    WebkitPermissionID webkitPermissionID = WebkitPermissionID.getWebkitPermissionID(request.getResources()[index]);
+                                    selected = true;
                                     successPermissions.add(request.getResources()[index]);
-                                    if(webkitPermissionID != WebkitPermissionID.UNKNOWN) {
-                                        JTools.threadPool.execute(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                DataBaseForBrowser.getInstance(context).websitePermissionDao().addWebsitePermission(new DataBaseForBrowser.WebsitePermission(request.getOrigin().getHost(), webkitPermissionID.getId()));
-                                            }
-                                        });
-                                    }
+                                    setWebsitePermission(DataBaseForBrowser.WebsitePermission.State.ALLOW);
                                     ws.close();
                                 }
                             });
-                            pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                            textView = pageView.findViewById(R.id.cancel);
+                            textView.setText(R.string.refuse);
+                            textView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    selected = true;
+                                    setWebsitePermission(DataBaseForBrowser.WebsitePermission.State.REFUSE);
                                     ws.close();
                                 }
                             });
+                            ws.addWindowStateChangeListener(new WindowStruct.OnWindowStateChangeListener() {
+                                @Override
+                                public void onStateChanged(Context context, WindowStruct windowStruct) {
+                                    if(windowStruct.nowState == WindowStruct.State.CLOSE && !selected){
+                                        setWebsitePermission(DataBaseForBrowser.WebsitePermission.State.DEFAULT);
+                                    }
+                                }
+                            });
+                        }
+
+                        private void setWebsitePermission(DataBaseForBrowser.WebsitePermission.State state){
+                            WebkitPermissionID webkitPermissionID = WebkitPermissionID.getWebkitPermissionID(request.getResources()[index]);
+                            if(webkitPermissionID != WebkitPermissionID.UNKNOWN) {
+                                JTools.threadPool.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        DataBaseForBrowser.WebsitePermission websitePermission = dao.getWebsitePermission(request.getOrigin().getHost(), webkitPermissionID.getId());
+                                        if(websitePermission == null){
+                                            websitePermission = new DataBaseForBrowser.WebsitePermission(request.getOrigin().getHost(), webkitPermissionID.getId(), state);
+                                            dao.addWebsitePermission(websitePermission);
+                                        }else {
+                                            websitePermission.state = state;
+                                            dao.updateWebsitePermission(websitePermission);
+                                        }
+                                    }
+                                });
+                            }
                         }
 
                         @Override
@@ -226,7 +255,7 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private void requestToSystem(PermissionRequest request, List<String> successPermissions, Context context, WindowStruct webWindow){
+        private void requestToSystem(final PermissionRequest request, final List<String> successPermissions, final Context context, final WindowStruct webWindow){
             if(successPermissions.size() == 0){
                 request.deny();
                 return;
@@ -286,8 +315,11 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
                     JTools.uiThread.post(new Runnable() {
                         @Override
                         public void run() {
-                            if(websitePermission != null){
-                                requestGeolocationPermissionsToSystem(context, origin, host, webWindow, callback);
+                            if(websitePermission != null && websitePermission.state != DataBaseForBrowser.WebsitePermission.State.DEFAULT){
+                                if(websitePermission.state == DataBaseForBrowser.WebsitePermission.State.REFUSE)
+                                    callback.invoke(origin, false, false);
+                                else
+                                    requestGeolocationPermissionsToSystem(context, origin, host, webWindow, callback);
                             }else
                                 requestGeolocationPermissionsToUsr(context, origin, host, webWindow, callback);
                         }
@@ -304,34 +336,57 @@ public class WebBrowserRequestPermission extends AppCompatActivity {
             JTools.createAlertWindow(context, messageView, webWindow)
                     .windowPageTitles(new String[]{context.getString(R.string.permission_request)})
                     .constructionAndDeconstructionWindow(new WindowStruct.constructionAndDeconstructionWindow() {
-                        boolean isConfirm = false;
+                        DataBaseForBrowser.WebsitePermissionDao dao = DataBaseForBrowser.getInstance(context).websitePermissionDao();
+                        boolean selected = false;
                         @Override
                         public void Construction(Context context, View pageView, int position, Map<String, Object> args, final WindowStruct ws) {
-                            pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                            TextView textView = pageView.findViewById(R.id.confirm);
+                            textView.setText(R.string.allow);
+                            textView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    isConfirm = true;
+                                    selected = true;
                                     ws.close();
-                                    JTools.threadPool.execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            DataBaseForBrowser.getInstance(context).websitePermissionDao().addWebsitePermission(new DataBaseForBrowser.WebsitePermission(host, WebkitPermissionID.ACCESS_COARSE_LOCATION.getId()));
-                                        }
-                                    });
+                                    setWebsitePermission(DataBaseForBrowser.WebsitePermission.State.ALLOW);
                                     requestGeolocationPermissionsToSystem(context, origin, host, webWindow, callback);
                                 }
                             });
-                            pageView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                            textView = pageView.findViewById(R.id.cancel);
+                            textView.setText(R.string.refuse);
+                            textView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    selected = true;
+                                    setWebsitePermission(DataBaseForBrowser.WebsitePermission.State.REFUSE);
+                                    callback.invoke(origin, false, false);
                                     ws.close();
+                                }
+                            });
+                            ws.addWindowStateChangeListener(new WindowStruct.OnWindowStateChangeListener() {
+                                @Override
+                                public void onStateChanged(Context context, WindowStruct windowStruct) {
+                                    if(windowStruct.nowState == WindowStruct.State.CLOSE && !selected){
+                                        setWebsitePermission(DataBaseForBrowser.WebsitePermission.State.DEFAULT);
+                                        callback.invoke(origin, false, false);
+                                    }
                                 }
                             });
                         }
 
-                        @Override
-                        public void onDestroy(Context context, WindowStruct windowStruct){
-                            if(!isConfirm) callback.invoke(origin, false, false);
+                        private void setWebsitePermission(DataBaseForBrowser.WebsitePermission.State state){
+                            JTools.threadPool.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DataBaseForBrowser.WebsitePermission websitePermission = dao.getWebsitePermission(host, WebkitPermissionID.ACCESS_COARSE_LOCATION.getId());
+                                    if(websitePermission == null){
+                                        websitePermission = new DataBaseForBrowser.WebsitePermission(host, WebkitPermissionID.ACCESS_COARSE_LOCATION.getId(), state);
+                                        dao.addWebsitePermission(websitePermission);
+                                    }else {
+                                        websitePermission.state = state;
+                                        dao.updateWebsitePermission(websitePermission);
+                                    }
+                                }
+                            });
                         }
                     })
                     .show();

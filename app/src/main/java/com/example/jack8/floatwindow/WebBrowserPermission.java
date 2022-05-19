@@ -3,7 +3,9 @@ package com.example.jack8.floatwindow;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -12,15 +14,16 @@ import com.google.android.gms.ads.AdView;
 import com.jack8.floatwindow.Window.WindowStruct;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class WebBrowserPermission extends WindowStruct.constructionAndDeconstructionWindow {
     private String domainName;
-    private List<DataBaseForBrowser.WebsitePermission> websitePermissions;
 
-    private Switch location, camera, microphone, MIDI_Sysex, protected_media;
+    private Spinner location, camera, microphone, MIDI_Sysex, protected_media;
     private AdView mAdView;
+    private Map<Integer, Spinner> permissionSpinners;
 
     public WebBrowserPermission(String domainName){
         this.domainName = domainName;
@@ -28,27 +31,50 @@ public class WebBrowserPermission extends WindowStruct.constructionAndDeconstruc
 
     @Override
     public void Construction(Context context, View pageView, int position, Map<String, Object> args, WindowStruct windowStruct){
-        location = (Switch) pageView.findViewById(R.id.location);
-        camera = (Switch) pageView.findViewById(R.id.camera);
-        microphone = (Switch) pageView.findViewById(R.id.microphone);
-        MIDI_Sysex = (Switch) pageView.findViewById(R.id.MIDI_Sysex);
-        protected_media = (Switch) pageView.findViewById(R.id.protected_media);
+        location = (Spinner) pageView.findViewById(R.id.location);
+        camera = (Spinner) pageView.findViewById(R.id.camera);
+        microphone = (Spinner) pageView.findViewById(R.id.microphone);
+        MIDI_Sysex = (Spinner) pageView.findViewById(R.id.MIDI_Sysex);
+        protected_media = (Spinner) pageView.findViewById(R.id.protected_media);
 
-        location.setTag(WebBrowserRequestPermission.WebkitPermissionID.ACCESS_COARSE_LOCATION.getId());
-        camera.setTag(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_VIDEO_CAPTURE.getId());
-        microphone.setTag(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_AUDIO_CAPTURE.getId());
-        MIDI_Sysex.setTag(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_MIDI_SYSEX.getId());
-        protected_media.setTag(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_PROTECTED_MEDIA_ID.getId());
+        location.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.permissions)));
+        camera.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.permissions)));
+        microphone.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.permissions)));
+        MIDI_Sysex.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.permissions)));
+        protected_media.setAdapter(new ArrayAdapter(context, R.layout.list_item_no_background, R.id.item_text, context.getResources().getStringArray(R.array.permissions)));
+
+        location.setSelection(1);
+        camera.setSelection(1);
+        microphone.setSelection(1);
+        MIDI_Sysex.setSelection(1);
+        protected_media.setSelection(1);
+
+        location.setTag(new DataBaseForBrowser.WebsitePermission(-1, domainName, WebBrowserRequestPermission.WebkitPermissionID.ACCESS_COARSE_LOCATION.getId(), DataBaseForBrowser.WebsitePermission.State.DEFAULT));
+        camera.setTag(new DataBaseForBrowser.WebsitePermission(-1, domainName, WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_VIDEO_CAPTURE.getId(), DataBaseForBrowser.WebsitePermission.State.DEFAULT));
+        microphone.setTag(new DataBaseForBrowser.WebsitePermission(-1, domainName, WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_AUDIO_CAPTURE.getId(), DataBaseForBrowser.WebsitePermission.State.DEFAULT));
+        MIDI_Sysex.setTag(new DataBaseForBrowser.WebsitePermission(-1, domainName, WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_MIDI_SYSEX.getId(), DataBaseForBrowser.WebsitePermission.State.DEFAULT));
+        protected_media.setTag(new DataBaseForBrowser.WebsitePermission(-1, domainName, WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_PROTECTED_MEDIA_ID.getId(), DataBaseForBrowser.WebsitePermission.State.DEFAULT));
+
+        permissionSpinners = new HashMap<>();
+        permissionSpinners.put(WebBrowserRequestPermission.WebkitPermissionID.ACCESS_COARSE_LOCATION.getId(), location);
+        permissionSpinners.put(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_VIDEO_CAPTURE.getId(), camera);
+        permissionSpinners.put(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_AUDIO_CAPTURE.getId(), microphone);
+        permissionSpinners.put(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_MIDI_SYSEX.getId(), MIDI_Sysex);
+        permissionSpinners.put(WebBrowserRequestPermission.WebkitPermissionID.RESOURCE_PROTECTED_MEDIA_ID.getId(), protected_media);
 
         JTools.threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                websitePermissions = DataBaseForBrowser.getInstance(context).websitePermissionDao().getWebsitePermission(domainName);
+                List<DataBaseForBrowser.WebsitePermission> websitePermissions = DataBaseForBrowser.getInstance(context).websitePermissionDao().getWebsitePermission(domainName);
                 JTools.uiThread.post(new Runnable() {
                     @Override
                     public void run() {
                         for(DataBaseForBrowser.WebsitePermission websitePermission: websitePermissions){
-                            ((Switch)pageView.findViewWithTag(websitePermission.permission)).setChecked(true);
+                            Spinner spinner = permissionSpinners.get(websitePermission.permission);
+                            if(spinner != null) {
+                                spinner.setTag(websitePermission);
+                                spinner.setSelection(websitePermission.state.getType() + 1);
+                            }
                         }
                     }
                 });
@@ -62,33 +88,27 @@ public class WebBrowserPermission extends WindowStruct.constructionAndDeconstruc
         pageView.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final List<DataBaseForBrowser.WebsitePermission> success = new ArrayList<>();
-                final List<DataBaseForBrowser.WebsitePermission> refuse = new ArrayList<>();
-                LinearLayout switchList = pageView.findViewById(R.id.switch_list);
-                int count = switchList.getChildCount();
-                for(int i = 0; i < count; i++){
-                    Switch switchBtn = (Switch) switchList.getChildAt(i);
-                    if(switchBtn.isChecked()){
-                        success.add(new DataBaseForBrowser.WebsitePermission(domainName, (int) switchBtn.getTag()));
-                    }else{
-                        refuse.add(new DataBaseForBrowser.WebsitePermission(domainName, (int) switchBtn.getTag()));
+                final List<DataBaseForBrowser.WebsitePermission> websitePermissions = new ArrayList<>();
+                for(Map.Entry<Integer, Spinner> s: permissionSpinners.entrySet()){
+                    if(s.getValue().getTag() != null) {
+                        DataBaseForBrowser.WebsitePermission websitePermission = (DataBaseForBrowser.WebsitePermission) s.getValue().getTag();
+                        websitePermission.state = DataBaseForBrowser.WebsitePermission.State.getState(s.getValue().getSelectedItemPosition() - 1);
+                        websitePermissions.add(websitePermission);
                     }
                 }
                 JTools.threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
                         DataBaseForBrowser.WebsitePermissionDao dao = DataBaseForBrowser.getInstance(context).websitePermissionDao();
-                        DataBaseForBrowser.WebsitePermission[] websitePermissions = new DataBaseForBrowser.WebsitePermission[success.size()];
-                        for(DataBaseForBrowser.WebsitePermission permission: success){
-                            DataBaseForBrowser.WebsitePermission p = dao.getWebsitePermission(permission.domainName, permission.permission);
-                            if(p == null)
-                                dao.addWebsitePermission(permission);
+                        for(DataBaseForBrowser.WebsitePermission websitePermission: websitePermissions){
+                            if(websitePermission.id != -1)
+                                dao.updateWebsitePermission(websitePermission);
+                            else {
+                                websitePermission.id = 0;//必須從-1改回0，不然id就會變成-1
+                                dao.addWebsitePermission(websitePermission);
+                            }
                         }
-                        for(DataBaseForBrowser.WebsitePermission permission: refuse){
-                            DataBaseForBrowser.WebsitePermission p = dao.getWebsitePermission(permission.domainName, permission.permission);
-                            if(p != null)
-                                dao.deleteWebsitePermission(p);
-                        }
+
                     }
                 });
                 windowStruct.close();

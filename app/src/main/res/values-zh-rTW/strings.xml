@@ -127,6 +127,11 @@
         <item>停用</item>
         <item>啟用</item>
     </string-array>
+    <string-array name="permissions">
+        <item>拒絕</item>
+        <item>預設</item>
+        <item>允許</item>
+    </string-array>
     <string name="camera">相機</string>
     <string name="microphone">麥克風</string>
     <string name="MIDI_Sysex">MIDI 裝置</string>
@@ -137,4 +142,6 @@
     <string name="website">網站</string>
     <string name="location">位置</string>
     <string name="website_permission_setting">網站權限設定</string>
+    <string name="allow">允許</string>
+    <string name="refuse">拒絕</string>
 </resources>

@@ -26,73 +26,85 @@
                 android:textColor="#313131"
                 android:textSize="18sp" />
 
-            <LinearLayout
-                android:id="@+id/switch_list"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:text="@string/location"
+                android:textColor="#313131" />
 
-                <Switch
-                    android:id="@+id/location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:shadowColor="#cefffefe"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="15"
-                    android:text="@string/location"
-                    android:textColor="#313131" />
+            <Spinner
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-                <Switch
-                    android:id="@+id/camera"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:shadowColor="#cefffefe"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="15"
-                    android:text="@string/camera"
-                    android:textColor="#313131" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:text="@string/camera"
+                android:textColor="#313131" />
 
-                <Switch
-                    android:id="@+id/microphone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:shadowColor="#cefffefe"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="15"
-                    android:text="@string/microphone"
-                    android:textColor="#313131" />
+            <Spinner
+                android:id="@+id/camera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-                <Switch
-                    android:id="@+id/protected_media"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:shadowColor="#cefffefe"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="15"
-                    android:text="@string/protected_media"
-                    android:textColor="#313131" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:text="@string/microphone"
+                android:textColor="#313131" />
 
-                <Switch
-                    android:id="@+id/MIDI_Sysex"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:shadowColor="#cefffefe"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="15"
-                    android:text="@string/MIDI_Sysex"
-                    android:textColor="#313131" />
+            <Spinner
+                android:id="@+id/microphone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:text="@string/protected_media"
+                android:textColor="#313131" />
+
+            <Spinner
+                android:id="@+id/protected_media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:shadowColor="#cefffefe"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:text="@string/MIDI_Sysex"
+                android:textColor="#313131" />
+
+            <Spinner
+                android:id="@+id/MIDI_Sysex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
             <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"

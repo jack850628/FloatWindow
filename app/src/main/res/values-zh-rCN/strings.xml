@@ -127,6 +127,11 @@
         <item>停用</item>
         <item>启用</item>
     </string-array>
+    <string-array name="permissions">
+        <item>拒绝</item>
+        <item>预设</item>
+        <item>允许</item>
+    </string-array>
     <string name="microphone">麦克风</string>
     <string name="camera">相机</string>
     <string name="MIDI_Sysex">MIDI 装置</string>
@@ -137,4 +142,6 @@
     <string name="website">网站</string>
     <string name="location">位置</string>
     <string name="website_permission_setting">网站权限设置</string>
+    <string name="allow">允许</string>
+    <string name="refuse">拒绝</string>
 </resources>
