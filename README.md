@@ -3,9 +3,9 @@
 Floating Window app for Android
 
 <span style="
-    color: #e92828;">The contents of this repository have been deprecated and moved to </span>[FloatWindowCore 浮動視窗核心](https://github.com/jack850628/FloatWindow-Core).\
+    color: #e92828;">The contents of this repository have been moved to </span>[FloatWindowCore 浮動視窗核心](https://github.com/jack850628/FloatWindow-Core).\
 <span style="
-    color: #e92828;">這個儲存倉庫的內容已經棄用，並轉移至</span>[FloatWindowCore 浮動視窗核心](https://github.com/jack850628/FloatWindow-Core)。\
+    color: #e92828;">這個儲存倉庫的內容已經轉移至</span>[FloatWindowCore 浮動視窗核心](https://github.com/jack850628/FloatWindow-Core)。\
 ![Alt text](Demonstration.png)
 
 
