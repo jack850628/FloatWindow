@@ -18,7 +18,7 @@
 
             <TextView
                 android:id="@+id/tip"
-                style="@style/AppTheme.WindiowText"
+                style="@style/AppTheme.WindowText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -41,7 +41,7 @@
                     android:src="@drawable/browser" />
 
                 <TextView
-                    style="@style/AppTheme.WindiowText"
+                    style="@style/AppTheme.WindowText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -66,7 +66,7 @@
                     android:src="@drawable/note" />
 
                 <TextView
-                    style="@style/AppTheme.WindiowText"
+                    style="@style/AppTheme.WindowText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -91,7 +91,7 @@
                     android:src="@drawable/calculator" />
 
                 <TextView
-                    style="@style/AppTheme.WindiowText"
+                    style="@style/AppTheme.WindowText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -116,7 +116,7 @@
                     android:src="@drawable/setting_icon" />
 
                 <TextView
-                    style="@style/AppTheme.WindiowText"
+                    style="@style/AppTheme.WindowText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -142,7 +142,7 @@
                     android:src="@drawable/donate" />
 
                 <TextView
-                    style="@style/AppTheme.WindiowText"
+                    style="@style/AppTheme.WindowText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -168,7 +168,7 @@
                     android:src="@drawable/watch_adpng" />
 
                 <TextView
-                    style="@style/AppTheme.WindiowText"
+                    style="@style/AppTheme.WindowText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

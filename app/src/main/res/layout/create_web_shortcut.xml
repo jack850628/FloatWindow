@@ -23,7 +23,7 @@
 
         <com.example.jack8.floatwindow.FwEditView
             android:id="@+id/input_text"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -34,14 +34,14 @@
             android:id="@+id/hidden_controls_bar_checkBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:text="@string/hidden_controls_bar" />
 
         <CheckBox
             android:id="@+id/remember_current_window_state_checkBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:text="@string/remember_current_window_state" />
 
         <TextView

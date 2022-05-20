@@ -31,6 +31,8 @@ android {
 dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
+    implementation files('libs/floatwindow-release.aar')
+
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.firebase:firebase-database:20.0.5'
@@ -60,7 +62,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-bom:30.0.0'
     implementation 'com.google.firebase:firebase-perf:20.0.6'
 
-    implementation project(path: ':floatwindow')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'androidx.work:work-runtime:2.7.1'

@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:layout_weight="0"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:textSize="18sp" />
 
         <TextView
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -32,7 +32,7 @@
         android:id="@+id/home_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.WindiowText"
+        style="@style/AppTheme.WindowText"
         android:textColor="#5A5A5A"
         android:textSize="12sp" />
 

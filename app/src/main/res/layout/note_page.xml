@@ -68,6 +68,6 @@
         android:scrollbars="vertical"
         android:scrollHorizontally="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        style="@style/AppTheme.WindiowText"
+        style="@style/AppTheme.WindowText"
         android:background="@null"/>
 </LinearLayout>

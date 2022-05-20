@@ -13,7 +13,7 @@
 
         <!--
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string1" />
@@ -29,7 +29,7 @@
             android:layout_height="30dp" />
         -->
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -38,7 +38,7 @@
             android:textStyle="bold" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string1" />
@@ -51,7 +51,7 @@
 
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -60,7 +60,7 @@
             android:textStyle="bold" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string2" />
@@ -74,7 +74,7 @@
 
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -83,7 +83,7 @@
             android:textStyle="bold" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string3" />
@@ -95,7 +95,7 @@
             android:src="@drawable/what_is_new_image5" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -104,7 +104,7 @@
             android:textStyle="bold" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string5" />
@@ -122,7 +122,7 @@
             android:src="@drawable/what_is_new_image9" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -131,7 +131,7 @@
             android:textStyle="bold" />
 
         <TextView
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/what_is_new_string4" />

@@ -12,7 +12,7 @@
         android:ems="10"
         android:hint="@string/temperature"
         android:inputType="numberDecimal"
-        style="@style/AppTheme.WindiowText"
+        style="@style/AppTheme.WindowText"
         android:textColorHint="#AAAAAA" />
 
     <LinearLayout

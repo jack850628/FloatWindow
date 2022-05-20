@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/height"
-            style="@style/AppTheme.WindiowText" />
+            style="@style/AppTheme.WindowText" />
 
         <EditText
             android:id="@+id/H"
@@ -22,7 +22,7 @@
             android:ems="10"
             android:hint="@string/cm"
             android:inputType="numberDecimal"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:textColorHint="#AAAAAA" />
 
     </LinearLayout>
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/weight"
-            style="@style/AppTheme.WindiowText" />
+            style="@style/AppTheme.WindowText" />
 
         <EditText
             android:id="@+id/W"
@@ -46,7 +46,7 @@
             android:ems="10"
             android:hint="@string/kg"
             android:inputType="numberDecimal"
-            style="@style/AppTheme.WindiowText"
+            style="@style/AppTheme.WindowText"
             android:textColorHint="#AAAAAA" />
 
     </LinearLayout>
@@ -70,13 +70,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="BMI:"
-            style="@style/AppTheme.WindiowText" />
+            style="@style/AppTheme.WindowText" />
 
         <TextView
             android:id="@+id/BMI"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.WindiowText" />
+            style="@style/AppTheme.WindowText" />
     </LinearLayout>
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"

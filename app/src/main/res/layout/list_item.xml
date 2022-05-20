@@ -7,5 +7,5 @@
     android:paddingLeft="5dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dip"
-    style="@style/AppTheme.WindiowText"
+    style="@style/AppTheme.WindowText"
     android:textSize="18sp" />

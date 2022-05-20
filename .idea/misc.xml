@@ -8,23 +8,30 @@
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/about.xml" value="0.146875" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/add_to_bookmark.xml" value="0.17391304347826086" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/alert.xml" value="0.1" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/bookmark_list_item.xml" value="0.12552083333333333" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/brickout_end_window.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/calculator.xml" value="0.146875" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/calculator_sub_page1.xml" value="0.146875" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/calculator_sub_page2.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/create_web_shortcut.xml" value="0.25" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/fw_editview_popview.xml" value="0.15806159420289856" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/help.xml" value="0.28554502369668244" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/history_list_item.xml" value="0.17753623188405798" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/history_page.xml" value="0.17753623188405798" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/list_checkbox_item.xml" value="0.17391304347826086" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/list_item.xml" value="0.19791666666666666" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/list_item_no_background.xml" value="0.17391304347826086" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/main_menu.xml" value="0.17239583333333333" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/note_page.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/setting.xml" value="0.45" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/web_browser_permission.xml" value="0.1" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/web_browser_setting.xml" value="0.3625" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/web_download_file.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/webpage.xml" value="0.17391304347826086" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/what_is_new.xml" value="0.25" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/window_conetxt2.xml" value="0.17391304347826086" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/window_context.xml" value="0.14945652173913043" />
+        <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/app/src/main/res/layout/window_manager.xml" value="0.12552083333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/floatwindow/src/main/res/drawable/close_window.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/floatwindow/src/main/res/drawable/fullscreen_window.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/jack8/AndroidStudioProjects/FloatWindow/floatwindow/src/main/res/drawable/hide_window.xml" value="0.17395833333333333" />
